@@ -18,7 +18,7 @@ The interface is designed for throughput rather than comfort. The data is writte
 
 keys:
 * `left` (or `space`), `right` - advance through the images in the folder. if you do not draw a rectangle, it will mark the whole photo as a window. To not include any rectangles, press `0` to ignore the photo entirely.
-* mouse - draw rectangle. all new rectangles are currently given the `window` tag.
+* mouse - draw rectangle. all new rectangles are currently given the `window` tag or the tags from the current rectangle.
 * pink letters at top left: add/remove tags to the current rectangle or entire image
 * `up`, `down` - change the current rectangle
 * `backspace` - remove current rectangle
