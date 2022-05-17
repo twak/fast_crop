@@ -15,7 +15,7 @@ class ROI:
 
         self.current_n = 0
         self.images = []
-        self.meta_dir = Path(dir).parent.joinpath("metadata_single_elements/%s" % os.path.basename(dir) )
+        self.meta_dir = Path(dir).parent.parent.joinpath("metadata_single_elements/%s" % os.path.basename(dir) )
         os.makedirs(self.meta_dir, exist_ok=True)
 
         for exn in ("**.jpg", "**.png" ):
@@ -211,7 +211,7 @@ class ROI:
 
     def json_file(self, pth = None):
         if pth == None:
-            pth = self.input_loc;
+            pth = self.input_loc
 
         pre, ext = os.path.splitext(pth)
 
@@ -220,11 +220,14 @@ class ROI:
 
     def save(self):
 
-        if (self.rects is None or len (self.rects) == 0) and len(self.tags) == 0 and not os.path.exists(self.json_file()):
-            print ("not saving (no rects) %s" % self.input_loc)
-            return
+        # if (self.rects is None or len (self.rects) == 0) and len(self.tags) == 0 and not os.path.exists(self.json_file()):
+        #     print ("not saving (no rects) %s" % self.input_loc)
+        #     return
 
-        out = {"rects": self.rects, "width": self.im.width, "height": self.im.height } #, "tags": self.tags}
+        if len ( self.rects ) == 0 and 'deleted' not in self.tags:
+            self.rects.append( [[0,0,self.im.width, self.im.height], self.default_tags.copy()] )
+
+        out = {"rects": self.rects, "width": self.im.width, "height": self.im.height, "tags": self.tags}
 
         with open(self.json_file(), "w") as file:
             json.dump(out, file)
@@ -280,7 +283,7 @@ class ROI:
         if self.font is None:
             self.font = pygame.font.SysFont(pygame.font.get_default_font(), 10)
 
-        self.screen = pygame.display.set_mode((1600, 1600))
+        self.screen = pygame.display.set_mode((1024, 1024))
         self.load(0)
         self.mainLoop()
 
