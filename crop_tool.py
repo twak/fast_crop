@@ -7,6 +7,7 @@ import PIL.Image
 import pygame, sys
 from PIL import Image, ImageOps
 import numpy as np
+from pathlib import Path
 
 class ROI:
 
@@ -17,9 +18,15 @@ class ROI:
 
         self.current_n = 0
         self.images = []
+        self.meta_dir = Path(dir).parent.joinpath("metadata_single_elements/%s" % os.path.basename(dir) )
+        os.makedirs(self.meta_dir, exist_ok=True)
 
         for exn in ("**.jpg", "**.png" ):
             self.images.extend(glob.glob(dir+"/"+exn))
+
+        if (len(self.images) == 0):
+            print ("no images found in %s!" % dir)
+            sys.exit(1)
 
         for i, f in enumerate (self.images):
             if os.path.exists(self.json_file(f)):
@@ -28,10 +35,13 @@ class ROI:
         print ("found %d images" % len (self.images))
 
         self.keys = {}
-        self.keys['deleted'] = "0: Deleted" # not processed to dataset
+
+        self.keys['deleted'] = "0: Deleted"  # whole image not processed to dataset
         self.keys['glass_facade'] = "1: Glass Facade" # glass panels
         self.keys['church'] = "2: Church" # complex church window
         self.keys['street'] = "3: Shop" # street level/wide angle shot
+
+        self.keys['win'] = "w: Window"  # we are creating windows
 
     def displayImage(self):
 
@@ -161,8 +171,10 @@ class ROI:
     def json_file(self, pth = None):
         if pth == None:
             pth = self.input_loc;
+
         pre, ext = os.path.splitext(pth)
-        return  pre + ".json"
+
+        return  os.path.join(self.meta_dir, os.path.basename(pre)+".json")
 
 
     def save(self):
@@ -182,6 +194,7 @@ class ROI:
         self.rects = []
         self.tags = []
         self.current_n += incr
+
         self.input_loc = self.images[(self.current_n + len(self.images) ) % len(self.images)]
         print ("loading %s" % self.input_loc)
         pygame.display.set_caption(self.input_loc)
@@ -263,32 +276,33 @@ class ROI:
 
             return img
 
-    def move_tag(self, tag_to_move, destination):
+    # def move_tag(self, tag_to_move, destination):
+    #
+    #     for im_file in self.images:
+    #         json_file = self.json_file(im_file)
+    #
+    #         base_dir = os.path.basename(im_file)
+    #
+    #         if os.path.exists(json_file): # crop
+    #             prev = json.load(open(json_file, "r"))
+    #             tags = prev["tags"]
+    #             if tag_to_move in tags:
+    #                 # print(json_file)
+    #                 # print(im_file)
+    #                 # print("\n")
+    #                 os.rename(json_file, os.path.join(destination, os.path.basename(json_file)))
+    #                 os.rename(im_file  , os.path.join(destination, os.path.basename(  im_file)))
 
-        for im_file in self.images:
-            pre, ext = os.path.splitext(im_file)
-            json_file = pre + ".json"
 
-            base_dir = os.path.basename(im_file)
+    def cut_n_shut(self, dir_, clear_log = False, sub_dirs = True, crop_mode='square_crop', resolution = 512):
 
-            if os.path.exists(json_file): # crop
-                prev = json.load(open(json_file, "r"))
-                tags = prev["tags"]
-                if tag_to_move in tags:
-                    # print(json_file)
-                    # print(im_file)
-                    # print("\n")
-                    os.rename(json_file, os.path.join(destination, os.path.basename(json_file)))
-                    os.rename(im_file  , os.path.join(destination, os.path.basename(  im_file)))
-
-
-    def cut_n_shut(self, dir_, clear_log = False, sub_dirs = True):
+        global VALID_CROPS
 
         os.makedirs(dir_, exist_ok=True)
         dir = dir_
 
-        mode = 'w' if clear_log else 'a'
-        log = open( os.path.join ( dir_, 'log.txt'), mode)
+        fm = 'w' if clear_log else 'a'
+        log = open( os.path.join ( dir_, 'log.txt'), fm)
 
         def save(im, out_name, count):
 
@@ -308,10 +322,14 @@ class ROI:
 
             im.save(out_path, format="JPEG", quality=98)
 
-        res = 512
+        if not crop_mode in VALID_CROPS:
+            print ("unknown crop mode %s. pick from: %s " % (crop_mode, " ".join(VALID_CROPS)))
+            return
+
+        # resolution = 512
 #        mode = 'square_crop'
-        mode = 'square_expand'
-        mode = 'none'
+#         crop_mode = 'square_expand'
+#         crop_mode = 'none'
         min_dim = 2048 # 1024 lost 77/3,100 at this resolution (12.4.22)
 
         for im_file in self.images:
@@ -355,18 +373,48 @@ class ROI:
                     log.write("%s [%d, %d, %d, %d]\n" % (im_file, r[0], r[1], r[2], r[3]) )
 
                     crop_im = im.crop( ( r[0], r[1], r[2], r[3] ) )
-                    crop_im = self.crop(crop_im, res, mode)
+                    crop_im = self.crop(crop_im, resolution, crop_mode)
 
                     save(crop_im, out_name, count)
                     count = count + 1
             else: # whole image
-                im = self.crop(im, res, mode)
+                im = self.crop(im, resolution, crop_mode)
                 log.write(im_file + f"[0,0,{im.width},{im.height}]\n")
                 save ( im, out_name, count )
 
         log.close()
 
+
+VALID_CROPS = {'square_crop', 'square_expand', 'none'}
+
 if __name__ == "__main__":
+
+    print("\n\n") #pygame output...
+
+    if len ( sys.argv) == 1:
+        path = "."
+        print("the first command line argument specifies the folder location - using python root for now. Other instructions: \n")
+        print("second argument is the output folder - this switches us to image processing mode (crops and writes images to output)")
+        print("third argument is the optional crop mode: %s " % ", ".join(VALID_CROPS))
+        print("fourth argument is the optional resolution (used if crop_mode is not 'none')")
+    else:
+        path = sys.argv[1]
+
+    if len(sys.argv) < 3: # running interactive
+        print("running interactive in %s." % path)
+        ROI(path).interactive()
+
+    else: # process output
+        out = sys.argv[2]
+        print("cropping images from %s to %s" % (path, out) )
+        crop_mode = 'none'
+        resolution = 512
+        if len(sys.argv) >= 4:
+            crop_mode = sys.argv[3]
+        if len(sys.argv) >= 5:
+            resolution = int ( sys.argv[4] )
+
+        ROI( path ).cut_n_shut(out, clear_log=True, crop_mode = crop_mode, resolution = resolution)
 
     #ROI('C:/Users/twak/Documents/architecture_net/windowz_images/tom_dales').interactive()
     #ROI('C:/Users/twak/Documents/architecture_net/windowz_images/tom_bramley').interactive()
@@ -377,12 +425,9 @@ if __name__ == "__main__":
     #ROI('C:/Users/twak/Documents/architecture_net/windowz_images/tom_cams').interactive()
     #ROI('C:/Users/twak/Documents/architecture_net/windowz_images/tom_london').interactive()
     #ROI('C:/Users/twak/Documents/architecture_net/windowz_images/Michaela_Windows_Vienna_20220505').interactive()
-
     # ROI('C:/Users/twak/Documents/architecture_net/windowz_images/tom_london').move_tag('deleted', 'C:\\Users\\twak\Documents\\architecture_net\\not_windowz' )
 
-    if True: # generate whole dataset
-        out = 'C:/Users/twak\Downloads/test_out'
-
+    if False: # generate whole dataset on tom's machine
         ROI('C:/Users/twak/Documents/architecture_net/windowz_images/tom_york').cut_n_shut(out, clear_log= True)
         ROI('C:/Users/twak/Documents/architecture_net/windowz_images/tom_leeds_docks').cut_n_shut(out)
         ROI('C:/Users/twak/Documents/architecture_net/windowz_images/tom_bramley').cut_n_shut(out)
