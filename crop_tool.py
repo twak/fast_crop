@@ -13,9 +13,6 @@ class ROI:
 
     def __init__(self, dir ):
 
-        # load index from all image filenames
-        # load rects
-
         self.current_n = 0
         self.images = []
         self.meta_dir = Path(dir).parent.joinpath("metadata_single_elements/%s" % os.path.basename(dir) )
@@ -39,11 +36,11 @@ class ROI:
 
         self.photo_tags[ pygame.K_0 ] = ('deleted', "0: Deleted")  # whole image not processed to dataset
 
-        self.rect_tags[ pygame.K_1 ]  = ( 'glass_facade', "1: Glass Facade" ) # glass panels
-        self.rect_tags[ pygame.K_2 ]  = ( 'church', "2: Church" )# complex church window
-        self.rect_tags[pygame.K_3]    = ( 'street', "3: Shop")  # street level/wide angle shot
-        self.rect_tags[pygame.K_4]    = ( 'abnormal', "4: Abnormal")  # street level/wide angle shot
-        self.rect_tags[  pygame.K_w ] = ( 'window', "w: Window" )  # we are creating windows
+        self.rect_tags[pygame.K_1] = ( 'glass_facade', "1: Glass Facade" ) # glass panels
+        self.rect_tags[pygame.K_2] = ( 'church'      , "2: Church" )# complex church window
+        self.rect_tags[pygame.K_3] = ( 'street'      , "3: Shop")  # street level/wide angle shot
+        self.rect_tags[pygame.K_4] = ( 'abnormal'    , "4: Abnormal")  # street level/wide angle shot
+        self.rect_tags[pygame.K_w] = ( 'window'      , "w: Window" )  # we are creating windows
 
         self.default_tags = ['window']
 
@@ -77,9 +74,6 @@ class ROI:
                 # rect border
                 pygame.draw.rect(self.screen, color, pygame.Rect(x / self.scale, y / self.scale, (x2 - x) / self.scale, (y2 - y) / self.scale), width=width)
 
-
-
-
         if 'deleted' in self.tags:
             pygame.draw.line(self.screen, (255, 0, 0), (0, 0), (self.screen.get_width(), self.screen.get_height()), width = 10)
             pygame.draw.line(self.screen, (255, 0, 0), (self.screen.get_width(), 0), (0, self.screen.get_height()), width = 10)
@@ -106,11 +100,11 @@ class ROI:
                 y += height
                 height = abs(height)
 
-            pygame.draw.line(self.screen, (255, 0, 255), (0, y), (self.screen.get_width(), y))
-            pygame.draw.line(self.screen, (255, 0, 255), (0, y + height), (self.screen.get_width(), y + height))
-            pygame.draw.line(self.screen, (255, 0, 255), (x, 0), (x, self.screen.get_height()))
-            pygame.draw.line(self.screen, (255, 0, 255), (x + width, 0), (x + width, self.screen.get_height()))
-            pygame.draw.rect(self.screen, (0, 255, 0), pygame.Rect( x, y, width, height ), width = 1 )
+            pygame.draw.line(self.screen, (255, 0  , 255), (0, y), (self.screen.get_width(), y))
+            pygame.draw.line(self.screen, (255, 0  , 255), (0, y + height), (self.screen.get_width(), y + height))
+            pygame.draw.line(self.screen, (255, 0  , 255), (x, 0), (x, self.screen.get_height()))
+            pygame.draw.line(self.screen, (255, 0  , 255), (x + width, 0), (x + width, self.screen.get_height()))
+            pygame.draw.rect(self.screen, (0  , 255, 0  ), pygame.Rect( x, y, width, height ), width = 1 )
 
         pygame.display.flip()
 
@@ -201,17 +195,6 @@ class ROI:
                                 self.tags.remove(tag)
                             else:
                                 self.tags.append (tag)
-
-                    # if event.key >= pygame.K_0 and event.key <= pygame.K_9:
-                    #     ind = event.key - pygame.K_0
-                    #
-                    #     if ind < len (self.keys):
-                    #         val = list(self.keys.keys())[ind]
-                    #         if val in self.tags:
-                    #             self.tags.remove(val)
-                    #         else:
-                    #             self.tags.append (val)
-
 
                 if (event.type == pygame.KEYDOWN and event.key == pygame.K_q) or event.type == pygame.QUIT:
                         self.save()
