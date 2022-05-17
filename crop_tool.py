@@ -34,14 +34,18 @@ class ROI:
 
         print ("found %d images" % len (self.images))
 
-        self.keys = {}
+        self.rect_tags = {}
+        self.photo_tags = {}
 
-        self.keys['deleted'] = "0: Deleted"  # whole image not processed to dataset
-        self.keys['glass_facade'] = "1: Glass Facade" # glass panels
-        self.keys['church'] = "2: Church" # complex church window
-        self.keys['street'] = "3: Shop" # street level/wide angle shot
+        self.photo_tags[ pygame.K_0 ] = ('deleted', "0: Deleted")  # whole image not processed to dataset
 
-        self.keys['win'] = "w: Window"  # we are creating windows
+        self.rect_tags[ pygame.K_1 ]  = ( 'glass_facade', "1: Glass Facade" ) # glass panels
+        self.rect_tags[ pygame.K_2 ]  = ( 'church', "2: Church" )# complex church window
+        self.rect_tags[pygame.K_3]    = ( 'street', "3: Shop")  # street level/wide angle shot
+        self.rect_tags[pygame.K_4]    = ( 'abnormal', "4: Abnormal")  # street level/wide angle shot
+        self.rect_tags[  pygame.K_w ] = ( 'window', "w: Window" )  # we are creating windows
+
+        self.default_tags = ['window']
 
     def displayImage(self):
 
@@ -53,19 +57,41 @@ class ROI:
         self.screen.blit(px, px.get_rect())
 
         if self.rects is not None:
-            for x, y, x2, y2 in self.rects:
-                pygame.draw.rect(self.screen, (0, 200, 0), pygame.Rect( x / self.scale, y/ self.scale, (x2-x)/ self.scale, (y2-y)/ self.scale ), width = 1 )
+            for rect in self.rects:
+                x, y, x2, y2 = rect[0]
+
+                color = (255, 255, 255) if rect == self.current_rect else (200, 200, 200)
+                width = 3 if rect == self.current_rect else 1
+
+                pygame.draw.rect(self.screen, (0,0,0), pygame.Rect(x / self.scale, y / self.scale, (x2 - x) / self.scale, (y2 - y) / self.scale), width=2*width)
+
+                # tags
+                pygame.draw.rect(self.screen, (0, 0, 0), pygame.Rect(x / self.scale, y / self.scale, 16, len(rect[1]) * 16))
+                o = 0
+                for t in rect[1]:
+                    # color = (255, 0, 255) if t in self.tags else (0, 255, 255)
+                    surface = self.font.render(t[0], True, color)
+                    self.screen.blit(surface, (x / self.scale + 4, y / self.scale + o * 16 + 3))
+                    o += 1
+
+                # rect border
+                pygame.draw.rect(self.screen, color, pygame.Rect(x / self.scale, y / self.scale, (x2 - x) / self.scale, (y2 - y) / self.scale), width=width)
+
+
+
 
         if 'deleted' in self.tags:
-            pygame.draw.line(self.screen, (255, 0, 0), (0, 0), (self.screen.get_width(), self.screen.get_height()))
-            pygame.draw.line(self.screen, (255, 0, 0), (self.screen.get_width(), 0), (0, self.screen.get_height()))
+            pygame.draw.line(self.screen, (255, 0, 0), (0, 0), (self.screen.get_width(), self.screen.get_height()), width = 10)
+            pygame.draw.line(self.screen, (255, 0, 0), (self.screen.get_width(), 0), (0, self.screen.get_height()), width = 10)
 
         # tags at top left
-        pygame.draw.rect(self.screen, (0,0,0), pygame.Rect(0,0, 120, len(self.keys) * 16 ))
+        all_tags = self.photo_tags.items() | self.rect_tags.items()
+        pygame.draw.rect(self.screen, (0,0,0), pygame.Rect(0,0, 120, len(all_tags) * 16 ))
         o = 0
-        for t, d in self.keys.items():
-            color = (255, 0, 255) if t in self.tags else (0, 255, 255)
-            surface = self.font.render(d, True, color)
+        for t, d in all_tags:
+            # color = (255, 0, 255) if t in self.current_rect[1] else (0, 255, 255)
+            color = (255, 0, 255)
+            surface = self.font.render(d[1], True, color)
             self.screen.blit (surface, (5, o * 16) )
             o = o + 1
 
@@ -122,7 +148,10 @@ class ROI:
 
                         if self.rects is None:
                             self.rects = []
-                        self.rects.append(r)
+
+                        template_tags = self.default_tags if self.current_rect is None else self.current_rect[1]
+                        self.current_rect = (r, template_tags.copy() )
+                        self.rects.append(self.current_rect)
 
                         self.topleft = self.bottomright = None
 
@@ -137,22 +166,51 @@ class ROI:
                         self.save()
                         self.load(+1)
 
+                    if event.key == pygame.K_DOWN or event.key == pygame.K_UP:
+                        if self.current_rect != None and self.current_rect in self.rects:
+                            i = self.rects.index(self.current_rect)
+                            dir = 1 if event.key == pygame.K_DOWN else -1
+                            self.current_rect = self.rects[(i+len ( self.rects ) + dir)%len ( self.rects )]
+
                     if event.key == pygame.K_c:
                         self.rects = []
-
+                        self.current_rect = None
 
                     if event.key == pygame.K_BACKSPACE:
-                        if len (self.rects) > 0:
-                            self.rects = self.rects[:-1]
-
-                    if event.key >= pygame.K_0 and event.key <= pygame.K_9:
-                        ind = event.key - pygame.K_0
-                        if ind < len (self.keys):
-                            val = list(self.keys.keys())[ind]
-                            if val in self.tags:
-                                self.tags.remove(val)
+                        if self.current_rect in self.rects:
+                            i = self.rects.index(self.current_rect)
+                            self.rects.remove(self.current_rect)
+                            if len(self.rects) > 0:
+                                self.current_rect = self.rects[(i % len ( self.rects ))]
                             else:
-                                self.tags.append (val)
+                                self.current_rect = None
+
+                    if self.current_rect != None:
+                        for key, tag_desc in self.rect_tags.items():
+                            if event.key == key:
+                                tag = tag_desc[0]
+                                if tag in self.current_rect[1]:
+                                    self.current_rect[1].remove(tag)
+                                else:
+                                    self.current_rect[1].append(tag)
+
+                    for key, tag_desc in self.photo_tags.items():
+                        if event.key == key:
+                            tag = tag_desc[0]
+                            if tag in self.tags:
+                                self.tags.remove(tag)
+                            else:
+                                self.tags.append (tag)
+
+                    # if event.key >= pygame.K_0 and event.key <= pygame.K_9:
+                    #     ind = event.key - pygame.K_0
+                    #
+                    #     if ind < len (self.keys):
+                    #         val = list(self.keys.keys())[ind]
+                    #         if val in self.tags:
+                    #             self.tags.remove(val)
+                    #         else:
+                    #             self.tags.append (val)
 
 
                 if (event.type == pygame.KEYDOWN and event.key == pygame.K_q) or event.type == pygame.QUIT:
@@ -179,11 +237,11 @@ class ROI:
 
     def save(self):
 
-        if (self.rects is None or len (self.rects) == 0) and len(self.tags) == 0:
+        if (self.rects is None or len (self.rects) == 0) and len(self.tags) == 0 and not os.path.exists(self.json_file()):
             print ("not saving (no rects) %s" % self.input_loc)
             return
 
-        out = {"rects": self.rects, "width": self.im.width, "height": self.im.height, "tags": self.tags}
+        out = {"rects": self.rects, "width": self.im.width, "height": self.im.height } #, "tags": self.tags}
 
         with open(self.json_file(), "w") as file:
             json.dump(out, file)
@@ -192,6 +250,8 @@ class ROI:
     def load(self, incr):
 
         self.rects = []
+        self.current_rect = None
+
         self.tags = []
         self.current_n += incr
 
@@ -203,6 +263,11 @@ class ROI:
         if os.path.exists(json_file):
             prev = json.load(open(json_file, "r"))
             self.rects = prev["rects"]
+            if len(self.rects) > 0:
+                self.current_rect = self.rects[-1]
+            else:
+                self.current_rect = None
+
             if "tags" in prev:
                 self.tags = prev["tags"]
 
