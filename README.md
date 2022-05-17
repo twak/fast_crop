@@ -1,10 +1,10 @@
 # fast crop tool
 
-Introductory video:
+This is a custom tool to mark window rectangles in many photos quickly. You can also tag the rectangles with additional metadata. It may be extended in the future to mark other features than rectangles...
 
 ## dependencies
 
-I used Python 3.10, `Pillow` (9.1.1) `Numpy` (1.22.3) and `pygame` (2.1.2).
+Python 3.10, `Pillow` (9.1.1) `numpy` (1.22.3) and `pygame` (2.1.2).
 
 ## interactive mode
 
@@ -15,8 +15,8 @@ python crop_tool.py "C:\Downloads\dataset\twak_london_20220522"
 If the window is too big you can edit a line (above 286) `self.screen = pygame.display.set_mode((1600, 1600))` to change the resolution of the window to however big you want.
 
 keys:
-* left (or space), right - advance through the images in the folder
-* mouse - draw rectangle
+* left (or space), right - advance through the images in the folder. if you do not draw a rectangle, it will mark the whole photo as a window.
+* mouse - draw rectangle. all new rectangles are currently given the `window` tag.
 * pink letters at top left: add/remove tags to the current rectangle or entire image
 * up, down - change the current rectangle
 * delete - remove current rectangle
