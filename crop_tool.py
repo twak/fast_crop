@@ -8,6 +8,7 @@ import pygame, sys
 from PIL import Image, ImageOps
 import numpy as np
 from pathlib import Path
+import tags
 
 class ROI:
 
@@ -34,15 +35,15 @@ class ROI:
         self.rect_tags = {}
         self.photo_tags = {}
 
-        self.photo_tags[ pygame.K_0 ] = ('deleted', "0: Deleted")  # whole image not processed to dataset
+        self.photo_tags[ pygame.K_0 ] = ( tags.deleted, "0: Deleted")  # whole image not processed to dataset
 
-        self.rect_tags[pygame.K_1] = ( 'glass_facade', "1: Glass Facade" ) # glass panels
-        self.rect_tags[pygame.K_2] = ( 'church'      , "2: Church" )# complex church window
-        self.rect_tags[pygame.K_3] = ( 'street'      , "3: Shop")  # street level/wide angle shot
-        self.rect_tags[pygame.K_4] = ( 'abnormal'    , "4: Abnormal")  # street level/wide angle shot
-        self.rect_tags[pygame.K_w] = ( 'window'      , "w: Window" )  # we are creating windows
+        self.rect_tags[pygame.K_1] = ( tags.glass_facade, "1: Glass Facade" ) # glass panels
+        self.rect_tags[pygame.K_2] = ( tags.church      , "2: Church" )# complex church window
+        self.rect_tags[pygame.K_3] = ( tags.shop        , "3: Shop")  # street level/wide angle shot
+        self.rect_tags[pygame.K_4] = ( tags.abnormal    , "4: Abnormal")  # street level/wide angle shot
+        self.rect_tags[pygame.K_w] = ( tags.window      , "w: Window" )  # we are creating windows
 
-        self.default_tags = ['window']
+        self.default_tags = [tags.window]
 
     def displayImage(self):
 
@@ -345,17 +346,18 @@ class ROI:
     #                 os.rename(im_file  , os.path.join(destination, os.path.basename(  im_file)))
 
 
-    def cut_n_shut(self, dir_, clear_log = False, sub_dirs = True, crop_mode='square_crop', resolution = 512):
+    def cut_n_shut(self, dir_, clear_log = False, sub_dirs = True, crop_mode='square_crop', resolution = 512, quality=98):
 
         global VALID_CROPS
 
         os.makedirs(dir_, exist_ok=True)
         dir = dir_
+        name_map = {}
 
         fm = 'w' if clear_log else 'a'
         log = open( os.path.join ( dir_, 'log.txt'), fm)
 
-        def save(im, out_name, count):
+        def save(im, out_name):
 
             if len (im.getbands() ) > 3: # pngs..
                  im = im.convert("RGB")
@@ -366,12 +368,13 @@ class ROI:
 
             md5hash = hashlib.md5(im.tobytes())
             jpg_out_file = "%s.jpg" % md5hash.hexdigest()
+            # name_map[md5hash] =
             log.write("\"%s\"\n" % jpg_out_file)
 
 
             out_path = os.path.join(dir, jpg_out_file)
 
-            im.save(out_path, format="JPEG", quality=98)
+            im.save(out_path, format="JPEG", quality=quality)
 
         if not crop_mode in VALID_CROPS:
             print ("unknown crop mode %s. pick from: %s " % (crop_mode, " ".join(VALID_CROPS)))
@@ -426,12 +429,12 @@ class ROI:
                     crop_im = im.crop( ( r[0], r[1], r[2], r[3] ) )
                     crop_im = self.crop(crop_im, resolution, crop_mode)
 
-                    save(crop_im, out_name, count)
+                    save(crop_im, out_name)
                     count = count + 1
             else: # whole image
                 im = self.crop(im, resolution, crop_mode)
                 log.write(im_file + f"[0,0,{im.width},{im.height}]\n")
-                save ( im, out_name, count )
+                save ( im, out_name )
 
         log.close()
 
@@ -444,7 +447,7 @@ if __name__ == "__main__":
 
     if len ( sys.argv) == 1:
         path = "."
-        print("the first command line argument specifies the folder location - using python root for now. Other instructions: \n")
+        print("the first command line argument specifies the dataset root.\n")
         print("second argument is the output folder - this switches us to image processing mode (crops and writes images to output)")
         print("third argument is the optional crop mode: %s " % ", ".join(VALID_CROPS))
         print("fourth argument is the optional resolution (used if crop_mode is not 'none')")
@@ -456,6 +459,7 @@ if __name__ == "__main__":
         ROI(path).interactive()
 
     else: # process output
+
         out = sys.argv[2]
         print("cropping images from %s to %s" % (path, out) )
         crop_mode = 'none'
