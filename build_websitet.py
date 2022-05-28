@@ -8,13 +8,13 @@ from pathlib import Path
 from PIL import Image, ImageOps
 import tags
 
-orig = "C:\\Users\\twak\\Downloads\\update_test\\photos"
-meta_dir = "C:\\Users\\twak\\Downloads\\update_test\\metadata_single_elements"
-web_dir = "C:\\Users\\twak\\Downloads\\update_test\\metadata_website"
+# orig = "C:\\Users\\twak\\Downloads\\update_test\\photos"
+# meta_dir = "C:\\Users\\twak\\Downloads\\update_test\\metadata_single_elements"
+# web_dir = "C:\\Users\\twak\\Downloads\\update_test\\metadata_website"
 
-# orig = "C:\\Users\\twak\\Documents\\architecture_net\\dataset\\photos"
-# meta_dir = "C:\\Users\\twak\\Documents\\architecture_net\\dataset\\metadata_single_elements"
-# web_dir = "C:\\Users\\twak\\Documents\\architecture_net\\dataset\\metadata_website"
+orig = "C:\\Users\\twak\\Documents\\architecture_net\\dataset\\photos"
+meta_dir = "C:\\Users\\twak\\Documents\\architecture_net\\dataset\\metadata_single_elements"
+web_dir = "C:\\Users\\twak\\Documents\\architecture_net\\dataset\\metadata_website"
 
 dataset_root = Path(orig).parent
 res = 128
@@ -61,8 +61,8 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
             for tag_name in tags.all_tags:
                 html_file.write(f'<input class="{tag_name}_c" type="checkbox" value="{tag_name}_c" name="{tag_name}_foo">{tag_name}   \n')
 
-            for tag_name in os.listdir(orig):
-                html_file.write(f'<input class="{tag_name}_c" type="checkbox" value="{tag_name}_c" name="{tag_name}_foo" checked>{tag_name}<br>\n')
+            for idx, tag_name in enumerate ( os.listdir(orig) ):
+                html_file.write(f'<input class="{tag_name}_c" type="checkbox" value="{tag_name}_c" name="{tag_name}_foo" {"checked" if idx == 0 else ""}>{tag_name}\n')
 
 
         for batch in os.listdir(orig):
@@ -77,11 +77,11 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
             count = 0
 
             for photo in os.listdir(photos_dir):
-
-                print(f'{batch} {count} ')
-                count += 1
-
                 if photo.endswith(".JPG") or photo.endswith(".jpg"):
+
+                    print(f'{batch} {count} {photo}')
+                    count += 1
+
                     thumbnail(os.path.join(photos_dir, photo), os.path.join(batch_thumbs, photo))
 
                     pre, _ = os.path.splitext(photo)
@@ -110,7 +110,13 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                         photo_html.write(f"<a href='../../photos/{batch}/{photo}'><img src='../../photos/{batch}/{photo}' height='640'></a><br><br>\n")
 
                         for thumb_idx, r in enumerate ( metadata["rects"] ):
+
+                            print ("    crop %d" % thumb_idx)
                             crop_file=photo+"_crop_%d.jpg" % thumb_idx
+                            rect = r[0]
+                            if rect[2] - rect[0] < 20 or rect [3] -rect[1] < 20:
+                                print ("skipping small rect")
+                                continue
                             thumbnail(os.path.join(photos_dir, photo),  os.path.join(batch_thumbs, crop_file), rect=r[0])
 
                             rects_html.write(
