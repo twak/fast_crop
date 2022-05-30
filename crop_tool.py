@@ -30,7 +30,7 @@ class ROI:
             if os.path.exists(self.json_file(f)):
                 self.current_n = i # skip to last annotated
 
-        print ("found %d images" % len (self.images))
+        print ("found %d images; starting at number %d" % (len (self.images), self.current_n ))
 
         self.rect_tags = {}
         self.photo_tags = {}
@@ -41,9 +41,11 @@ class ROI:
         self.rect_tags[pygame.K_2] = ( tags.church      , "2: Church" )# complex church window
         self.rect_tags[pygame.K_3] = ( tags.shop        , "3: Shop")  # street level/wide angle shot
         self.rect_tags[pygame.K_4] = ( tags.abnormal    , "4: Abnormal")  # street level/wide angle shot
-        self.rect_tags[pygame.K_w] = ( tags.window      , "w: Window" )  # we are creating windows
+        self.rect_tags[pygame.K_w] = ( tags.window      , "w: Window")  # we are creating windows
+        self.rect_tags[pygame.K_m] = ( tags.material    , "m: Material")  # we are marking materials
 
         self.default_tags = [tags.window]
+        self.exclusive_tags = [tags.window, tags.material] # pick one!
 
     def displayImage(self):
 
@@ -81,13 +83,13 @@ class ROI:
 
         # tags at top left
         all_tags = self.photo_tags.items() | self.rect_tags.items()
-        pygame.draw.rect(self.screen, (0,0,0), pygame.Rect(0,0, 120, len(all_tags) * 16 ))
+        pygame.draw.rect(self.screen, (0,0,0), pygame.Rect(self.screen.get_width() -120, 0,120, len(all_tags) * 16 ))
         o = 0
         for t, d in all_tags:
             # color = (255, 0, 255) if t in self.current_rect[1] else (0, 255, 255)
             color = (255, 0, 255)
             surface = self.font.render(d[1], True, color)
-            self.screen.blit (surface, (5, o * 16) )
+            self.screen.blit (surface, (self.screen.get_width()-120+5, o * 16) )
             o = o + 1
 
         if self.topleft is not None and self.bottomright is not None:
@@ -145,7 +147,7 @@ class ROI:
                             self.rects = []
 
                         template_tags = self.default_tags if self.current_rect is None else self.current_rect[1]
-                        self.current_rect = (r, template_tags.copy() )
+                        self.current_rect = (r, template_tags.copy())
                         self.rects.append(self.current_rect)
 
                         self.topleft = self.bottomright = None
@@ -171,6 +173,10 @@ class ROI:
                         self.rects = []
                         self.current_rect = None
 
+                    if event.key == pygame.K_a:
+                        self.current_rect = ([0,0,self.im.width,self.im.height], self.default_tags.copy())
+                        self.rects.append(self.current_rect)
+
                     if event.key == pygame.K_BACKSPACE:
                         if self.current_rect in self.rects:
                             i = self.rects.index(self.current_rect)
@@ -183,10 +189,19 @@ class ROI:
                     if self.current_rect != None:
                         for key, tag_desc in self.rect_tags.items():
                             if event.key == key:
+
                                 tag = tag_desc[0]
+
+
+
                                 if tag in self.current_rect[1]:
                                     self.current_rect[1].remove(tag)
                                 else:
+                                    if tag in self.exclusive_tags:
+                                        for t2 in self.exclusive_tags:
+                                            if t2 in self.current_rect[1]:
+                                                self.current_rect[1].remove(t2)
+
                                     self.current_rect[1].append(tag)
 
                     for key, tag_desc in self.photo_tags.items():
@@ -284,7 +299,7 @@ class ROI:
         if self.font is None:
             self.font = pygame.font.SysFont(pygame.font.get_default_font(), 10)
 
-        self.screen = pygame.display.set_mode((1024, 1024))
+        self.screen = pygame.display.set_mode((1600, 1600))
         self.load(0)
         self.mainLoop()
 

@@ -8,13 +8,13 @@ from pathlib import Path
 from PIL import Image, ImageOps
 import tags
 
-# orig = "C:\\Users\\twak\\Downloads\\update_test\\photos"
-# meta_dir = "C:\\Users\\twak\\Downloads\\update_test\\metadata_single_elements"
-# web_dir = "C:\\Users\\twak\\Downloads\\update_test\\metadata_website"
+orig = "C:\\Users\\twak\\Downloads\\update_test\\photos"
+meta_dir = "C:\\Users\\twak\\Downloads\\update_test\\metadata_single_elements"
+web_dir = "C:\\Users\\twak\\Downloads\\update_test\\metadata_website"
 
-orig = "C:\\Users\\twak\\Documents\\architecture_net\\dataset\\photos"
-meta_dir = "C:\\Users\\twak\\Documents\\architecture_net\\dataset\\metadata_single_elements"
-web_dir = "C:\\Users\\twak\\Documents\\architecture_net\\dataset\\metadata_website"
+# orig = "C:\\Users\\twak\\Documents\\architecture_net\\dataset\\photos"
+# meta_dir = "C:\\Users\\twak\\Documents\\architecture_net\\dataset\\metadata_single_elements"
+# web_dir = "C:\\Users\\twak\\Documents\\architecture_net\\dataset\\metadata_website"
 
 dataset_root = Path(orig).parent
 res = 128
@@ -60,9 +60,10 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
             html_file.write("</style>\n")
             for tag_name in tags.all_tags:
                 html_file.write(f'<input class="{tag_name}_c" type="checkbox" value="{tag_name}_c" name="{tag_name}_foo">{tag_name}   \n')
-
+            html_file.write(f'<br>')
             for idx, tag_name in enumerate ( os.listdir(orig) ):
                 html_file.write(f'<input class="{tag_name}_c" type="checkbox" value="{tag_name}_c" name="{tag_name}_foo" {"checked" if idx == 0 else ""}>{tag_name}\n')
+            html_file.write(f'<br><br>')
 
 
         for batch in os.listdir(orig):
@@ -82,6 +83,9 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                     print(f'{batch} {count} {photo}')
                     count += 1
 
+                    if count > 10:
+                        continue
+
                     thumbnail(os.path.join(photos_dir, photo), os.path.join(batch_thumbs, photo))
 
                     pre, _ = os.path.splitext(photo)
@@ -100,7 +104,7 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                     index_html.write(
                         f'<div class="{" ".join(tags)}">'
                         f'<a href="{batch}/{photo_pre}.html">'
-                               f'<img src="{batch+"/"+photo}" alt="{batch+"/"+photo}" width="64" height="64" loading="lazy"></a>\n'
+                               f'<img src="{batch+"/"+photo}" alt="{batch+"/"+photo}" width="64" height="64" loading="lazy" border="1"></a>\n'
                         f'</div>')
 
                     with open(os.path.join(web_dir, batch, pre + ".html"), 'w') as photo_html:
@@ -122,7 +126,7 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                             rects_html.write(
                                 f'<div class="{" ".join(tags)}">'
                                 f'<a href="{batch}/{photo_pre}.html">'
-                                       f'<img src="{batch+"/"+crop_file}" alt="{batch}:{photo}:{thumb_idx}" width="64" height="64" loading="lazy"></a>\n'
+                                       f'<img src="{batch+"/"+crop_file}" alt="{batch}:{photo}:{thumb_idx}" width="64" height="64" loading="lazy" border="1"></a>\n'
                                 f'</div>')
 
                             photo_html.write(f'crop {thumb_idx} with tags: {", ".join(r[1])}<br>')
@@ -131,8 +135,9 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                         photo_html.write(f"<br><p>all metadata:</p><ul>")
                         for md in os.listdir(dataset_root):
                             for photo_data in glob.glob(os.path.join(dataset_root, md, batch)+"/"+pre+".*"):
-                                _, md_ext = os.path.splitext(photo_data)
-                                photo_html.write(f'<li><a href="{photo_data}">{md} {md_ext.lower()}</a></li>')
+                                md_path, md_ext = os.path.splitext(photo_data)
+                                md_path_strs = os.path.split(photo_data)
+                                photo_html.write(f'<li><a href="../../{md}/{batch}/{md_path_strs[1]}">{md} {md_ext.lower()}</a></li>')
                         photo_html.write(f'</ul>')
 
 
