@@ -13,8 +13,6 @@ import PIL.ImageDraw as ImageDraw
 import PIL.Image as Image
 from PIL import ImageOps
 
-dataset_root = r"C:\Users\twak\Documents\architecture_net\dataset"
-
 def render(dataset_root, photo_file, json_file):
 
     colors = {}
@@ -29,10 +27,6 @@ def render(dataset_root, photo_file, json_file):
     colors["bars"] = (110, 110, 110)
     colors["balcony"] = (222,170,135)
     colors["misc object"] = (174,233,174)
-
-    # colors_transparent = copy.deepcopy (colors)
-    # for key, c in colors_transparent.items():
-    #     colors_transparent[key] = [*c, 128]
 
     # read src input
     photo = Image.open(os.path.join (dataset_root, "photos", photo_file) )
@@ -184,18 +178,34 @@ def write_label_jsons(dataset_root, src_lookup, lyd_json):
 
                 polygon_list.extend(polies_out)
 
-            print ("***********  \n\n\n")
+            print ("***********\n")
             print (out_file_name)
-            print (annotations_out)
+            # print (annotations_out)
 
             with open(out_file_name, "w") as f:
                 json.dump(annotations_out, f)
 
             render (dataset_root, src_file, out_file_name)
 
+            global COUNT
+            COUNT += 1
+
+
+# todo:
+## when we get find a label, generate the website thumbnails and delete the html cache files
+## florians new crops for his data
+## create actual + label dataset in format for learning
+
+
+dataset_root = r"C:\Users\twak\Documents\architecture_net\dataset"
+
 json_src = []
 json_src.extend(glob.glob(r'C:\Users\twak\Documents\architecture_net\dataset\metadata_window_labels\from_labellers\LYD__KAUST_Batch_1(100images)_16.06.22_\**.json'))
 src_lookup = build_src_lookup(dataset_root)
 
+COUNT = 0
+
 for f in json_src:
     write_label_jsons(dataset_root, src_lookup, f)
+
+print (f"processed {COUNT} windows")
