@@ -193,8 +193,7 @@ def write_label_jsons(dataset_root, src_lookup, lyd_json):
 
 # todo:
 ## when we get find a label, generate the website thumbnails and delete the html cache files
-## florians new crops for his data
-## create actual + label dataset in format for learning
+## florians new crops for his data vs my old crops?!
 
 
 dataset_root = r"C:\Users\twak\Documents\architecture_net\dataset"

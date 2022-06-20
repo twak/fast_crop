@@ -15,6 +15,7 @@ import tags
 orig = "C:\\Users\\twak\\Documents\\architecture_net\\dataset\\photos"
 meta_dir = "C:\\Users\\twak\\Documents\\architecture_net\\dataset\\metadata_single_elements"
 web_dir = "C:\\Users\\twak\\Documents\\architecture_net\\dataset\\metadata_website"
+use_cache = True
 
 dataset_root = Path(orig).parent
 res = 128
@@ -34,9 +35,9 @@ for metadata_type in os.listdir(dataset_root):  # entry in an md folder gets you
         all_tags.append(metadata_type)
 
 
-def thumbnail(orig_path, thumb_path, rect=None):
+def thumbnail(orig_path, thumb_path, rect=None, use_cache = False):
 
-    if os.path.exists(thumb_path):
+    if use_cache and os.path.exists(thumb_path):
         return
 
     im = Image.open(orig_path)
@@ -73,15 +74,16 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
 
             html_file.write("</style>\n")
 
-            for tag_name in tags.all_tags:
+            for tag_name in tags.all_tags: # crop-tags we've defined
                 html_file.write(f'<input class="{tag_name}_c" type="checkbox" value="{tag_name}_c" name="{tag_name}_foo">{tag_name}   \n')
             html_file.write(f'<br><hr>')
-            for idx, tag_name in enumerate ( os.listdir(orig) ):
+            for idx, tag_name in enumerate ( os.listdir(orig) ): # batch names are also tagged here
                 html_file.write(f'<input class="{tag_name}_c" type="checkbox" value="{tag_name}_c" name="{tag_name}_foo" {"checked" if idx == -1 else ""}>{tag_name}\n')
             html_file.write(f'<br><hr>')
-            for tag_name in os.listdir(dataset_root): # entry in an md folder gets you a tag
+            for tag_name in os.listdir(dataset_root): # available metadata also tags each file
                 if os.path.isdir (os.path.join (dataset_root, tag_name)):
                     html_file.write(f'<input class="{tag_name}_c" type="checkbox" value="{tag_name}_c" name="{tag_name}_foo">{tag_name}   \n')
+
             html_file.write(f'<br><hr>')
 
 
@@ -113,7 +115,7 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
             append_index_file = os.path.join(batch_thumbs, "html_index.html")
             append_rect_file  = os.path.join(batch_thumbs, "html_rects.html")
 
-            if os.path.exists (append_index_file) and os.path.exists (append_rect_file):
+            if use_cache and os.path.exists (append_index_file) and os.path.exists (append_rect_file):
 
                 # cache files found, let's use those
                 print(f"using cached version for {batch}")
@@ -139,10 +141,10 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                         #     continue
 
                         if os.path.exists(os.path.join(labels_dir, photo)):
-                            thumbnail(os.path.join(labels_dir, photo), os.path.join(batch_thumbs, photo))
+                            thumbnail( os.path.join(labels_dir, photo), os.path.join(batch_thumbs, photo), use_cache=use_cache )
                             has_win_labels = True
                         else:
-                            thumbnail(os.path.join(photos_dir, photo), os.path.join(batch_thumbs, photo))
+                            thumbnail (os.path.join(photos_dir, photo), os.path.join(batch_thumbs, photo), use_cache=use_cache )
                             has_win_labels = False
 
                         pre, _ = os.path.splitext(photo)
@@ -157,17 +159,18 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                             metadata["tags"] = ["no_meta"]
                             metadata["rects"] = []
 
-                        tags = set(metadata["tags"])
+                        tags = set(metadata["tags"]) # whole image tags
                         tags.add(batch)
-                        for r in metadata["rects"]:
-                            for t in r[1]:
-                                tags.add(t)
+
+                        for md in os.listdir(dataset_root): # all data-types that match batch/name-with-any-extension
+                            for photo_data in glob.glob(os.path.join(dataset_root, md, batch) + "/" + pre + ".*"):
+                                tags.add(md)
 
                         photo_pre, ext = os.path.splitext(photo)
 
 
                         photo_page_path = os.path.join(web_dir, batch, pre + ".html")
-                        if not os.path.exists(photo_page_path):
+                        if use_cache and not os.path.exists(photo_page_path):
                             with open(photo_page_path, 'w') as photo_html:
 
                                 photo_html.write("<html><body>\n")
@@ -180,15 +183,19 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                                 for thumb_idx, r in enumerate ( metadata["rects"] ):
 
                                     print ("    crop %d" % thumb_idx)
-                                    crop_file=photo+"_crop_%d.jpg" % thumb_idx
+                                    crop_file = photo+"_crop_%d.jpg" % thumb_idx
+
+                                    rect_tags = tags.copy().union(set(r[1])) # per-photo-tags too
                                     rect = r[0]
-                                    if rect[2] - rect[0] < 20 or rect [3] -rect[1] < 20:
+
+                                    if rect[2] - rect[0] < 20 or rect [3] - rect[1] < 20:
                                         print ("skipping small rect")
                                         continue
-                                    thumbnail(os.path.join(photos_dir, photo),  os.path.join(batch_thumbs, crop_file), rect=r[0])
+
+                                    thumbnail(os.path.join(photos_dir, photo),  os.path.join(batch_thumbs, crop_file), rect=r[0], use_cache=use_cache)
 
                                     rects_append += (
-                                        f'<div class="{" ".join(tags)}">'
+                                        f'<div class="{" ".join(rect_tags)}">'
                                         f'<a href="{batch}/{photo_pre}.html">'
                                                f'<img src="{batch+"/"+crop_file}" alt="{batch}:{photo}:{thumb_idx}" width="64" height="64" loading="lazy" border="1"></a>\n'
                                         f'</div>')
@@ -202,14 +209,11 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                                         md_path, md_ext = os.path.splitext(photo_data)
                                         md_path_strs = os.path.split(photo_data)
                                         photo_html.write(f'<li><a href="../../{md}/{batch}/{md_path_strs[1]}">{md} {md_ext.lower()}</a></li>')
-                                        tags.add(md)
+
                                 photo_html.write(f'</ul>')
 
                                 photo_html.write("</body></html>\n")
-                        else:
-                            for md in os.listdir(dataset_root):
-                                for photo_data in glob.glob(os.path.join(dataset_root, md, batch) + "/" + pre + ".*"):
-                                    tags.add(md)
+
 
                         index_append += (
                             f'<div class="{" ".join(tags)}">'
