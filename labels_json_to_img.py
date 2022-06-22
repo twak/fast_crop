@@ -63,36 +63,26 @@ def render(dataset_root, photo_file, json_file):
                 draw_label_photo.polygon ( poly, colors[cat] )
                 draw_label_trans.polygon ( poly, (*colors[cat], 180), outline = (0,0,0) )
 
-
     jp = Path(json_file)
     label_photo.save(os.path.join(jp.parent, os.path.splitext(jp.name)[0] + ".png"), "PNG")
     photo.save(os.path.join(jp.parent, os.path.splitext(jp.name)[0] + ".jpg"), "JPEG")
 
+    # delete website resources/cache files to match...
+    pfp = Path ( photo_file )
+    batch = pfp.parent.name
+    photo_root_name = os.path.splitext(pfp.name)[0]
+    web_root = Path(dataset_root).joinpath(pfp.parent.parent.joinpath("metadata_website") )
 
-    # draw polygons
+    for to_del in [ web_root.joinpath("crops.html"),
+                    web_root.joinpath("index.html"),
+                    web_root.joinpath(batch).joinpath("html_index.html"),
+                    web_root.joinpath(batch).joinpath("html_rects.html"),
+                    web_root.joinpath(batch).joinpath(pfp.name),
+                    web_root.joinpath(batch).joinpath(photo_root_name + ".html") ]:
+        if os.path.exists(to_del):
+            print(f"removing {to_del} cache file")
+            os.remove(to_del)
 
-
-    #
-    # image = Image.new("RGB", (640, 480))
-    #
-    # draw = ImageDraw.Draw(image)
-    #
-    # # points = ((1,1), (2,1), (2,2), (1,2), (0.5,1.5))
-    # points = ((100, 100), (200, 100), (200, 200), (100, 200), (50, 150))
-    # draw.polygon((points), fill=200)
-    #
-    # image.show()
-
-    # save full-res labels directory as png
-    # save full-res transparency as jpg
-    # ??for image and each crop delete existing thumbnails + html page???
-
-    # in web-script:
-    #   when crop img thumbs, also crop label thumbs at 2x1 showing labels
-    #   show full-res labels full-size
-    #   links to json + transparency are automatic
-    #   each metadata folder as tag to each crop and photo
-    #   ...run lazy script again...
 
 def build_src_lookup(dataset_root):
     src_lookup = {}
@@ -190,16 +180,10 @@ def write_label_jsons(dataset_root, src_lookup, lyd_json):
             global COUNT
             COUNT += 1
 
-
-# todo:
-## when we get find a label, generate the website thumbnails and delete the html cache files
-## florians new crops for his data vs my old crops?!
-
-
 dataset_root = r"C:\Users\twak\Documents\architecture_net\dataset"
 
 json_src = []
-json_src.extend(glob.glob(r'C:\Users\twak\Documents\architecture_net\dataset\metadata_window_labels\from_labellers\LYD__KAUST_Batch_1(100images)_16.06.22_\**.json'))
+json_src.extend(glob.glob(r'C:\Users\twak\Documents\architecture_net\dataset\metadata_window_labels\from_labellers\LYD__KAUST_1_batch_(100_frames)_21.06.2022\**.json'))
 src_lookup = build_src_lookup(dataset_root)
 
 COUNT = 0
