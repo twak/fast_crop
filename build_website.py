@@ -6,9 +6,9 @@ from pathlib import Path
 from PIL import Image, ImageOps
 import tags
 
-orig = os.path.join(Path.cwd(), "photos")
+orig     = os.path.join(Path.cwd(), "photos")
 meta_dir = os.path.join(Path.cwd(), "metadata_single_elements")
-web_dir = os.path.join(Path.cwd(), "metadata_website")
+web_dir  = os.path.join(Path.cwd(), "metadata_website")
 use_cache = True
 
 dataset_root = Path(orig).parent
