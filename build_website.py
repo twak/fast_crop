@@ -1,20 +1,14 @@
 import glob
 import json
 import os
-
 import PIL
-
 from pathlib import Path
 from PIL import Image, ImageOps
 import tags
 
-# orig = "C:\\Users\\twak\\Downloads\\update_test\\photos"
-# meta_dir = "C:\\Users\\twak\\Downloads\\update_test\\metadata_single_elements"
-# web_dir = "C:\\Users\\twak\\Downloads\\update_test\\metadata_website"
-
-orig = "C:\\Users\\twak\\Documents\\architecture_net\\dataset\\photos"
-meta_dir = "C:\\Users\\twak\\Documents\\architecture_net\\dataset\\metadata_single_elements"
-web_dir = "C:\\Users\\twak\\Documents\\architecture_net\\dataset\\metadata_website"
+orig = os.path.join(Path.cwd(), "photos")
+meta_dir = os.path.join(Path.cwd(), "metadata_single_elements")
+web_dir = os.path.join(Path.cwd(), "metadata_website")
 use_cache = True
 
 dataset_root = Path(orig).parent
