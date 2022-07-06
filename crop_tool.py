@@ -6,7 +6,6 @@ import os
 import PIL.Image
 import pygame, sys
 from PIL import Image, ImageOps
-import numpy as np
 from pathlib import Path
 import tags
 
@@ -303,188 +302,19 @@ class ROI:
         self.load(0)
         self.mainLoop()
 
-
-    def crop(self, img, res = -1, mode = 'none'):
-
-
-        if mode == 'none':
-            return img
-
-        if mode == 'square_crop': # https://stackoverflow.com/questions/16646183/crop-an-image-in-the-centre-using-pil
-
-            width  = img.size[0]
-            height = img.size[1]
-
-            new_width = min(width, height)
-
-            left = int(np.ceil((width - new_width) / 2))
-            right = width - np.floor((width - new_width) / 2)
-
-            top = int(np.ceil((height - new_width) / 2))
-            bottom = height - int(np.floor((height - new_width) / 2))
-
-            img = img.crop ((left, top, right, bottom))
-
-            if res != -1:
-               img =  img.resize( (res, res), resample = PIL.Image.Resampling.BOX)
-
-            return img
-
-        if mode == 'square_expand':
-
-            width  = img.size[1]
-            height = img.size[0]
-
-            wh  = min(width, height)
-            img = ImageOps.pad(img, (wh, wh), color="black")
-
-            if res != -1:
-               img =  img.resize( (res, res), resample = PIL.Image.Resampling.BOX)
-
-            return img
-
-    # def move_tag(self, tag_to_move, destination):
-    #
-    #     for im_file in self.images:
-    #         json_file = self.json_file(im_file)
-    #
-    #         base_dir = os.path.basename(im_file)
-    #
-    #         if os.path.exists(json_file): # crop
-    #             prev = json.load(open(json_file, "r"))
-    #             tags = prev["tags"]
-    #             if tag_to_move in tags:
-    #                 # print(json_file)
-    #                 # print(im_file)
-    #                 # print("\n")
-    #                 os.rename(json_file, os.path.join(destination, os.path.basename(json_file)))
-    #                 os.rename(im_file  , os.path.join(destination, os.path.basename(  im_file)))
-
-
-    def cut_n_shut(self, dir_, clear_log = False, sub_dirs = True, crop_mode='square_crop', resolution = 512, quality=98):
-
-        global VALID_CROPS
-
-        os.makedirs(dir_, exist_ok=True)
-        dir = dir_
-        name_map = {}
-
-        fm = 'w' if clear_log else 'a'
-        log = open( os.path.join ( dir_, 'log.txt'), fm)
-
-        def save(im, out_name):
-
-            if len (im.getbands() ) > 3: # pngs..
-                 im = im.convert("RGB")
-
-            if im.width == 0 or im.height == 0:
-                print("skipping zero sized rect in %s" % out_name)
-                return
-
-            md5hash = hashlib.md5(im.tobytes())
-            jpg_out_file = "%s.jpg" % md5hash.hexdigest()
-            # name_map[md5hash] =
-            log.write("\"%s\"\n" % jpg_out_file)
-
-
-            out_path = os.path.join(dir, jpg_out_file)
-
-            im.save(out_path, format="JPEG", quality=quality)
-
-        if not crop_mode in VALID_CROPS:
-            print ("unknown crop mode %s. pick from: %s " % (crop_mode, " ".join(VALID_CROPS)))
-            return
-
-        # resolution = 512
-#        mode = 'square_crop'
-#         crop_mode = 'square_expand'
-#         crop_mode = 'none'
-        min_dim = 2048 # 1024 lost 77/3,100 at this resolution (12.4.22)
-
-        for im_file in self.images:
-
-            if sub_dirs:
-                sub_dir = os.path.split ( os.path.split(im_file)[0] )[1]
-                dir = os.path.join(dir_, sub_dir)
-                os.makedirs( dir, exist_ok=True)
-
-            print ('processing %s...' % im_file)
-
-            im = ImageOps.exif_transpose(Image.open(im_file))
-
-            out_name, out_ext = os.path.splitext ( os.path.basename(im_file) )
-            out_ext = out_ext.lower()
-
-            pre, ext = os.path.splitext(im_file)
-            json_file = pre + ".json"
-
-            count = 0
-
-            if os.path.exists(json_file): # crop
-                prev = json.load(open(json_file, "r"))
-                rects = prev["rects"]
-
-                tags = []
-
-                if "tags" in prev:
-                    tags = prev["tags"]
-
-                if 'deleted' in tags:
-                    print("skipping deleted")
-                    continue
-
-                for r in rects:
-
-                    if r[2] - r[0] < min_dim or r[3] - r[1] < min_dim:
-                        print("skipping small rect")
-                        continue
-
-                    log.write("%s [%d, %d, %d, %d]\n" % (im_file, r[0], r[1], r[2], r[3]) )
-
-                    crop_im = im.crop( ( r[0], r[1], r[2], r[3] ) )
-                    crop_im = self.crop(crop_im, resolution, crop_mode)
-
-                    save(crop_im, out_name)
-                    count = count + 1
-            else: # whole image
-                im = self.crop(im, resolution, crop_mode)
-                log.write(im_file + f"[0,0,{im.width},{im.height}]\n")
-                save ( im, out_name )
-
-        log.close()
-
-
-VALID_CROPS = {'square_crop', 'square_expand', 'none'}
-
 if __name__ == "__main__":
 
     print("\n\n") #pygame output...
 
     if len ( sys.argv) == 1:
         path = "."
-        print("the first command line argument specifies the dataset root.\n")
-        print("second argument is the output folder - this switches us to image processing mode (crops and writes images to output)")
-        print("third argument is the optional crop mode: %s " % ", ".join(VALID_CROPS))
-        print("fourth argument is the optional resolution (used if crop_mode is not 'none')")
+        print("first command line argument specifies the dataset root.\n")
     else:
         path = sys.argv[1]
 
     if len(sys.argv) < 3: # running interactive
         print("running interactive in %s." % path)
         ROI(path).interactive()
-
-    else: # process output
-
-        out = sys.argv[2]
-        print("cropping images from %s to %s" % (path, out) )
-        crop_mode = 'none'
-        resolution = 512
-        if len(sys.argv) >= 4:
-            crop_mode = sys.argv[3]
-        if len(sys.argv) >= 5:
-            resolution = int ( sys.argv[4] )
-
-        ROI( path ).cut_n_shut(out, clear_log=True, crop_mode = crop_mode, resolution = resolution)
 
     #ROI('C:/Users/twak/Documents/architecture_net/windowz_images/tom_dales').interactive()
     #ROI('C:/Users/twak/Documents/architecture_net/windowz_images/tom_bramley').interactive()
@@ -496,14 +326,13 @@ if __name__ == "__main__":
     #ROI('C:/Users/twak/Documents/architecture_net/windowz_images/tom_london').interactive()
     #ROI('C:/Users/twak/Documents/architecture_net/windowz_images/Michaela_Windows_Vienna_20220505').interactive()
     # ROI('C:/Users/twak/Documents/architecture_net/windowz_images/tom_london').move_tag('deleted', 'C:\\Users\\twak\Documents\\architecture_net\\not_windowz' )
-
-    if False: # generate whole dataset on tom's machine
-        ROI('C:/Users/twak/Documents/architecture_net/windowz_images/tom_york').cut_n_shut(out, clear_log= True)
-        ROI('C:/Users/twak/Documents/architecture_net/windowz_images/tom_leeds_docks').cut_n_shut(out)
-        ROI('C:/Users/twak/Documents/architecture_net/windowz_images/tom_bramley').cut_n_shut(out)
-        ROI('C:/Users/twak/Documents/architecture_net/windowz_images/tom_dales').cut_n_shut(out)
-        ROI('C:/Users/twak/Documents/architecture_net/windowz_images/tom_saffron').cut_n_shut(out)
-        ROI('C:/Users/twak/Documents/architecture_net/windowz_images/tom_cams').cut_n_shut(out)
-        ROI('C:/Users/twak/Documents/architecture_net/windowz_images/tom_london').cut_n_shut(out)
-        ROI('C:/Users/twak/Documents/architecture_net/windowz_images/tom_archive').cut_n_shut(out)
-        ROI('C:/Users/twak/Documents/architecture_net/windowz_images/Michaela_Windows_Vienna_20220505').cut_n_shut(out)
+    # if False: # generate whole dataset on tom's machine
+    #     ROI('C:/Users/twak/Documents/architecture_net/windowz_images/tom_york').cut_n_shut(out, clear_log= True)
+    #     ROI('C:/Users/twak/Documents/architecture_net/windowz_images/tom_leeds_docks').cut_n_shut(out)
+    #     ROI('C:/Users/twak/Documents/architecture_net/windowz_images/tom_bramley').cut_n_shut(out)
+    #     ROI('C:/Users/twak/Documents/architecture_net/windowz_images/tom_dales').cut_n_shut(out)
+    #     ROI('C:/Users/twak/Documents/architecture_net/windowz_images/tom_saffron').cut_n_shut(out)
+    #     ROI('C:/Users/twak/Documents/architecture_net/windowz_images/tom_cams').cut_n_shut(out)
+    #     ROI('C:/Users/twak/Documents/architecture_net/windowz_images/tom_london').cut_n_shut(out)
+    #     ROI('C:/Users/twak/Documents/architecture_net/windowz_images/tom_archive').cut_n_shut(out)
+    #     ROI('C:/Users/twak/Documents/architecture_net/windowz_images/Michaela_Windows_Vienna_20220505').cut_n_shut(out)
