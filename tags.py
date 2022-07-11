@@ -5,5 +5,7 @@ abnormal='abnormal'
 window='window'
 material='material'
 deleted='deleted'
+door='door'
+facade='facade'
 
-all_tags=[glass_facade, church, shop, abnormal, window, material, deleted]
+all_tags=[glass_facade, church, shop, abnormal, window, door, material, facade, deleted]
