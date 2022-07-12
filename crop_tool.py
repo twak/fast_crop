@@ -36,9 +36,9 @@ class ROI:
 
         self.photo_tags[ pygame.K_0 ] = ( tags.deleted, "0: Deleted")  # whole image not processed to dataset
 
-        self.rect_tags[pygame.K_1] = ( tags.glass_facade, "1: Glass Facade" ) # glass panels
-        self.rect_tags[pygame.K_2] = ( tags.church      , "2: Church" )# complex church window
-        self.rect_tags[pygame.K_3] = ( tags.shop        , "3: Shop")  # street level/wide angle shot
+        self.rect_tags[pygame.K_1] = ( tags.glass_facade, "1: Glass Facade" ) # glass panel windows
+        self.rect_tags[pygame.K_2] = ( tags.church      , "2: Church" )# complex church feature
+        self.rect_tags[pygame.K_3] = ( tags.shop        , "3: Shop")  # street level/wide angle of window/shop frontage
         self.rect_tags[pygame.K_4] = ( tags.abnormal    , "4: Abnormal")  # street level/wide angle shot
         self.rect_tags[pygame.K_5] = ( tags.door        , "5: Door")  # a door!
         self.rect_tags[pygame.K_6] = ( tags.facade      , "6: Facade")  # a large amount of a building
