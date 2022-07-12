@@ -108,9 +108,11 @@ dataset_root = r"C:\Users\twak\Documents\architecture_net\dataset"
 
 json_src = []
 #json_src.extend(glob.glob(r'/home/twak/Downloads/LYD__KAUST_batch_2_24.06.2022/LYD<>KAUST_batch_2_24.06.2022/**.json'))
-json_src.extend(glob.glob(r'C:\Users\twak\Documents\architecture_net\dataset\metadata_window_labels\from_labellers\LYD__KAUST_batch_1_fixed_24.06.2022\**.json'))
-json_src.extend(glob.glob(r'C:\Users\twak\Documents\architecture_net\dataset\metadata_window_labels\from_labellers\LYD__KAUST_batch_2_24.06.2022\**.json'))
-#src_lookup = build_src_lookup(r"/home/twak/Downloads/input_locations_first_1500.txt")
+# json_src.extend(glob.glob(r'C:\Users\twak\Documents\architecture_net\dataset\metadata_window_labels\from_labellers\LYD__KAUST_batch_1_fixed_24.06.2022\**.json'))
+# json_src.extend(glob.glob(r'C:\Users\twak\Documents\architecture_net\dataset\metadata_window_labels\from_labellers\LYD__KAUST_batch_2_24.06.2022\**.json'))
+json_src.extend(glob.glob(r'C:\Users\twak\Documents\architecture_net\dataset\metadata_window_labels\from_labellers\LYD__KAUST_batch_3_08.07.2022\**.json' ))
+
+# src_lookup = build_src_lookup(r"/home/twak/Downloads/input_locations_first_1500.txt")
 src_lookup = build_src_lookup(r"C:\Users\twak\Documents\architecture_net\dataset\metadata_window_labels\from_labellers\input_locations_first_1500.txt")
 
 COUNT = 0

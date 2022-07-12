@@ -17,20 +17,22 @@ import numpy as np
 
 colors = {}
 
-if False: # pretty colors
-    colors["window pane"] = (135, 170, 222)
-    colors["window frame"] = (255, 128, 128)
-    colors["open-window"] = (0, 0, 0)
-    colors["wall frame"] = (233, 175, 198)
-    colors["wall"] = (204, 204, 204),
-    colors["door"] = (164, 120, 192)
-    colors["shutter"] = (255, 153, 85)
-    colors["blind"] = (255, 230, 128)
-    colors["bars"] = (110, 110, 110)
-    colors["balcony"] = (222, 170, 135)
-    colors["misc object"] = (174, 233, 174)
+USE_PRETTY_COLORS = True
 
-else: # blender colors
+if USE_PRETTY_COLORS: # pretty colors
+    colors["window pane"]  = (135, 170, 222)
+    colors["window frame"] = (255, 128, 128)
+    colors["open-window"]  = (0, 0, 0)
+    colors["wall frame"]   = (233, 175, 198)
+    colors["wall"]         = (204, 204, 204)
+    colors["door"]         = (164, 120, 192)
+    colors["shutter"]      = (255, 153, 85)
+    colors["blind"]        = (255, 230, 128)
+    colors["bars"]         = (110, 110, 110)
+    colors["balcony"]      = (222, 170, 135)
+    colors["misc object"]  = (174, 233, 174)
+
+else: # blender/label dataset colors
 
     colors["window pane"] = (0, 182, 206)
     colors["window frame"] = (206, 0, 0)
@@ -124,6 +126,7 @@ def render_per_crop( dataset_root, json_file, output_folder, res=512, mode='None
 
     os.makedirs(os.path.join(output_folder, "rgb"), exist_ok=True)
     os.makedirs(os.path.join(output_folder, "labels"), exist_ok=True)
+    os.makedirs(os.path.join(output_folder, "twofer"), exist_ok=True)
 
     # read src input
     photo = Image.open(os.path.join(dataset_root, photo_file))
@@ -142,18 +145,33 @@ def render_per_crop( dataset_root, json_file, output_folder, res=512, mode='None
         draw_label_photo = ImageDraw.Draw(label_img, 'RGBA')
         draw_label_photo.rectangle([(0, 0), (label_img.width, label_img.height)], fill=(255, 255, 255))
 
+        draw_label_trans_img = crop_photo.copy()
+        draw_label_trans = ImageDraw.Draw(draw_label_trans_img, 'RGBA')
+
         for cat, polies in crop_data["labels"].items():
 
             for poly in polies:
                 poly = [tuple(x) for x in poly]
-                draw_label_photo.polygon(poly, colors[cat])
+                draw_label_photo.polygon( poly, colors[cat])
+                draw_label_trans.polygon( poly, (* ( colors[cat]), 180), outline = (0,0,0), width=2 )
 
-        crop_photo = crop(crop_photo, res, mode, resample=Image.Resampling.LANCZOS, background_col="black")
-        label_img  = crop(label_img , res, mode, resample=Image.Resampling.NEAREST, background_col="white")
 
+        # output at native res
         crop_name = os.path.splitext(crop_name)[0]
-        crop_photo.save(os.path.join(output_folder, "rgb"   , crop_name + ".jpg"))
-        label_img .save(os.path.join(output_folder, "labels", crop_name + ".png"))
+        # crop_photo.save(os.path.join(output_folder, "rgb"   , crop_name + ".jpg"))
+        # label_img .save(os.path.join(output_folder, "labels", crop_name + ".png"))
+
+        # crop down
+        crop_photo           = crop(crop_photo, res, mode, resample=Image.Resampling.LANCZOS, background_col="black")
+        label_img            = crop(label_img , res, mode, resample=Image.Resampling.NEAREST, background_col="white")
+        draw_label_trans_img = crop(draw_label_trans_img , res, mode, resample=Image.Resampling.NEAREST, background_col="black")
+
+        # cat all three images
+        triplet = Image.new('RGB', (crop_photo.width + label_img.width + draw_label_trans_img.width, crop_photo.height))
+        triplet.paste(crop_photo, (0, 0))
+        triplet.paste(label_img, (crop_photo.width, 0))
+        triplet.paste(draw_label_trans_img, (crop_photo.width + label_img.width, 0))
+        triplet .save(os.path.join(output_folder, "twofer", crop_name + ".jpg"))
 
 
 def find_photo_for_json(dataset_root, json_file ):
@@ -169,6 +187,15 @@ def find_photo_for_json(dataset_root, json_file ):
 def crop( img, res=-1, mode='none', resample=Image.Resampling.BOX, background_col="black"):
 
     if mode == 'none':
+
+        if res == -1:
+            return img
+
+        if img.width > img.height:
+            img = img.resize((res, int(round(img.height * (res / img.width)))), resample=resample)
+        else:
+            img = img.resize((int(round(img.width * (res / img.height))), res), resample=resample)
+
         return img
 
     if mode == 'square_crop': # https://stackoverflow.com/questions/16646183/crop-an-image-in-the-centre-using-pil
@@ -290,10 +317,10 @@ def cut_n_shut(images, dir_, clear_log = False, sub_dirs = True, crop_mode='squa
 
                 save(crop_im, out_name)
                 count = count + 1
-        else: # whole image
-            im = crop(im, resolution, crop_mode)
-            log.write(im_file + f"[0,0,{im.width},{im.height}]\n")
-            save ( im, out_name )
+        # else: # whole image -
+        #     im = crop(im, resolution, crop_mode)
+        #     log.write(im_file + f"[0,0,{im.width},{im.height}]\n")
+        #     save ( im, out_name )
 
     log.close()
 
@@ -304,7 +331,7 @@ VALID_CROPS = {'square_crop', 'square_expand', 'none'}
 if __name__ == "__main__":
 
     dataset_root = r"C:\Users\twak\Documents\architecture_net\dataset"
-    output_folder = r"C:\Users\twak\Downloads\rendered_dataset"
+    output_folder = r"C:\Users\twak\Downloads\rendered_dataset_batch_3"
 
     # render single-windows crops
     # cut_n_shut(...)
@@ -320,4 +347,4 @@ if __name__ == "__main__":
     # for all crops that have labels in metadata_window_labels
 
     for f in json_src:
-        render_per_crop( dataset_root, f, output_folder, res=512, mode='square_crop')
+        render_per_crop( dataset_root, f, output_folder, res=1024, mode='none')

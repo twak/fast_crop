@@ -13,6 +13,8 @@ meta_dir = os.path.join(dataset_root, "metadata_single_elements")
 web_dir  = os.path.join(dataset_root, "metadata_website")
 use_cache = True
 
+process_dataset.USE_PRETTY_COLORS = True
+
 res = 128
 quality = 50
 name_map = {}
