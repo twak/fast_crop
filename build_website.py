@@ -5,13 +5,14 @@ import PIL
 from pathlib import Path
 from PIL import Image, ImageOps
 import tags
+import process_dataset
 
-orig     = os.path.join(Path.cwd(), "photos")
-meta_dir = os.path.join(Path.cwd(), "metadata_single_elements")
-web_dir  = os.path.join(Path.cwd(), "metadata_website")
+dataset_root = Path.cwd()
+orig     = os.path.join(dataset_root, "photos")
+meta_dir = os.path.join(dataset_root, "metadata_single_elements")
+web_dir  = os.path.join(dataset_root, "metadata_website")
 use_cache = True
 
-dataset_root = Path(orig).parent
 res = 128
 quality = 50
 name_map = {}
@@ -130,17 +131,19 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                         print(f'{batch} {count} {photo}')
                         count += 1
 
+                        pre, _ = os.path.splitext(photo)
+                        json_file = pre + ".json"
+                        json_file_path = os.path.join(meta_dir, batch, json_file)
+                        labels_json_path = os.path.join(labels_dir, pre+".json")
+
                         # use image-with labels as thumbnail where available
-                        if os.path.exists(os.path.join(labels_dir, photo)):
+                        if os.path.exists(labels_json_path):
+                            process_dataset.render_labels_web(dataset_root, labels_json_path, flush_html=False, use_cache=False )
                             thumbnail( os.path.join(labels_dir, photo), os.path.join(batch_thumbs, photo), use_cache=False )
                             has_win_labels = True
                         else:
                             thumbnail (os.path.join(photos_dir, photo), os.path.join(batch_thumbs, photo), use_cache=use_cache )
                             has_win_labels = False
-
-                        pre, _ = os.path.splitext(photo)
-                        json_file = pre + ".json"
-                        json_file_path = os.path.join(meta_dir, batch, json_file)
 
                         # read in the crop metadata
                         if os.path.exists (json_file_path):
@@ -158,6 +161,7 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                                 tags.add(md)
 
                         photo_pre, ext = os.path.splitext(photo)
+                        index_tags = tags.copy()
 
                         for thumb_idx, r in enumerate ( metadata["rects"] ):
 
@@ -180,7 +184,7 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                                 f'</div>')
 
                             # photo page takes tags of all crops
-                            tags = tags.union(set(r[1]))
+                            index_tags = index_tags.union(set(r[1]))
 
                         photo_page_path = os.path.join(web_dir, batch, pre + ".html")
                         if not ( use_cache and os.path.exists(photo_page_path) ):
@@ -217,7 +221,7 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                                 photo_html.write("</body></html>\n")
 
                         index_append += (
-                            f'<div class="{" ".join(tags)}">'
+                            f'<div class="{" ".join(index_tags)}">'
                             f'<a href="{batch}/{photo_pre}.html">'
                                    f'<img src="{batch+"/"+photo}" alt="{batch+"/"+photo}" width="64" height="64" loading="lazy" border="1"></a>\n'
                             f'</div>')

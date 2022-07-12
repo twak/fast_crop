@@ -46,7 +46,7 @@ class ROI:
         self.rect_tags[pygame.K_m] = ( tags.material    , "m: Material")  # we are marking materials
 
         self.default_tags = [tags.window]
-        self.exclusive_tags = [tags.window, tags.material, tags.door, tags.facade] # pick one!
+        self.exclusive_tags = [tags.window, tags.material, tags.door, tags.facade] # picking one removes others
 
     def displayImage(self):
 

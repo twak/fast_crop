@@ -44,18 +44,26 @@ else: # blender colors
     colors["balcony"] = (222, 170, 135)
     colors["misc object"] = (174, 233, 174)
 
-def render_labels_web (dataset_root, json_file):
+def render_labels_web (dataset_root, label_json_file, flush_html = False, use_cache = False):
 
     global colors
 
-    photo_file = find_photo_for_json(dataset_root, json_file)
+    jp = Path(label_json_file)
+    photo_name = os.path.splitext(jp.name)[0]
+    labels_path = os.path.join(jp.parent, photo_name + ".png")
+    photo_path = os.path.join(jp.parent, photo_name + ".jpg")
+
+    if use_cache and os.path.exists(labels_path) and os.path.exists(photo_path):
+        return
+
+    photo_file = find_photo_for_json(dataset_root, label_json_file)
 
     # read src input
     photo = Image.open(os.path.join (dataset_root, "photos", photo_file ))
     photo = ImageOps.exif_transpose(photo)
     draw_label_trans = ImageDraw.Draw(photo, 'RGBA')
 
-    with open(json_file, "r") as f:
+    with open(label_json_file, "r") as f:
         data = json.load(f)
 
     label_photo = Image.new("RGB", (photo.width, photo.height) )
@@ -85,25 +93,25 @@ def render_labels_web (dataset_root, json_file):
                 draw_label_photo.polygon ( poly, colors[cat] )
                 draw_label_trans.polygon ( poly, (*colors[cat], 180), outline = (0,0,0) )
 
-    jp = Path(json_file)
-    label_photo.save(os.path.join(jp.parent, os.path.splitext(jp.name)[0] + ".png"), "PNG")
-    photo.save(os.path.join(jp.parent, os.path.splitext(jp.name)[0] + ".jpg"), "JPEG")
+    label_photo.save(labels_path, "PNG" )
+    photo      .save( photo_path, "JPEG")
 
-    # delete website resources/cache files to match...
-    pfp = Path ( photo_file )
-    batch = pfp.parent.name
-    photo_root_name = os.path.splitext(pfp.name)[0]
-    web_root = Path(dataset_root).joinpath(pfp.parent.parent.joinpath("metadata_website") )
+    if flush_html:
+        # delete website resources/cache files to match...
+        pfp = Path ( photo_file )
+        batch = pfp.parent.name
+        photo_root_name = os.path.splitext(pfp.name)[0]
+        web_root = Path(dataset_root).joinpath(pfp.parent.parent.joinpath("metadata_website") )
 
-    for to_del in [ web_root.joinpath("crops.html"),
-                    web_root.joinpath("index.html"),
-                    web_root.joinpath(batch).joinpath("html_index.html"),
-                    web_root.joinpath(batch).joinpath("html_rects.html"),
-                    web_root.joinpath(batch).joinpath(pfp.name),
-                    web_root.joinpath(batch).joinpath(photo_root_name + ".html") ]:
-        if os.path.exists(to_del):
-            print(f"removing {to_del} cache file")
-            os.remove(to_del)
+        for to_del in [ web_root.joinpath("crops.html"),
+                        web_root.joinpath("index.html"),
+                        web_root.joinpath(batch).joinpath("html_index.html"),
+                        web_root.joinpath(batch).joinpath("html_rects.html"),
+                        web_root.joinpath(batch).joinpath(pfp.name),
+                        web_root.joinpath(batch).joinpath(photo_root_name + ".html") ]:
+            if os.path.exists(to_del):
+                print(f"removing {to_del} cache file")
+                os.remove(to_del)
 
 
 def render_per_crop( dataset_root, json_file, output_folder, res=512, mode='None'):
@@ -292,21 +300,24 @@ def cut_n_shut(images, dir_, clear_log = False, sub_dirs = True, crop_mode='squa
 
 VALID_CROPS = {'square_crop', 'square_expand', 'none'}
 
-dataset_root = r"C:\Users\twak\Documents\architecture_net\dataset"
-output_folder = r"C:\Users\twak\Downloads\rendered_dataset"
 
-# render single-windows crops
-# cut_n_shut(...)
+if __name__ == "__main__":
 
-json_src = []
-#json_src.extend(glob.glob(r'/home/twak/Downloads/LYD__KAUST_batch_2_24.06.2022/LYD<>KAUST_batch_2_24.06.2022/**.json'))
-json_src.extend(glob.glob( os.path.join (dataset_root, "metadata_window_labels", "*", "*.json" ) ) ) # r'C:\Users\twak\Documents\architecture_net\dataset\metadata_window_labels\from_labellers\LYD__KAUST_batch_1_fixed_24.06.2022\**.json'))
+    dataset_root = r"C:\Users\twak\Documents\architecture_net\dataset"
+    output_folder = r"C:\Users\twak\Downloads\rendered_dataset"
 
-# render labels over whole photos for the website
-# for j in json_src:
-#     render_labels_web( dataset_root, j)
+    # render single-windows crops
+    # cut_n_shut(...)
 
-# for all crops that have labels in metadata_window_labels
+    json_src = []
+    #json_src.extend(glob.glob(r'/home/twak/Downloads/LYD__KAUST_batch_2_24.06.2022/LYD<>KAUST_batch_2_24.06.2022/**.json'))
+    json_src.extend(glob.glob( os.path.join (dataset_root, "metadata_window_labels", "*", "*.json" ) ) ) # r'C:\Users\twak\Documents\architecture_net\dataset\metadata_window_labels\from_labellers\LYD__KAUST_batch_1_fixed_24.06.2022\**.json'))
 
-for f in json_src:
-    render_per_crop( dataset_root, f, output_folder, res=512, mode='square_crop')
+    # render labels over whole photos for the website
+    # for j in json_src:
+    #     render_labels_web( dataset_root, j)
+
+    # for all crops that have labels in metadata_window_labels
+
+    for f in json_src:
+        render_per_crop( dataset_root, f, output_folder, res=512, mode='square_crop')
