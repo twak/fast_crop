@@ -15,6 +15,8 @@ import PIL.Image as Image
 from PIL import ImageOps
 import numpy as np
 
+import svgwrite
+
 colors = {}
 
 USE_PRETTY_COLORS = True
@@ -33,18 +35,17 @@ if USE_PRETTY_COLORS: # pretty colors
     colors["misc object"]  = (174, 233, 174)
 
 else: # blender/label dataset colors
-
-    colors["window pane"] = (0, 182, 206)
+    colors["window pane"]  = (0, 182, 206)
     colors["window frame"] = (206, 0, 0)
-    colors["open-window"] = (0, 0, 0)
-    colors["wall frame"] = (0, 158, 0)
-    colors["wall"] = (167, 167, 167)
-    colors["door"] = (164, 120, 192)
-    colors["shutter"] = (255, 153, 85)
-    colors["blind"] = (255, 230, 128)
-    colors["bars"] = (110, 110, 110)
-    colors["balcony"] = (222, 170, 135)
-    colors["misc object"] = (174, 233, 174)
+    colors["open-window"]  = (0, 0, 0)
+    colors["wall frame"]   = (0, 158, 0)
+    colors["wall"]         = (167, 167, 167)
+    colors["door"]         = (164, 120, 192)
+    colors["shutter"]      = (255, 153, 85)
+    colors["blind"]        = (255, 230, 128)
+    colors["bars"]         = (110, 110, 110)
+    colors["balcony"]      = (222, 170, 135)
+    colors["misc object"]  = (174, 233, 174)
 
 def render_labels_web (dataset_root, label_json_file, flush_html = False, use_cache = False):
 
@@ -138,6 +139,9 @@ def render_per_crop( dataset_root, json_file, output_folder, res=512, mode='None
     # crop to each defined region
     for crop_name, crop_data in data.items():
 
+        if os.path.exists(os.path.join(output_folder, "twofer", crop_name + ".jpg")):
+            continue
+
         crop_bounds = crop_data["crop"]
         crop_photo =photo.crop (crop_bounds)
 
@@ -148,13 +152,29 @@ def render_per_crop( dataset_root, json_file, output_folder, res=512, mode='None
         draw_label_trans_img = crop_photo.copy()
         draw_label_trans = ImageDraw.Draw(draw_label_trans_img, 'RGBA')
 
+        dwg = svgwrite.Drawing(os.path.join(output_folder, "twofer", crop_name + ".svg"), profile='tiny')
+        dwg.add(dwg.line((0, 0), (10, 0), stroke=svgwrite.rgb(10, 10, 16, '%')))
+        dwg.add(dwg.text(crop_name, insert=(0, 0.2), fill='black'))
+
+
         for cat, polies in crop_data["labels"].items():
+
+
 
             for poly in polies:
                 poly = [tuple(x) for x in poly]
                 draw_label_photo.polygon( poly, colors[cat])
                 draw_label_trans.polygon( poly, (* ( colors[cat]), 180), outline = (0,0,0), width=2 )
 
+                dwg.add ( dwg.polygon(poly, fill=f'rgb({colors[cat][0]},{colors[cat][1]},{colors[cat][2]})') )
+
+                # p = Path(fill=f'rgb({colors[cat][0]},{colors[cat][1]},{colors[cat][2]})')
+                # p.push(f'm {poly[0][0]} {poly[0][1]}')
+                # for x in poly:
+                #     p.push(f'l {x[0], x[1]}')
+                # dwg.add(p)
+
+        dwg.save()
 
         # output at native res
         crop_name = os.path.splitext(crop_name)[0]
@@ -331,7 +351,7 @@ VALID_CROPS = {'square_crop', 'square_expand', 'none'}
 if __name__ == "__main__":
 
     dataset_root = r"C:\Users\twak\Documents\architecture_net\dataset"
-    output_folder = r"C:\Users\twak\Downloads\rendered_dataset_batch_3"
+    output_folder = r"C:\Users\twak\Downloads\rendered_dataset_batch_2_updated"
 
     # render single-windows crops
     # cut_n_shut(...)
@@ -347,4 +367,5 @@ if __name__ == "__main__":
     # for all crops that have labels in metadata_window_labels
 
     for f in json_src:
+        # if "IMG_8337" in f:
         render_per_crop( dataset_root, f, output_folder, res=1024, mode='none')
