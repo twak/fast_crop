@@ -136,16 +136,15 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                         pre, _ = os.path.splitext(photo)
                         json_file = pre + ".json"
                         json_file_path = os.path.join(meta_dir, batch, json_file)
-                        labels_json_path = os.path.join(labels_dir, pre+".json")
+                        labels_json_path = os.path.join(labels_dir, pre + ".json")
+                        labels_png_path = os.path.join(labels_dir, pre + ".png")
 
                         # use image-with labels as thumbnail where available
-                        if os.path.exists(labels_json_path):
+                        if os.path.exists(labels_json_path): # render json to image if required
                             process_dataset.render_labels_web(dataset_root, labels_json_path, flush_html=False, use_cache=False )
                             thumbnail( os.path.join(labels_dir, photo), os.path.join(batch_thumbs, photo), use_cache=False )
-                            has_win_labels = True
                         else:
-                            thumbnail (os.path.join(photos_dir, photo), os.path.join(batch_thumbs, photo), use_cache=use_cache )
-                            has_win_labels = False
+                            thumbnail(os.path.join(photos_dir, photo), os.path.join(batch_thumbs, photo), use_cache=use_cache)
 
                         # read in the crop metadata
                         if os.path.exists (json_file_path):
@@ -195,8 +194,11 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                                 photo_html.write(f"<h3>{batch} {photo}</h3><p>whole-image-tags: {' '.join(metadata['tags'])}</p>")
                                 photo_html.write(f"<a href='../../photos/{batch}/{photo}'><img src='../../photos/{batch}/{photo}' height='640'></a><br><br>\n")
 
-                                if has_win_labels:
+                                if os.path.exists ( os.path.join(labels_dir, photo) ):
                                     photo_html.write(f"<a href='../../metadata_window_labels/{batch}/{photo}'><img src='../../metadata_window_labels/{batch}/{photo}' height='640'></a><br><br>\n")
+
+                                if os.path.exists(labels_png_path):
+                                    photo_html.write(f"<a href='../../metadata_window_labels/{batch}/{pre}.png'><img src='../../metadata_window_labels/{batch}/{pre}.png' height='640'></a><br><br>\n")
 
                                 for thumb_idx, r in enumerate(metadata["rects"]):
                                     if rect[2] - rect[0] < 20 or rect[3] - rect[1] < 20:

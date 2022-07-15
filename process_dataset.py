@@ -6,6 +6,7 @@ import json
 # from the index file when we created the crops for the labellers to our src coordinate system
 import os
 import random
+import time
 from collections import defaultdict
 from os import path
 from pathlib import Path
@@ -117,7 +118,7 @@ def render_labels_web (dataset_root, label_json_file, flush_html = False, use_ca
                 os.remove(to_del)
 
 
-def render_per_crop( dataset_root, json_file, output_folder, res=512, mode='None'):
+def render_labels_per_crop( dataset_root, json_file, output_folder, res=512, mode='None'):
 
     print (f"rendering crops from {json_file} @ {res}:{mode}")
 
@@ -158,8 +159,6 @@ def render_per_crop( dataset_root, json_file, output_folder, res=512, mode='None
 
 
         for cat, polies in crop_data["labels"].items():
-
-
 
             for poly in polies:
                 poly = [tuple(x) for x in poly]
@@ -252,16 +251,15 @@ def crop( img, res=-1, mode='none', resample=Image.Resampling.BOX, background_co
         return img
 
 
-def cut_n_shut(images, dir_, clear_log = False, sub_dirs = True, crop_mode='square_crop', resolution=512, quality=98):
+def cut_n_shut(images, output_dir, clear_log = False, sub_dirs = True, crop_mode='square_crop', resolution=512, quality=98):
 
     global VALID_CROPS
 
-    os.makedirs(dir_, exist_ok=True)
-    dir = dir_
+    os.makedirs(output_dir, exist_ok=True)
     name_map = {}
 
     fm = 'w' if clear_log else 'a'
-    log = open( os.path.join ( dir_, 'log.txt'), fm)
+    log = open( os.path.join ( output_dir, 'log.txt'), fm)
 
     def save(im, out_name):
 
@@ -274,11 +272,10 @@ def cut_n_shut(images, dir_, clear_log = False, sub_dirs = True, crop_mode='squa
 
         md5hash = hashlib.md5(im.tobytes())
         jpg_out_file = "%s.jpg" % md5hash.hexdigest()
-        # name_map[md5hash] =
         log.write("\"%s\"\n" % jpg_out_file)
 
 
-        out_path = os.path.join(dir, jpg_out_file)
+        out_path = os.path.join(output_dir, jpg_out_file)
 
         im.save(out_path, format="JPEG", quality=quality)
 
@@ -286,33 +283,30 @@ def cut_n_shut(images, dir_, clear_log = False, sub_dirs = True, crop_mode='squa
         print ("unknown crop mode %s. pick from: %s " % (crop_mode, " ".join(VALID_CROPS)))
         return
 
-    # resolution = 512
-#        mode = 'square_crop'
-#         crop_mode = 'square_expand'
-#         crop_mode = 'none'
     min_dim = 2048 # 1024 lost 77/3,100 at this resolution (12.4.22)
+    count = 0
 
     for im_file in images:
 
         if sub_dirs:
             sub_dir = os.path.split ( os.path.split(im_file)[0] )[1]
-            dir = os.path.join(dir_, sub_dir)
+            dir = os.path.join(output_dir, sub_dir)
             os.makedirs( dir, exist_ok=True)
 
         print ('processing %s...' % im_file)
 
-        im = ImageOps.exif_transpose(Image.open(im_file))
 
         out_name, out_ext = os.path.splitext ( os.path.basename(im_file) )
         out_ext = out_ext.lower()
 
-        pre, ext = os.path.splitext(im_file)
-        json_file = pre + ".json"
+        batch = Path(im_file).parent.name
+        json_file = Path(im_file).parent.parent.parent.joinpath("metadata_single_elements").joinpath(batch).joinpath(f"{out_name}.json")
 
-        count = 0
+        if os.path.exists(os.path.join (".",json_file ) ): # crop
 
-        if os.path.exists(json_file): # crop
-            prev = json.load(open(json_file, "r"))
+            im = ImageOps.exif_transpose(Image.open(im_file))
+
+            prev = json.load(open(json_file, "r") )
             rects = prev["rects"]
 
             tags = []
@@ -325,6 +319,11 @@ def cut_n_shut(images, dir_, clear_log = False, sub_dirs = True, crop_mode='squa
                 continue
 
             for r in rects:
+
+                if "window" not in r[1] and "glass_facade" not in r[1] and "shop" not in r[1] and "church" not in r[1]:
+                    continue
+
+                r = r[0]
 
                 if r[2] - r[0] < min_dim or r[3] - r[1] < min_dim:
                     print("skipping small rect")
@@ -342,6 +341,12 @@ def cut_n_shut(images, dir_, clear_log = False, sub_dirs = True, crop_mode='squa
         #     log.write(im_file + f"[0,0,{im.width},{im.height}]\n")
         #     save ( im, out_name )
 
+
+                print(f"count {count}")
+
+        else:
+            print("no crop file, skipping")
+
     log.close()
 
 
@@ -358,14 +363,17 @@ if __name__ == "__main__":
 
     json_src = []
     #json_src.extend(glob.glob(r'/home/twak/Downloads/LYD__KAUST_batch_2_24.06.2022/LYD<>KAUST_batch_2_24.06.2022/**.json'))
-    json_src.extend(glob.glob( os.path.join (dataset_root, "metadata_window_labels", "*", "*.json" ) ) ) # r'C:\Users\twak\Documents\architecture_net\dataset\metadata_window_labels\from_labellers\LYD__KAUST_batch_1_fixed_24.06.2022\**.json'))
-
+    # json_src.extend(glob.glob( os.path.join (dataset_root, "metadata_window_labels", "*", "*.json" ) ) )
+    # json_src.extend(glob.glob(r'C:\Users\twak\Documents\architecture_net\dataset\metadata_window_labels\from_labellers\LYD__KAUST_batch_1_fixed_24.06.2022\**.json'))
     # render labels over whole photos for the website
     # for j in json_src:
     #     render_labels_web( dataset_root, j)
-
-    # for all crops that have labels in metadata_window_labels
-
-    for f in json_src:
+    # render labels, svg, transparencies for labeller QA
+    # for f in json_src:
         # if "IMG_8337" in f:
-        render_per_crop( dataset_root, f, output_folder, res=1024, mode='none')
+        # render_labels_per_crop( dataset_root, f, output_folder, res=1024, mode='none')
+
+    photo_src = []
+    # photo_src.extend(glob.glob(r'./photos/*/*.JPG'))
+    photo_src.extend(glob.glob(r'./photos/*/*.jpg'))
+    cut_n_shut(photo_src, f"./metadata_single_elements/dataset_cook{time.time()}", crop_mode="square_crop", resolution=1024, quality=95, sub_dirs=False )
