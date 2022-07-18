@@ -286,6 +286,8 @@ def cut_n_shut(images, output_dir, clear_log = False, sub_dirs = True, crop_mode
     min_dim = 2048 # 1024 lost 77/3,100 at this resolution (12.4.22)
     count = 0
 
+    print (f"found {len(images)} jpgs")
+
     for im_file in images:
 
         if sub_dirs:
@@ -294,7 +296,6 @@ def cut_n_shut(images, output_dir, clear_log = False, sub_dirs = True, crop_mode
             os.makedirs( dir, exist_ok=True)
 
         print ('processing %s...' % im_file)
-
 
         out_name, out_ext = os.path.splitext ( os.path.basename(im_file) )
         out_ext = out_ext.lower()
@@ -345,7 +346,7 @@ def cut_n_shut(images, output_dir, clear_log = False, sub_dirs = True, crop_mode
                 print(f"count {count}")
 
         else:
-            print("no crop file, skipping")
+            print("no metadata_single_element crop file, skipping")
 
     log.close()
 
@@ -374,6 +375,6 @@ if __name__ == "__main__":
         # render_labels_per_crop( dataset_root, f, output_folder, res=1024, mode='none')
 
     photo_src = []
-    # photo_src.extend(glob.glob(r'./photos/*/*.JPG'))
+    photo_src.extend(glob.glob(r'./photos/*/*.JPG'))
     photo_src.extend(glob.glob(r'./photos/*/*.jpg'))
     cut_n_shut(photo_src, f"./metadata_single_elements/dataset_cook{time.time()}", crop_mode="square_crop", resolution=1024, quality=95, sub_dirs=False )
