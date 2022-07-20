@@ -34,15 +34,15 @@ class ROI:
         self.rect_tags = {}
         self.photo_tags = {}
 
-        self.photo_tags[ pygame.K_0 ] = ( tags.deleted, "0: Deleted")  # whole image not processed to dataset
+        self.photo_tags[ pygame.K_0 ] = ( tags.deleted, "0: Deleted")  # soft-delete: whole image not processed to dataset
 
-        self.rect_tags[pygame.K_1] = ( tags.glass_facade, "1: Glass Facade" ) # glass panel windows
-        self.rect_tags[pygame.K_2] = ( tags.church      , "2: Church" )# complex church feature
-        self.rect_tags[pygame.K_3] = ( tags.shop        , "3: Shop")  # street level/wide angle of window/shop frontage
-        self.rect_tags[pygame.K_4] = ( tags.abnormal    , "4: Abnormal")  # street level/wide angle shot
-        self.rect_tags[pygame.K_5] = ( tags.door        , "5: Door")  # a door!
-        self.rect_tags[pygame.K_6] = ( tags.facade      , "6: Facade")  # a large amount of a building
-        self.rect_tags[pygame.K_w] = ( tags.window      , "w: Window")  # we are creating windows
+        self.rect_tags[pygame.K_f] = ( tags.glass_facade, "1: Glass Facade Window" ) # glass panel windows
+        self.rect_tags[pygame.K_c] = ( tags.church      , "2: Church Window" )# complex church feature
+        self.rect_tags[pygame.K_s] = ( tags.shop        , "3: Shop Window")  # street level/wide angle of window/shop frontage
+        self.rect_tags[pygame.K_a] = ( tags.abnormal    , "4: Abnormal Window")  # street level/wide angle shot
+        self.rect_tags[pygame.K_d] = ( tags.door        , "5: Door")  # a door!
+        self.rect_tags[pygame.K_f] = ( tags.facade      , "6: Facade")  # a large amount of a building
+        self.rect_tags[pygame.K_w] = ( tags.window      , "w: Window (regular!)")  # we are creating windows
         self.rect_tags[pygame.K_m] = ( tags.material    , "m: Material")  # we are marking materials
 
         self.default_tags = [tags.window]

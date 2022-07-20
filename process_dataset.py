@@ -118,7 +118,11 @@ def render_labels_web (dataset_root, label_json_file, flush_html = False, use_ca
                 os.remove(to_del)
 
 
+
 def render_labels_per_crop( dataset_root, json_file, output_folder, res=512, mode='None'):
+    '''
+    This is mostly for checking the labels from the labellers...
+    '''
 
     print (f"rendering crops from {json_file} @ {res}:{mode}")
 
@@ -321,7 +325,7 @@ def cut_n_shut(images, output_dir, clear_log = False, sub_dirs = True, crop_mode
 
             for r in rects:
 
-                if "window" not in r[1] and "glass_facade" not in r[1] and "shop" not in r[1] and "church" not in r[1]:
+                if not ( "window" in r[1] or "glass_facade" in r[1] or "shop" in r[1] or "church" in r[1] or "abnormal" in r[1] ):
                     continue
 
                 r = r[0]
@@ -357,24 +361,27 @@ VALID_CROPS = {'square_crop', 'square_expand', 'none'}
 if __name__ == "__main__":
 
     dataset_root = r"C:\Users\twak\Documents\architecture_net\dataset"
-    output_folder = r"C:\Users\twak\Downloads\rendered_dataset_batch_2_updated"
+    output_folder = r"C:\Users\twak\Downloads\rendered_dataset_batch_4"
 
     # render single-windows crops
     # cut_n_shut(...)
 
     json_src = []
     #json_src.extend(glob.glob(r'/home/twak/Downloads/LYD__KAUST_batch_2_24.06.2022/LYD<>KAUST_batch_2_24.06.2022/**.json'))
-    # json_src.extend(glob.glob( os.path.join (dataset_root, "metadata_window_labels", "*", "*.json" ) ) )
+    json_src.extend(glob.glob( os.path.join (dataset_root, "metadata_window_labels", "*", "*.json" ) ) )
     # json_src.extend(glob.glob(r'C:\Users\twak\Documents\architecture_net\dataset\metadata_window_labels\from_labellers\LYD__KAUST_batch_1_fixed_24.06.2022\**.json'))
     # render labels over whole photos for the website
+
     # for j in json_src:
     #     render_labels_web( dataset_root, j)
     # render labels, svg, transparencies for labeller QA
-    # for f in json_src:
-        # if "IMG_8337" in f:
-        # render_labels_per_crop( dataset_root, f, output_folder, res=1024, mode='none')
 
-    photo_src = []
-    photo_src.extend(glob.glob(r'./photos/*/*.JPG'))
-    photo_src.extend(glob.glob(r'./photos/*/*.jpg'))
-    cut_n_shut(photo_src, f"./metadata_single_elements/dataset_cook{time.time()}", crop_mode="square_crop", resolution=1024, quality=95, sub_dirs=False )
+    for f in json_src:
+        render_labels_per_crop( dataset_root, f, output_folder, res=1024, mode='none')
+
+
+    # generate dataset from all metadata_single_element
+    # photo_src = []
+    # photo_src.extend(glob.glob(r'./photos/*/*.JPG'))
+    # photo_src.extend(glob.glob(r'./photos/*/*.jpg'))
+    # cut_n_shut(photo_src, f"./metadata_single_elements/dataset_cook{time.time()}", crop_mode="square_crop", resolution=1024, quality=95, sub_dirs=False )

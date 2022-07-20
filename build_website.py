@@ -102,6 +102,10 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
              </script>""")
 
         for batch in os.listdir(orig):
+
+            if not os.path.isdir(os.path.join(orig, batch)):
+                continue
+
             # ["tom_archive_19000101", "tom_bramley_20220406", "tom_saffron_20220418", "tom_cams_20220418", "tom_dales_20220403", "tom_leeds_docks_20220404", "tom_london_20220418", "tom_york_20220411"]:
 
             index_append = ""
@@ -201,6 +205,7 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                                     photo_html.write(f"<a href='../../metadata_window_labels/{batch}/{pre}.png'><img src='../../metadata_window_labels/{batch}/{pre}.png' height='640'></a><br><br>\n")
 
                                 for thumb_idx, r in enumerate(metadata["rects"]):
+                                    crop_file = photo+"_crop_%d.jpg" % thumb_idx
                                     if rect[2] - rect[0] < 20 or rect[3] - rect[1] < 20:
                                         print("skipping small rect")
                                         continue
@@ -234,7 +239,9 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                 open(append_rect_file, "w").write(rects_append)
 
             index_html.write (index_append)
+            index_html.flush()
             rects_html.write (rects_append)
+            rects_html.flush()
 
 
         index_html.write("</body></html>\n")

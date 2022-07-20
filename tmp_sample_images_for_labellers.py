@@ -68,7 +68,7 @@ while COUNT < 2500:
     print(f"{COUNT} : {photo}")
 
     batch = Path(photo).parent.name
-    if "vienna" in batch or "Vienna" in batch and random.random() < 0.3: # downsample boring grey vienna
+    if ("vienna" in batch or "Vienna" in batch) and random.random() < 0.3: # downsample boring grey vienna
         print ("skipping Wein")
         continue
 
@@ -95,7 +95,8 @@ while COUNT < 2500:
 
         r = random.choice(rects)
 
-        if "window" not in r[1] and "glass_facade" not in r[1] and "shop" not in r[1] and "church" not in r[1]:
+        if "window" not in r[1] and "glass_facade" not in r[1] and "shop" not in r[1] and "church" not in r[1] and "abnormal" not in r[1]:
+            print("skipping not-a-window " + " ".join(tags))
             continue
 
         r = r[0]
@@ -110,7 +111,6 @@ while COUNT < 2500:
 
         md5hash = hashlib.md5(im.tobytes())
 
-
         jpg_out_file = "%s.jpg" % md5hash.hexdigest()
 
         log.write("\"%s\"\n" % jpg_out_file)
@@ -118,13 +118,15 @@ while COUNT < 2500:
         out_path = os.path.join(output_dir, jpg_out_file)
 
         if (os.path.exists(out_path)):
-            print("duplicate!")
+            print("skipping; duplicate hash!")
             continue
 
 
         im.save(out_path, format="JPEG", quality=90)
         COUNT += 1
         log.flush()
+    else:
+        print("skipping missing json file")
 
 
 log.close()
