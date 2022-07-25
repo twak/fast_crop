@@ -361,7 +361,7 @@ VALID_CROPS = {'square_crop', 'square_expand', 'none'}
 if __name__ == "__main__":
 
     dataset_root = r"C:\Users\twak\Documents\architecture_net\dataset"
-    output_folder = r"C:\Users\twak\Downloads\rendered_dataset_batch_4"
+    output_folder = r"C:\Users\twak\Downloads\rendered_dataset_batch_5"
 
     # render single-windows crops
     # cut_n_shut(...)

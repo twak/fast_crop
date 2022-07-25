@@ -107,11 +107,17 @@ def write_label_jsons( src_lookup, lyd_json, dataset_root = None):
 dataset_root = r"C:\Users\twak\Documents\architecture_net\dataset"
 
 json_src = []
+
+# newer corrections from labellers overwrite old version
+for s in ["LYD__KAUST_Batch_1(100images)_16.06.22_", "LYD__KAUST_1_batch_(100_frames)_21.06.2022", "LYD__KAUST_batch_1_fixed_24.06.2022", "LYD__KAUST_batch_2_24.06.2022", "LYD__KAUST_batch2_updated", "LYD__KAUST_batch1_fixed_2tasks", "LYD__KAUST_batch_1_updated", "LYD__KAUST_batch_3_fixed", "LYD__KAUST_batch_4", "LYD__KAUST_batch4_fixed_22.07.22", "LYD__KAUST_batch5_22.07.22"]:
+    json_src.extend(glob.glob(rf'C:\Users\twak\Documents\architecture_net\dataset\old_metadata_window_labels\from_labellers\{s}\**.json'))
+
+
 #json_src.extend(glob.glob(r'/home/twak/Downloads/LYD__KAUST_batch_2_24.06.2022/LYD<>KAUST_batch_2_24.06.2022/**.json'))
 # json_src.extend(glob.glob(r'C:\Users\twak\Documents\architecture_net\dataset\metadata_window_labels\from_labellers\LYD__KAUST_batch_1_fixed_24.06.2022\**.json'))
 # json_src.extend(glob.glob(r'C:\Users\twak\Documents\architecture_net\dataset\metadata_window_labels\from_labellers\LYD__KAUST_batch_2_24.06.2022\**.json'))
 # json_src.extend(glob.glob(r'C:\Users\twak\Documents\architecture_net\dataset\old_metadata_window_labels\from_labellers\LYD__KAUST_batch1_fixed_2tasks\**.json' ))
-json_src.extend(glob.glob(r'C:\Users\twak\Documents\architecture_net\dataset\old_metadata_window_labels\from_labellers\LYD__KAUST_batch_4\**.json'))
+# json_src.extend(glob.glob(r'C:\Users\twak\Documents\architecture_net\dataset\old_metadata_window_labels\from_labellers\LYD__KAUST_batch5_22.07.22\**.json'))
 
 # src_lookup = build_src_lookup(r"/home/twak/Downloads/input_locations_first_1500.txt")
 src_lookup = build_src_lookup(r"C:\Users\twak\Documents\architecture_net\dataset\old_metadata_window_labels\from_labellers\input_locations_first_1500.txt")

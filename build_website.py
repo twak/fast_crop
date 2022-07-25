@@ -243,6 +243,5 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
             rects_html.write (rects_append)
             rects_html.flush()
 
-
         index_html.write("</body></html>\n")
         rects_html.write("</body></html>\n")
