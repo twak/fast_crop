@@ -197,6 +197,8 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, res=512, mod
         triplet .save(os.path.join(output_folder, "twofer", crop_name + ".jpg"))
 
 
+
+
 def find_photo_for_json(dataset_root, json_file ):
     phop = Path(json_file)
     name = os.path.splitext(phop.name)[0]
@@ -358,10 +360,37 @@ def cut_n_shut(images, output_dir, clear_log = False, sub_dirs = True, crop_mode
 VALID_CROPS = {'square_crop', 'square_expand', 'none'}
 
 
+
+
+def count( dataset_root, json_files):
+    '''
+    How many have we had labelled?...
+    '''
+
+    total = 0
+    total_json_files = 0
+    FREQ = [0,0,0,0,0,0]
+
+    for json_file in json_files:
+        with open(json_file, "r") as f:
+            data = json.load(f)
+            total_json_files += 1
+
+            wins = len (data.items())
+
+            print(f"counting crops from {json_file} = {wins}")
+            FREQ[wins] += wins
+            total += wins
+
+    print (f"total {total} in {total_json_files} files")
+
+    for i in range ( len (FREQ) ):
+        print (f"{i} : {FREQ[i]}")
+
 if __name__ == "__main__":
 
     dataset_root = r"C:\Users\twak\Documents\architecture_net\dataset"
-    output_folder = r"C:\Users\twak\Downloads\rendered_dataset_batch_5"
+    output_folder = r"C:\Users\twak\Downloads\rendered_dataset_all_8_9_22"
 
     # render single-windows crops
     # cut_n_shut(...)
@@ -375,6 +404,8 @@ if __name__ == "__main__":
     # for j in json_src:
     #     render_labels_web( dataset_root, j)
     # render labels, svg, transparencies for labeller QA
+
+    #count (dataset_root, json_src)
 
     for f in json_src:
         render_labels_per_crop( dataset_root, f, output_folder, res=1024, mode='none')
