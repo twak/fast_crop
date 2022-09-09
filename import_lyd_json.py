@@ -87,6 +87,7 @@ def write_label_jsons( src_lookup, lyd_json):
             #
             # continue
 
+
             src_split = re.split(r'[\\]|[.]', src_file)
 
             out_file_name = os.path.join(".", "metadata_window_labels", src_split[0], src_split[1]+".json" )
@@ -102,17 +103,26 @@ def write_label_jsons( src_lookup, lyd_json):
             annotations_out[crop_file_name] = this_window
             this_window["crop"] = src_region
 
+            vert_count = 0
+            poly_count = 0
+            cats = []
+
             if img_id in idx_to_ann:
                 global COUNT3
                 COUNT3 +=1
                 for ann in idx_to_ann.get(img_id):
                     cat_name = cdx_to_category[ann["category_id"]]
 
+                    cats.append(cat_name)
+
                     polygon = ann["segmentation"]
                     polies_out = []
 
+                    poly_count += len (polygon)
+
                     for poly2 in polygon:
                         poly_out = []
+                        vert_count += len ( poly2) /2
                         for i in range ( int ( len ( poly2) /2 ) ):
                             poly_out.append( ( poly2[i*2], poly2[i*2+1] ) )
                         if len (poly_out) > 0:
@@ -130,12 +140,29 @@ def write_label_jsons( src_lookup, lyd_json):
                     json.dump(annotations_out, f)
                     JSON_NAMES[out_file_name] = len ( annotations_out )
 
-                global COUNT
+                global COUNT, TOTAL_VERTS, TOTAL_POLYGONS, CAT_COUNT
                 COUNT += 1
 
                 if crop_file_name not in ALL_NAMES:
                     ALL_NAMES[crop_file_name] = f"{parent.name}\{p.name}"
                     print(f"{len(ALL_NAMES)}  {crop_file_name}")
+
+                    global CITY_COUNT
+                    if src_split[0] in CITY_COUNT:
+                        CITY_COUNT[src_split[0]] += 1
+                    else:
+                        CITY_COUNT[src_split[0]] = 1
+
+                    TOTAL_VERTS += vert_count
+                    TOTAL_POLYGONS += poly_count
+
+
+                    for c in cats:
+                        if c in CAT_COUNT:
+                            CAT_COUNT[c]+=1
+                        else:
+                            CAT_COUNT[c]= 1
+
                 else:
                     print(f" this guy mentioned twice: {crop_file_name} in {parent.name}\{p.name}    x (previously in {ALL_NAMES[crop_file_name]})")
 
@@ -185,6 +212,10 @@ src_lookup = build_src_lookup([r".\old_metadata_window_labels\from_labellers\inp
 COUNT  = 0
 COUNT2 = 0
 COUNT3 = 0
+CITY_COUNT = {}
+TOTAL_VERTS = 0
+TOTAL_POLYGONS = 0
+CAT_COUNT = {}
 
 for f in json_src:
     write_label_jsons( src_lookup, f )
@@ -199,4 +230,14 @@ for i in JSON_NAMES.values():
 print ( f"{COUNT2} failures" )
 print ( f"processed {COUNT} windows" )
 
-print (f"unique json files {len ( JSON_NAMES ) } containing {total_rects} crops")
+print (f"unique json files {len ( JSON_NAMES ) } containing {total_rects} crops\n")
+
+for c,n in CITY_COUNT.items():
+    print( f"{c}, {n}")
+
+print("\n")
+
+for c,n in CAT_COUNT.items():
+    print( f"{c}, {n}")
+
+print (f"total verts {TOTAL_VERTS}, total polys {TOTAL_POLYGONS}")

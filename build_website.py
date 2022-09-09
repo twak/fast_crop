@@ -5,7 +5,7 @@ import PIL
 from pathlib import Path
 from PIL import Image, ImageOps
 import tags
-import process_dataset
+import process_labels
 
 dataset_root = Path.cwd()
 orig     = os.path.join(dataset_root, "photos")
@@ -13,7 +13,7 @@ meta_dir = os.path.join(dataset_root, "metadata_single_elements")
 web_dir  = os.path.join(dataset_root, "metadata_website")
 use_cache = True
 
-process_dataset.USE_PRETTY_COLORS = True
+process_labels.USE_PRETTY_COLORS = True
 
 res = 128
 quality = 50
@@ -145,7 +145,7 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
 
                         # use image-with labels as thumbnail where available
                         if os.path.exists(labels_json_path): # render json to image if required
-                            process_dataset.render_labels_web(dataset_root, labels_json_path, flush_html=False, use_cache=False )
+                            process_labels.render_labels_web(dataset_root, labels_json_path, flush_html=False, use_cache=False)
                             thumbnail( os.path.join(labels_dir, photo), os.path.join(batch_thumbs, photo), use_cache=False )
                         else:
                             thumbnail(os.path.join(photos_dir, photo), os.path.join(batch_thumbs, photo), use_cache=use_cache)

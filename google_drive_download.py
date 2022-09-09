@@ -1,6 +1,6 @@
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
-import os
+import os, time
 
 gauth = GoogleAuth()
 # Try to load saved client credentials
@@ -20,7 +20,7 @@ gauth.SaveCredentialsFile("mycreds.txt")
 
 drive = GoogleDrive(gauth)
 
-file_list = drive.ListFile({'q': "'' in parents and trashed=false"}).GetList()
+file_list = drive.ListFile({'q': "'FIXME' in parents and trashed=false"}).GetList()
 
 while not len(file_list) == 0: #for file1 in file_list:
 
@@ -29,12 +29,12 @@ while not len(file_list) == 0: #for file1 in file_list:
     try:
 
         if file1['mimeType'] == 'application/vnd.google-apps.folder': # is directory
-            file_list.append ( ({'q': f"'{file1['id']}' in parents and trashed=false"}).GetList() )
+            file_list.extend (  drive.ListFile({'q': f"'{file1['id']}' in parents and trashed=false"}).GetList() )
             print (f"found subdir {file1['title']}. indexed.")
             continue
 
         if os.path.exists(file1['title']) and os.path.getsize(file1) > 0:
-            print("exists, skipping")
+            print(f"{file1['title']} exists, skipping")
             continue
 
         print('title: %s, id: %s, mt %s' % (file1['title'], file1['id'], file1['mimeType']))
@@ -42,11 +42,12 @@ while not len(file_list) == 0: #for file1 in file_list:
             gauth.Refresh()
 
         file6 = drive.CreateFile({'id': file1['id']})
-        file6.GetContentFile(file1['title'])
+        file6.GetContentFile(file1['title']) # note: no directory structures here
 
     except Exception as e:
 
         print (f"failed to download {file1['title']}; sent to back of queue:\n {e}")
         file_list.append (file1)
+        time.sleep(1)
 
 
