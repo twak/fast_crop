@@ -146,8 +146,8 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, res=512, mod
     # crop to each defined region
     for crop_name, crop_data in data.items():
 
-        if os.path.exists(os.path.join(output_folder, "twofer", crop_name + ".jpg")):
-            continue
+        # if os.path.exists(os.path.join(output_folder, "twofer", crop_name + ".jpg")):
+        #     continue
 
         crop_bounds = crop_data["crop"]
         crop_photo =photo.crop (crop_bounds)
@@ -374,7 +374,7 @@ def florians_funky_naming(json_file):
     return out
 
 
-def count( dataset_root, json_files):
+def count(dataset_root, label_json_files):
     '''
     How many have we had labelled?...
     '''
@@ -384,7 +384,7 @@ def count( dataset_root, json_files):
     FREQ = [0,0,0,0,0,0]
     bybatch={}
 
-    for json_file in json_files:
+    for json_file in label_json_files:
 
         batch = Path ( json_file ).parent.name
 
@@ -413,10 +413,10 @@ def count( dataset_root, json_files):
 
         if good != 1:
             print(f"couldn't find unambiguous jpg for labelled json: {json_file}")
-        else:
-            if good_f != json_file:
-                print ( f"moving {Path(json_file).name} to {Path(good_f).name}" )
-                shutil.move(json_file, good_f)
+        # else:
+        #     if good_f != json_file:
+        #         print ( f"moving {Path(json_file).name} to {Path(good_f).name}" )
+        #         shutil.move(json_file, good_f)
 
     print (f"total {total} in {total_json_files} files")
 
@@ -456,7 +456,7 @@ if __name__ == "__main__":
     else:
         dataset_root = r"/mnt/vision/data/archinet/data"
 
-    output_folder = r"C:\Users\twak\Downloads\rendered_dataset_all_8_9_22"
+    output_folder = r"C:\Users\twak\Downloads\those_nine_rendered"
 
     # render single-windows crops
     # cut_n_shut(...)
@@ -470,13 +470,13 @@ if __name__ == "__main__":
     # for j in json_src:
     #     render_labels_web( dataset_root, j)
     # render labels, svg, transparencies for labeller QA
-
     count (dataset_root, json_src)
 
-    photos = []
-    photos.extend(glob.glob(os.path.join(dataset_root, "photos", "*", "*.JPG")))
-    photos.extend(glob.glob(os.path.join(dataset_root, "photos", "*", "*.jpg")))
-    count_photos(photos)
+    # photos = []
+    # photos.extend(glob.glob(os.path.join(dataset_root, "photos", "*", "*.JPG")))
+    # photos.extend(glob.glob(os.path.join(dataset_root, "photos", "*", "*.jpg")))
+
+    # count_photos(photos)
 
     # for f in json_src:
     #     render_labels_per_crop( dataset_root, f, output_folder, res=1024, mode='none')

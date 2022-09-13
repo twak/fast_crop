@@ -75,7 +75,8 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                 html_file.write(f'<input class="{tag_name}_c" type="checkbox" value="{tag_name}_c" name="{tag_name}_foo">{tag_name}   \n')
             html_file.write(f'<br><hr>')
             for idx, tag_name in enumerate ( os.listdir(orig) ): # batch names are also tagged here
-                html_file.write(f'<input class="{tag_name}_c" type="checkbox" value="{tag_name}_c" name="{tag_name}_foo" {"checked" if idx == -1 else ""}>{tag_name}\n')
+                if os.path.isdir(os.path.join(orig, tag_name)):
+                    html_file.write(f'<input class="{tag_name}_c" type="checkbox" value="{tag_name}_c" name="{tag_name}_foo" {"checked" if idx == -1 else ""}>{tag_name}\n')
             html_file.write(f'<br><hr>')
             for tag_name in os.listdir(dataset_root): # available metadata also tags each file
                 if os.path.isdir (os.path.join (dataset_root, tag_name)):

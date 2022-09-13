@@ -183,7 +183,7 @@ json_src = []
 
 # for s in ["LYD__KAUST_Batch_1(100images)_16.06.22_", "LYD__KAUST_1_batch_(100_frames)_21.06.2022",
 #           "LYD__KAUST_batch_1_fixed_24.06.2022", "LYD__KAUST_batch_2_24.06.2022", "LYD__KAUST_batch2_updated", "LYD__KAUST_batch1_fixed_2tasks", "LYD__KAUST_batch_1_updated", "LYD__KAUST_batch_3_fixed", "LYD__KAUST_batch_4", "LYD__KAUST_batch4_fixed_22.07.22", "LYD__KAUST_batch5_22.07.22", "LYD__KAUST_batch4-5_fixed", "LYD__KAUST_batch_6_04.08.2022", "LYD__KAUST_batch_6_fixed", "LYD__KAUST_batch_7",
-#           "LYD__KAUST_batch_6_fixed_24_08", "LYD__KAUST_batch_7_fixed_24_08", "LYD__KAUST_batch_8"]:
+#           "LYD__KAUST_batch_6_fixed_24_08", "LYD__KAUST_batch_7_fixed_24_08", "LYD__KAUST_batch_8", "LYD__KAUST_all_batches_old", "LYD__KAUST_all_batches", "LYD__KAUST_batch_9" ]:
 #     json_src.extend(glob.glob(rf'C:\Users\twak\Documents\architecture_net\dataset\old_metadata_window_labels\from_labellers\{s}\**.json'))
 
 json_src.extend(glob.glob(r'.\old_metadata_window_labels\from_labellers\LYD__KAUST_all_batches\*\**.json'))
