@@ -456,21 +456,23 @@ if __name__ == "__main__":
     else:
         dataset_root = r"/mnt/vision/data/archinet/data"
 
-    output_folder = r"C:\Users\twak\Downloads\those_nine_rendered"
+    output_folder = r"C:\Users\twak\Downloads\friday_debug"
 
     # render single-windows crops
     # cut_n_shut(...)
 
     json_src = []
     #json_src.extend(glob.glob(r'/home/twak/Downloads/LYD__KAUST_batch_2_24.06.2022/LYD<>KAUST_batch_2_24.06.2022/**.json'))
-    json_src.extend(glob.glob( os.path.join (dataset_root, "metadata_window_labels", "*", "*.json" ) ) )
+    # json_src.extend(glob.glob(os.path.join(dataset_root, "metadata_window_labels", "*", "*.json")))
+
+    json_src.extend(glob.glob(os.path.join(dataset_root, "metadata_window_labels", "tom_archive_19000102", "*.json")))
     # json_src.extend(glob.glob(r'C:\Users\twak\Documents\architecture_net\dataset\metadata_window_labels\from_labellers\LYD__KAUST_batch_1_fixed_24.06.2022\**.json'))
     # render labels over whole photos for the website
 
     # for j in json_src:
     #     render_labels_web( dataset_root, j)
     # render labels, svg, transparencies for labeller QA
-    count (dataset_root, json_src)
+    # count (dataset_root, json_src)
 
     # photos = []
     # photos.extend(glob.glob(os.path.join(dataset_root, "photos", "*", "*.JPG")))
@@ -478,8 +480,8 @@ if __name__ == "__main__":
 
     # count_photos(photos)
 
-    # for f in json_src:
-    #     render_labels_per_crop( dataset_root, f, output_folder, res=1024, mode='none')
+    for f in json_src:
+        render_labels_per_crop( dataset_root, f, output_folder, res=1024, mode='none')
 
 
     # generate dataset from all metadata_single_element
