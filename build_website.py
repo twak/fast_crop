@@ -80,7 +80,7 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
             html_file.write(f'<br><hr>')
             for idx, tag_name in enumerate ( os.listdir(orig) ): # batch names are also tagged here
                 if os.path.isdir(os.path.join(orig, tag_name)):
-                    html_file.write(f'<input class="{tag_name}_c" type="checkbox" value="{tag_name}_c" name="{tag_name}_foo" {"checked" if idx == -1 else ""}>{tag_name}\n')
+                    html_file.write(f'<input class="{tag_name}_c" type="checkbox" value="{tag_name}_c" name="{tag_name}_foo" {"checked" if idx == -1 else ""}>{tag_name}<a href="../photos/{tag_name}">[d]</a>\n')
             html_file.write(f'<br><hr>')
             for tag_name in os.listdir(dataset_root): # available metadata also tags each file
                 if os.path.isdir (os.path.join (dataset_root, tag_name)):
@@ -203,8 +203,8 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                                 photo_html.write(f"<h3>{batch} {photo}</h3><p>whole-image-tags: {' '.join(metadata['tags'])}</p>")
                                 photo_html.write(f"<a href='../../photos/{batch}/{photo}'><img src='../../photos/{batch}/{photo}' height='640'></a><br><br>\n")
 
-                                if os.path.exists ( os.path.join(labels_dir, photo) ):
-                                    photo_html.write(f"<a href='../../metadata_window_labels/{batch}/{photo}'><img src='../../metadata_window_labels/{batch}/{photo}' height='640'></a><br><br>\n")
+                                if os.path.exists ( os.path.join(labels_dir, photo_pre+".jpg") ):
+                                    photo_html.write(f"<a href='../../metadata_window_labels/{batch}/{photo}'><img src='../../metadata_window_labels/{batch}/{photo_pre}.jpg' height='640'></a><br><br>\n")
 
                                 if os.path.exists(labels_png_path):
                                     photo_html.write(f"<a href='../../metadata_window_labels/{batch}/{pre}.png'><img src='../../metadata_window_labels/{batch}/{pre}.png' height='640'></a><br><br>\n")
