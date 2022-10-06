@@ -1,7 +1,9 @@
+import concurrent
 import glob
 import hashlib
 import json
 import os
+from functools import lru_cache
 
 import PIL.Image
 import pygame, sys
@@ -34,6 +36,9 @@ class ROI:
 
         self.rect_tags = {}
         self.photo_tags = {}
+        self.cursor_widgets = 0
+        self.show_help = False
+        self._pool = concurrent.futures.ThreadPoolExecutor()
 
         self.photo_tags[ pygame.K_0 ] = ( tags.deleted, "0: Deleted")  # soft-delete: whole image not processed to dataset
 
@@ -57,6 +62,13 @@ class ROI:
 
         px = pygame.transform.scale(self.px, [rect.width / self.scale, rect.height / self.scale])
         self.screen.blit(px, px.get_rect())
+
+        if self.bottomright is not None and self.cursor_widgets < 2:
+            size = 64
+            cropped = pygame.Surface((size*2, size*2))
+            cropped.blit(self.px, [-self.bottomright[0] * self.scale+size, -self.bottomright[1] * self.scale+size] )
+            self.screen.blit(cropped, [self.bottomright[0]-size, self.bottomright[1]-size])
+            # self.screen.blit(px, px.get_rect())
 
         if self.rects is not None:
             for rect in self.rects:
@@ -84,15 +96,16 @@ class ROI:
             pygame.draw.line(self.screen, (255, 0, 0), (self.screen.get_width(), 0), (0, self.screen.get_height()), width = 10)
 
         # tags at top left
-        all_tags = self.photo_tags.items() | self.rect_tags.items()
-        pygame.draw.rect(self.screen, (0,0,0), pygame.Rect(self.screen.get_width() -120, 0,120, len(all_tags) * 16 ))
-        o = 0
-        for t, d in all_tags:
-            # color = (255, 0, 255) if t in self.current_rect[1] else (0, 255, 255)
-            color = (255, 0, 255)
-            surface = self.font.render(d[1], True, color)
-            self.screen.blit (surface, (self.screen.get_width()-120+5, o * 16) )
-            o = o + 1
+        if self.show_help:
+            all_tags = self.photo_tags.items() | self.rect_tags.items()
+            pygame.draw.rect(self.screen, (0,0,0), pygame.Rect(self.screen.get_width() -120, 0,120, len(all_tags) * 16 ))
+            o = 0
+            for t, d in all_tags:
+                # color = (255, 0, 255) if t in self.current_rect[1] else (0, 255, 255)
+                color = (255, 0, 255)
+                surface = self.font.render(d[1], True, color)
+                self.screen.blit (surface, (self.screen.get_width()-120+5, o * 16) )
+                o = o + 1
 
         if self.topleft is not None and self.bottomright is not None:
             x, y = self.topleft
@@ -110,6 +123,10 @@ class ROI:
             pygame.draw.line(self.screen, (255, 0  , 255), (x, 0), (x, self.screen.get_height()))
             pygame.draw.line(self.screen, (255, 0  , 255), (x + width, 0), (x + width, self.screen.get_height()))
             pygame.draw.rect(self.screen, (0  , 255, 0  ), pygame.Rect( x, y, width, height ), width = 1 )
+        elif self.bottomright is not None and self.cursor_widgets % 2 == 0: # always show a garget
+            x, y = self.bottomright
+            pygame.draw.line(self.screen, (255, 0, 255), (0, y), (self.screen.get_width(), y))
+            pygame.draw.line(self.screen, (255, 0, 255), (x, 0), (x, self.screen.get_height()))
 
         pygame.display.flip()
 
@@ -188,6 +205,12 @@ class ROI:
                             else:
                                 self.current_rect = None
 
+                    if event.key == pygame.K_z:
+                        self.cursor_widgets = ( self.cursor_widgets + 1 ) % 4
+
+                    if event.key == pygame.K_F1:
+                        self.show_help ^= True
+
                     if self.current_rect != None:
                         for key, tag_desc in self.rect_tags.items():
                             if event.key == key:
@@ -251,6 +274,15 @@ class ROI:
             json.dump(out, file)
             print("saving %s" % file.name)
 
+    @lru_cache(maxsize=8)
+    def load_maybe_cache(self, file):
+        im = Image.open(file)
+        return ImageOps.exif_transpose(im)
+
+    def pre_load_image(self, file):
+        self._pool.submit(self.load_maybe_cache, file)
+
+
     def load(self, incr):
 
         self.rects = []
@@ -277,19 +309,22 @@ class ROI:
 
 
         if os.path.exists(self.input_loc):
-            im = Image.open(self.input_loc)
-            self.im = im = ImageOps.exif_transpose(im)
+            self.im = self.load_maybe_cache(self.input_loc)
         else:
             self.rects = None
             self.im = Image.new("RGB", (10,10))
             print("error: file once seen is now missing :(")
 
-        self.px = ROI.pilImageToSurface(im)
+        self.px = ROI.pilImageToSurface(self.im)
         self.scale = max ( self.px.get_width()/self.screen.get_width(), self.px.get_height()/self.screen.get_height() )
 
         pygame.draw.rect(self.screen, (0, 0, 0), pygame.Rect(0, 0, self.screen.get_width(), self.screen.get_height()))
 
         pygame.display.flip()
+
+        for i in range (1,3): # pre-cache following images
+            self.pre_load_image( self.images[(self.current_n + i + len(self.images)) % len(self.images)] )
+        # print ( self.load_maybe_cache.cache_info() )
 
     def interactive(self):
 
