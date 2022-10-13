@@ -3,12 +3,16 @@ import os
 import process_labels
 from PIL import Image
 import numpy as np
+import concurrent.futures
 
 from pathlib import Path
 
 def to_greyscale_labels(png_file, out_folder):
 
     print (png_file)
+    output_path = os.path.join(out_folder, os.path.basename(Path(png_file).name) )
+    if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
+        return # already done, skip
 
     pretty = Image.open(png_file, "r")
     label = np.asarray ( pretty )[:,:,0:3]
@@ -27,13 +31,14 @@ def to_greyscale_labels(png_file, out_folder):
         output = output * (1- class_map) # zero out any previous labels
         output = output + class_map * i  # set greyscale label
 
-    Image.fromarray(np.uint8(output)).save(os.path.join(out_folder, os.path.basename(Path(png_file).name) ) )
+    Image.fromarray(np.uint8(output)).save( output_path )
 
+
+_pool = concurrent.futures.ThreadPoolExecutor()
 
 labels = []
-# json_src.extend(glob.glob(r'/home/twak/Downloads/LYD__KAUST_batch_2_24.06.2022/LYD<>KAUST_batch_2_24.06.2022/**.json'))
-labels.extend(glob.glob(os.path.join( r"C:\Users\twak\Downloads\blender_dataset_test", "labels_pretty", "**.png")))
 
+labels.extend(glob.glob(os.path.join( r"/ibex/scratch/kellyt/windowz/dataset_queen/", "labels", "*.png")))
 
 for lab in labels:
-    to_greyscale_labels(lab, r"C:\Users\twak\Downloads\blender_dataset_test\labels" )
+    _pool.submit ( to_greyscale_labels, lab, r"/ibex/scratch/kellyt/windowz/dataset_queen/labels_grey", )
