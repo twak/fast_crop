@@ -43,7 +43,8 @@ def split(rgb_files, output_folder, label_names=[["labels", "png"]], output_spli
             cpi += 1
 
 rgbs = []
-rgbs.extend(glob.glob(os.path.join( r"/home/twak/Downloads/winlab_1/rgb", "*.jpg")))
-split ( rgbs, r"/home/twak/Downloads//winlab_2",
+
+rgbs.extend(glob.glob(os.path.join( r"/ibex/scratch/kellyt/winlab_1/rgb", "*.jpg")))
+split ( rgbs, r"/ibex/scratch/kellyt/winlab_2",
         label_names=[["labels", "png"]],
         output_split=[[50, "val"], [50, "test"]] )
