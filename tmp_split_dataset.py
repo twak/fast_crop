@@ -14,7 +14,7 @@ def split(rgb_files, output_folder, label_names=[["labels", "png"]], output_spli
     total = 0
     for p, n in output_split:
         total += p
-        cum_perc.append([total * len (rgb_files) / 100, p, n])
+        cum_perc.append([ int ( total * len (rgb_files) / 100 ) , p, n])
 
     if total != 100:
         print("error, percents don't add up!")
@@ -28,8 +28,8 @@ def split(rgb_files, output_folder, label_names=[["labels", "png"]], output_spli
         out_stub = os.path.join(output_folder, tpn[2])
         prgb = Path(rgb)
 
-        os.makedirs(os.path.join( out_stub, prgb.parent) )
-        shutil.copyfile(rgb, os.path.join( out_stub, prgb.parent, prgb.name ))
+        os.makedirs(os.path.join( out_stub, prgb.parent.name), exist_ok=True )
+        shutil.copyfile(rgb, os.path.join( out_stub, prgb.parent.name, prgb.name ))
         basename = os.path.splitext(prgb.name)[0]
 
         for name, extn in label_names:
@@ -37,11 +37,13 @@ def split(rgb_files, output_folder, label_names=[["labels", "png"]], output_spli
             if not os.path.exists(src):
                 print (f"missing {name} for {rgb}")
             os.makedirs(os.path.join(out_stub, name), exist_ok=True)
-            shutil.copyfile( src, os.path.join(out_stub, name, basename.extn ) )
+            shutil.copyfile( src, os.path.join(out_stub, name, basename+"."+extn ) )
 
-        while i > tpn[0]: # cumulative > i
+        while i > cum_perc[cpi][0]: # cumulative > i
             cpi += 1
 
 rgbs = []
-rgbs.extend(glob.glob(os.path.join( r"/ibex/scratch/kellyt/windowz/winsyn_queen/", "rgb", "*.png")))
-split(rgbs, r"/ibex/scratch/kellyt/windowz/winlab_1", label_names=[["labels", "png"], "labels_8bit", "png"] )
+rgbs.extend(glob.glob(os.path.join( r"/home/twak/Downloads/winlab_1/rgb", "*.jpg")))
+split ( rgbs, r"/home/twak/Downloads//winlab_2",
+        label_names=[["labels", "png"]],
+        output_split=[[50, "val"], [50, "test"]] )
