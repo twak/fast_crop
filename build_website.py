@@ -7,10 +7,6 @@ from PIL import Image, ImageOps
 import tags
 import process_labels
 
-## todos
-# use deleted flag when building website
-# website is too slow on user end - build a javascript query engine + pagination
-
 dataset_root = Path.cwd()
 orig     = os.path.join(dataset_root, "photos")
 meta_dir = os.path.join(dataset_root, "metadata_single_elements")
