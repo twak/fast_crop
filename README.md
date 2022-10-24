@@ -1,4 +1,4 @@
-# fast crop tool
+# fast ccomputerop tool
 
 This is a custom tool to mark window rectangles in many photos quickly. You can also tag the rectangles with additional metadata. It may be extended in the future to mark other features than rectangles...
 
