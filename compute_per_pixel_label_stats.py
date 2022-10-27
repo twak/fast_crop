@@ -25,5 +25,5 @@ for f in label_src:
 total = np.sum(hist)
 
 for i in range ( len(hist) ):
-    print ( "%s, %d, %f" % (process_labels.LABEL_SEQ[i], counts[i], hist[i], hist[i]/float ( total ) ) )
+    print ( "%s, %d, %d, %f" % (process_labels.LABEL_SEQ[i], counts[i], hist[i], hist[i]/float ( total ) ) )
     # print ("\n")
