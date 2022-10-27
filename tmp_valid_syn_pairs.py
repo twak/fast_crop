@@ -20,6 +20,12 @@ def valid_syn_pairs(rgb_file):
     else:
         with contextlib.suppress(FileNotFoundError):
             print ("removing " + rgb_file)
+
+            if not good(rgb_file): print("missing rgb")
+            if not good(lab_file): print("missing lab")
+            if not good(attribs_file): print("missing attribs")
+            if not good(lab8_file): print("missing lab8")
+
             # os.remove(rgb_file)
             # os.remove(lab_file)
             # os.remove(lab8_file)
