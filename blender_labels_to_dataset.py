@@ -27,10 +27,11 @@ def to_greyscale_labels(png_file, out_folder):
         colour = np.array ( pretty_map[label_name] )
         equality = np.logical_and ( np.greater(label, colour-tol), np.less(label, colour+tol) )
         class_map = np.all(equality, axis=-1)
-        print (f"{label_name} - {colour} :: {class_map.sum()}")
+#        print (f"{label_name} - {colour} :: {class_map.sum()}")
         output = output * (1- class_map) # zero out any previous labels
         output = output + class_map * i  # set greyscale label
 
+    print ("saving to %s"%output_path)
     Image.fromarray(np.uint8(output)).save( output_path )
 
 
@@ -38,7 +39,11 @@ _pool = concurrent.futures.ThreadPoolExecutor()
 
 labels = []
 
-labels.extend(glob.glob(os.path.join( r"/ibex/scratch/kellyt/windowz/dataset_queen/", "labels", "*.png")))
+labels.extend(glob.glob(os.path.join( r"/ibex/scratch/kellyt/windowz/winsyn_king/", "labels", "*.png")))
+
+
+out_dir = r"/ibex/scratch/kellyt/windowz/winsyn_king/labels_8bit"
+os.path.makedirs(out_dir, exit_okay=True)
 
 for lab in labels:
-    _pool.submit ( to_greyscale_labels, lab, r"/ibex/scratch/kellyt/windowz/dataset_queen/labels_grey", )
+    _pool.submit ( to_greyscale_labels, lab, out_dir, )
