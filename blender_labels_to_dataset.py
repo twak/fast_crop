@@ -7,6 +7,8 @@ import concurrent.futures
 
 from pathlib import Path
 
+# convert labels in PRETTY colours (or PRETTY_FILMIC...) to greyscale 8 bits for mmseg
+
 def to_greyscale_labels(png_file, out_folder):
 
     print (png_file)
