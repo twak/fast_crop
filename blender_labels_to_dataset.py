@@ -1,5 +1,7 @@
 import glob
 import os
+import sys
+
 import process_labels
 from PIL import Image
 import numpy as np
@@ -41,10 +43,9 @@ _pool = concurrent.futures.ThreadPoolExecutor()
 
 labels = []
 
-labels.extend(glob.glob(os.path.join( r"/ibex/scratch/kellyt/windowz/winsyn_king/", "labels", "*.png")))
+labels.extend(glob.glob(os.path.join( sys.argv[1], "labels", "*.png")))
 
-
-out_dir = r"/ibex/scratch/kellyt/windowz/winsyn_king/labels_8bit"
+out_dir = os.path.join (sys.argv[1], "labels_8bit" )
 os.path.makedirs(out_dir, exit_okay=True)
 
 for lab in labels:
