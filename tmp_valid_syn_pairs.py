@@ -22,6 +22,8 @@ def valid_syn_pairs(rgb_file):
     try:
         a = Image.open(rgb_file, "r")    # albedo dataset causing issues
         b = Image.open(lab8_file, "r")
+        a.verify()
+        b.verify()
         if a is None or b is None:
             bad = True
     except:
