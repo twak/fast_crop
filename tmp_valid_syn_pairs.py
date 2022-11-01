@@ -8,12 +8,14 @@ import concurrent.futures
 # if blender rendering is interupted, we may not have all data for each image. Delete those which aren't complete...
 from PIL import Image
 
-def valid_syn_pairs(rgb_file):
+def valid_syn_pairs(file):
 
-    path = Path(rgb_file) # png
-    lab_file = path.parent.parent.joinpath("labels").joinpath(path.name)
-    lab8_file = path.parent.parent.joinpath("labels_8bit").joinpath(path.name)
-    attribs_file = path.parent.parent.joinpath("attribs").joinpath( os.path.splitext(path.name)[0]+".txt")
+    path = Path(file) # png
+
+    rgb_file     = path.parent.parent.joinpath("rgb"        ).joinpath(path.name)
+    lab_file     = path.parent.parent.joinpath("labels"     ).joinpath(path.name)
+    lab8_file    = path.parent.parent.joinpath("labels_8bit").joinpath(path.name)
+    attribs_file = path.parent.parent.joinpath("attribs"    ).joinpath( os.path.splitext(path.name)[0]+".txt")
 
     print (path)
     good = lambda f: os.path.exists(f) and os.path.getsize(f) > 0
@@ -61,7 +63,8 @@ _pool = concurrent.futures.ThreadPoolExecutor()
 
 rgbs = []
 
-rgbs.extend(glob.glob(os.path.join( sys.argv[1], "labels", "*.png")))
+rgbs.extend(glob.glob(os.path.join( sys.argv[1], "labels_8bit", "*.png")))
+rgbs.extend(glob.glob(os.path.join( sys.argv[1], "rgb", "*.png")))
 
 processes = []
 count = 0
