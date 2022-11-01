@@ -61,7 +61,7 @@ _pool = concurrent.futures.ThreadPoolExecutor()
 
 rgbs = []
 
-rgbs.extend(glob.glob(os.path.join( sys.argv[1], "rgb", "*.png")))
+rgbs.extend(glob.glob(os.path.join( sys.argv[1], "labels", "*.png")))
 
 processes = []
 count = 0
