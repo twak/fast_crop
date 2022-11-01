@@ -61,5 +61,7 @@ for rgb in rgbs:
 # for lab in rgbs:
 #     if valid_syn_pairs ( lab ):
 # 	    count+=1
-
-print (f"have deleted {count}")
+if len (sys.argv) > 2:
+    print (f"have deleted {count}")
+else:
+    print(f"if this wasn't a dry run, I would have deleted {count}")
