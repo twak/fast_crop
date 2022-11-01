@@ -17,7 +17,7 @@ def valid_syn_pairs(rgb_file):
     print (path)
     good = lambda f: os.path.exists(f) and os.path.getsize(f) > 0
     if good(rgb_file) and good (lab_file) and good(attribs_file) and good (lab8_file):
-        return 1 # good
+        return 0 # good
     else:
         with contextlib.suppress(FileNotFoundError):
 
@@ -35,7 +35,7 @@ def valid_syn_pairs(rgb_file):
                 os.remove(attribs_file)
             print("if this wasn't a dry run, I'd be removing " + rgb_file)
 
-        return 0 # bad
+        return 1 # bad
 
 #rgbs = []
 
