@@ -1,5 +1,6 @@
 import glob
 import os
+import sys
 from pathlib import Path
 import contextlib
 import concurrent.futures
@@ -42,7 +43,7 @@ _pool = concurrent.futures.ThreadPoolExecutor()
 
 rgbs = []
 
-rgbs.extend(glob.glob(os.path.join( r"/ibex/scratch/kellyt/windowz/winsyn_king/", "rgb", "*.png")))
+rgbs.extend(glob.glob(os.path.join( sys.argv[1], "rgb", "*.png")))
 
 processes = []
 count = 0
