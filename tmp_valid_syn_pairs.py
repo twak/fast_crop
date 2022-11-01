@@ -33,7 +33,8 @@ def valid_syn_pairs(rgb_file):
                 os.remove(lab_file)
                 os.remove(lab8_file)
                 os.remove(attribs_file)
-            print("if this wasn't a dry run, I'd be removing " + rgb_file)
+            else:
+                print("if this wasn't a dry run, I'd be removing " + rgb_file)
 
         return 1 # bad
 
