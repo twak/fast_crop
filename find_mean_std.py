@@ -7,7 +7,7 @@ import numpy as np
 from PIL import Image
 
 json_src = []
-json_src.extend(glob.glob(os.path.join(sys.argv[1], "*.jpg")))
+json_src.extend(glob.glob(os.path.join(sys.argv[1])))
 
 print(f"{len(json_src)} images found")
 random.shuffle(json_src)
