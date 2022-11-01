@@ -9,9 +9,11 @@ from PIL import Image
 json_src = []
 json_src.extend(glob.glob(os.path.join(sys.argv[1], "*.jpg")))
 
+print(f"{len(json_src)} images found")
 random.shuffle(json_src)
 
 if len(sys.argv) > 2:
+    print(f"using {sys.argv[2]} images for computation")
     json_src = json_src[:int(sys.argv[2])]
 
 np_data = []
