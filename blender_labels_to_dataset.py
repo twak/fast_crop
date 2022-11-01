@@ -21,7 +21,7 @@ def to_greyscale_labels(png_file, out_folder):
 
     tol = 10
 
-    pretty_map = process_labels.colours_for_mode(process_labels.PRETTY_FILMIC)
+    pretty_map = process_labels.colours_for_mode(process_labels.PRETTY)
     output = np.zeros(pretty.size, dtype=int)
 
     for i, label_name in enumerate (process_labels.LABEL_SEQ):
