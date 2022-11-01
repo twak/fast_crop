@@ -34,13 +34,13 @@ def valid_syn_pairs(file):
     if good(rgb_file) and good (lab_file) and good(attribs_file) and good (lab8_file) and not bad:
         return 0 # good
     else:
-        if not good(rgb_file): print("missing rgb")
-        if not good(lab_file): print("missing lab")
+        if not good(rgb_file    ): print("missing rgb"    )
+        if not good(lab_file    ): print("missing lab"    )
         if not good(attribs_file): print("missing attribs")
-        if not good(lab8_file): print("missing lab8")
+        if not good(lab8_file   ): print("missing lab8"   )
 
         if len (sys.argv) > 2:
-            print("removing " + rgb_file)
+            print("removing " + str ( rgb_file ) )
             with contextlib.suppress(FileNotFoundError):
                 os.remove(rgb_file)
             with contextlib.suppress(FileNotFoundError):
