@@ -17,6 +17,7 @@ import PIL.Image as Image
 from PIL import ImageOps
 import numpy as np
 from sys import platform
+import hashlib
 
 colors = {}
 
@@ -277,6 +278,9 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, folder_per_b
         label_img  = crop(label_img , res, mode, resample=Image.Resampling.NEAREST, background_col="white")
 
         base_name = os.path.splitext(crop_name)[0]
+
+        # base_name = base_name.replace("_new", "") # patch names sent to labellers
+        # base_name = base_name.replace("IMG_0276", hashlib.md5(crop_photo.tobytes()).hexdigest() )
 
         if folder_per_batch: # split by country
 
