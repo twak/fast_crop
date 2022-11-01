@@ -46,7 +46,7 @@ labels = []
 labels.extend(glob.glob(os.path.join( sys.argv[1], "labels", "*.png")))
 
 out_dir = os.path.join (sys.argv[1], "labels_8bit" )
-os.path.makedirs(out_dir, exit_okay=True)
+os.makedirs(out_dir, exist_ok=True)
 
 for lab in labels:
     _pool.submit ( to_greyscale_labels, lab, out_dir, )
