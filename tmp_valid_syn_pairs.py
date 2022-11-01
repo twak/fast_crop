@@ -27,10 +27,11 @@ def valid_syn_pairs(rgb_file):
             if not good(attribs_file): print("missing attribs")
             if not good(lab8_file): print("missing lab8")
 
-            # os.remove(rgb_file)
-            # os.remove(lab_file)
-            # os.remove(lab8_file)
-            # os.remove(attribs_file)
+            if len (sys.argv) > 2:
+                os.remove(rgb_file)
+                os.remove(lab_file)
+                os.remove(lab8_file)
+                os.remove(attribs_file)
 
         return 0 # bad
 
