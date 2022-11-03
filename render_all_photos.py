@@ -47,7 +47,7 @@ def process(jpg_file, out_dir, include_labelled=False, res=512):
 
     img = img.resize((res, res)) #, resample=resample)
 
-    md5hash = hashlib.md5(img.tobytes())
+    md5hash = hashlib.md5(img.tobytes()).hexdigest()
     img.save(os.path.join(out_dir, f"{md5hash}.jpg"))
 
     print (f"saved {jpg_file} to {md5hash}.jpg")
@@ -58,12 +58,12 @@ else:
     dataset_root = r"/mnt/vision/data/archinet/data"
 
 out_dir = r"/mnt/vision/data/archinet/crops_512_20221103"
-os.makedirs(out_dir)
+os.makedirs(out_dir, exist_ok=True)
 
 jpgs = []
-jpgs.extend(glob.glob(os.path.join(dataset_root, "metadata_window_labels", "*", "*.jpg")))
+jpgs.extend(glob.glob(os.path.join(dataset_root, "photos", "*", "*.jpg")))
 if platform == "linux":
-    jpgs.extend(glob.glob(os.path.join(dataset_root, "metadata_window_labels", "*", "*.JPg")))
+    jpgs.extend(glob.glob(os.path.join(dataset_root, "photos", "*", "*.JPG")))
 
 for i, img in enumerate( jpgs ):
     print(f"{i}/{len(jpgs)}")
