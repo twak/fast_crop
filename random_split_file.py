@@ -4,6 +4,7 @@ import random
 import sys
 from pathlib import Path
 
+# create a text file with an entry for n data points
 def random_split(location, count):
 
     label_src = []
