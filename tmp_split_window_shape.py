@@ -23,6 +23,10 @@ with open("./split_rects.txt", "w") as split_rects:
 
             root_name = os.path.splitext( Path(log).name )[0]
 
+            if not os.path.exists(f"./rgb/{root_name}.png"):
+                print("skipping...")
+                continue # we deleted the incomplete ones...
+
             n = int ( root_name )
             experiments[n] = experiment = {}
             with open(log) as fp:
