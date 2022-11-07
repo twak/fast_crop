@@ -99,7 +99,7 @@ def label_color_mode():
 
 def render_labels_web (dataset_root, label_json_file, flush_html = False, use_cache = False):
 
-    global colors
+    colors = colours_for_mode(PRETTY)
 
     jp = Path(label_json_file)
     photo_name = os.path.splitext(jp.name)[0]
@@ -417,7 +417,7 @@ if __name__ == "__main__":
     else:
         dataset_root = r"/mnt/vision/data/archinet/data"
 
-    output_folder = r"C:\Users\twak\Downloads\tuesday_debug"
+    output_folder = r"C:\Users\twak\Downloads\winlab_native"
 
     # render single-windows crops
     # cut_n_shut(...)
@@ -434,13 +434,15 @@ if __name__ == "__main__":
     # photos.extend(glob.glob(os.path.join(dataset_root, "photos", "*", "*.JPG")))
     # photos.extend(glob.glob(os.path.join(dataset_root, "photos", "*", "*.jpg")))
 
-    np_data = []
+    np_data = None #[]
 
     for f in json_src:
-        render_labels_per_crop( dataset_root, f, output_folder, folder_per_batch=True, res=512, mode='square_crop', np_data=np_data)
+        # render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=True, res=640, mode='square_crop', np_data=np_data)
+        render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=True, res=-1, mode='none', np_data=np_data)
 
-    all_data = np.concatenate(tuple(np_data), 0)
-    print(f"mean [{np.mean(all_data, axis=(0,1))}] std [{np.std(all_data, axis=(0,1))}]")
+    if np_data is not None:
+        all_data = np.concatenate(tuple(np_data), 0)
+        print(f"mean [{np.mean(all_data, axis=(0,1))}] std [{np.std(all_data, axis=(0,1))}]")
 
     # generate dataset from all metadata_single_element
     # photo_src = []
