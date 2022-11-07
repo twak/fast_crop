@@ -14,6 +14,7 @@ web_dir  = os.path.join(dataset_root, "metadata_website")
 use_cache = True
 
 process_labels.USE_PRETTY_COLORS = True
+process_labels.COLOR_MODE = process_labels.PRETTY
 
 res = 128
 quality = 50
@@ -25,8 +26,8 @@ all_tags = tags.all_tags.copy()
 all_tags.append("no_meta")
 all_tags.append("mesh")
 
-for batch in os.listdir(orig):
-    all_tags.append(batch)
+# for batch in os.listdir(orig):
+#     all_tags.append(batch)
 
 for metadata_type in os.listdir(dataset_root):  # entry in an md folder gets you a tag
     if os.path.isdir(os.path.join(dataset_root, metadata_type)):
@@ -56,31 +57,31 @@ def thumbnail(orig_path, thumb_path, rect=None, use_cache = False):
 with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
     with open(os.path.join(web_dir,"index.html"), 'w') as index_html:
 
-        for html_file, title in zip ([rects_html, index_html], ["<h3>crops (<a href='index.html'>photos</a>)</h3>", "<h3>(<a href='crops.html'>crops</a>) photos</h3>"]):
+        for html_file, title, file_name in zip ([rects_html, index_html], ["<h3>crops (<a href='index.html'>photos</a>)</h3>", "<h3>(<a href='crops.html'>crops</a>) photos</h3>"], ["html_rects", "html_index"]):
             html_file.write("<html><body>\n")
 
             html_file.write(title)
 
             html_file.write("<style>\n")
-
             for tag_name in all_tags:
-                html_file.write(f'input[type=checkbox].{tag_name}_c:checked ~ .{tag_name}{{\n'
+                html_file.write(f'input[type=checkbox].{tag_name}_c:checked ~ #batch>#content>.{tag_name}{{\n'
                            f'    display:inline;\n}}\n')
             for tag_name in all_tags:
                 html_file.write(f'.{tag_name} \n{{\n    display:none\n}}\n')
-
             html_file.write("</style>\n")
 
-            for tag_name in tags.all_tags: # crop-tags we've defined
-                html_file.write(f'<input class="{tag_name}_c" type="checkbox" value="{tag_name}_c" name="{tag_name}_foo">{tag_name}   \n')
-            html_file.write(f'<br><hr>')
             for idx, tag_name in enumerate ( os.listdir(orig) ): # batch names are also tagged here
                 if os.path.isdir(os.path.join(orig, tag_name)):
-                    html_file.write(f'<input class="{tag_name}_c" type="checkbox" value="{tag_name}_c" name="{tag_name}_foo" {"checked" if idx == -1 else ""}>{tag_name}<a href="../photos/{tag_name}">[d]</a>\n')
+                    html_file.write(f'<input class="{tag_name}_c" type="radio" value="{tag_name}_c" name="foo" onclick="set_batch(this.value);" {"checked" if idx == 0 else ""}>{tag_name}<a href="../photos/{tag_name}">[d]</a>\n')
+                    if idx == 0:
+                        first_batch = tag_name
+            html_file.write(f'<br><hr>')
+            for tag_name in tags.all_tags: # crop-tags we've defined
+                html_file.write(f'<input class="{tag_name}_c" type="checkbox" value="{tag_name}_c" name="{tag_name}_foo">{tag_name} \n')
             html_file.write(f'<br><hr>')
             for tag_name in os.listdir(dataset_root): # available metadata also tags each file
                 if os.path.isdir (os.path.join (dataset_root, tag_name)):
-                    html_file.write(f'<input class="{tag_name}_c" type="checkbox" value="{tag_name}_c" name="{tag_name}_foo">{tag_name}   \n')
+                    html_file.write(f'<input class="{tag_name}_c" type="checkbox" value="{tag_name}_c" name="{tag_name}_foo" {"checked" if tag_name == "photos" else ""}>{tag_name}\n')
 
             html_file.write(f'<br><hr>')
 
@@ -94,13 +95,40 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                 
                 // usage
                 var hash = getHashValue('tab');
-                const collection = document.getElementsByName(hash + "_foo");
+                const collection = document.getElementsByName("foo");
+                
                 for (let i = 0; i < collection.length; i++) {
-                  if (collection[i].type == "checkbox") {
+                  if (collection[i].type == "radio" && collection[i].value== hash+"_c" ) {
                     collection[i].click();
                   }
+                  if (hash == null && i == 0) collection[i].click();
                 }
-             </script>""")
+                
+                async function fetchHtmlAsText(url) {
+                    return await (await fetch(url)).text();
+                }
+                
+                // this is your `load_home() function
+                async function loadHome() {
+                    const contentDiv = document.getElementById("content");
+                    contentDiv.innerHTML = await fetchHtmlAsText("home.html");
+                }
+                
+                async function set_batch(c) { 
+                    batch_name = c.slice(0,-2)
+                    const contentDiv = document.getElementById("batch"); 
+                """)
+
+            html_file.write(f"        contentDiv.innerHTML = await fetchHtmlAsText(batch_name+'/{file_name}.html')\n" # select the first batch after load
+                            f"}}\n"
+                            f"document.addEventListener('DOMContentLoaded', function() {{"
+                            f"set_batch('{first_batch}_c')"
+                            f"}}, false);\n")
+            html_file.write ("""
+
+</script>
+<div id='batch'></div>
+</body></html>""" )
 
         for batch in os.listdir(orig):
 
@@ -109,6 +137,7 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
 
             # ["tom_archive_19000101", "tom_bramley_20220406", "tom_saffron_20220418", "tom_cams_20220418", "tom_dales_20220403", "tom_leeds_docks_20220404", "tom_london_20220418", "tom_york_20220411"]:
 
+            total_jpgs = 0
             index_append = ""
             rects_append = ""
             batch_thumbs = os.path.join(web_dir, batch)
@@ -131,6 +160,10 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
 
                 os.makedirs(batch_thumbs, exist_ok=True)
                 count = 0
+                rect_count = 0
+
+                index_append += (f"<div id='content'>") # wrap all in a div
+                rects_append += (f"<div id='content'>")
 
                 for photo in os.listdir(photos_dir):
                     if photo.endswith(".JPG") or photo.endswith(".jpg"):
@@ -160,7 +193,7 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                             metadata["rects"] = []
 
                         tags = set(metadata["tags"]) # whole image tags
-                        tags.add(batch)
+                        # tags.add(batch) - no! we shall all batches because we now use radio
 
                         for md in os.listdir(dataset_root): # all data-types that match batch/name-with-any-extension
                             for photo_data in glob.glob(os.path.join(dataset_root, md, batch) + "/" + pre + "*"):
@@ -191,6 +224,7 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
 
                             # photo page takes tags of all crops
                             index_tags = index_tags.union(set(r[1]))
+                            rect_count += 1
 
                         photo_page_path = os.path.join(web_dir, batch, pre + ".html")
                         if not ( use_cache and os.path.exists(photo_page_path) ):
@@ -236,13 +270,18 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                                    f'<img src="{batch+"/"+photo}" alt="{batch+"/"+photo}" width="64" height="64" loading="lazy" border="1"></a>\n'
                             f'</div>')
 
+                index_append += (f"<p>image count:{count}</p>")
+                index_append += (f"</div>")
+                rects_append += (f"<p>crop count:{rect_count}</p>")
+                rects_append += (f"</div>")
+
                 open(append_index_file, "w").write(index_append)
                 open(append_rect_file, "w").write(rects_append)
 
-            index_html.write (index_append)
-            index_html.flush()
-            rects_html.write (rects_append)
-            rects_html.flush()
+            # index_html.write (index_append)
+            # index_html.flush()
+            # rects_html.write (rects_append)
+            # rects_html.flush()
 
         index_html.write("</body></html>\n")
         rects_html.write("</body></html>\n")
