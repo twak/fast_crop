@@ -64,7 +64,7 @@ class ROI:
         px = pygame.transform.scale(self.px, [rect.width / self.scale, rect.height / self.scale])
         self.screen.blit(px, px.get_rect())
 
-        if self.bottomright is not None and self.cursor_widgets < 2:
+        if self.bottomright is not None and self.topleft is None and self.cursor_widgets < 2:
             size = 64
             cropped = pygame.Surface((size*2, size*2))
             cropped.blit(self.px, [-self.bottomright[0] * self.scale+size, -self.bottomright[1] * self.scale+size] )
