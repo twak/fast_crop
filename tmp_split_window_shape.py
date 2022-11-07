@@ -21,9 +21,9 @@ with open("./split_rects.txt", "w") as split_rects:
         for log in logs:
             print (log)
 
-            root_name = Path(log).with_suffix(".txt").name
+            root_name = os.path.splitext( Path(log).name )[0]
 
-            n = int ( os.path.splitext( Path(log).name )[0] )
+            n = int ( root_name )
             experiments[n] = experiment = {}
             with open(log) as fp:
                 shape = -1
@@ -41,9 +41,9 @@ with open("./split_rects.txt", "w") as split_rects:
 
                 if shape <= 3 and shape_rect_extra_h < 0.1: # is a rectangle!
                     count_rect += 1
-                    split_rects.write(root_name)
+                    split_rects.write(root_name+"\n")
                 else: # other shape
                     count_other += 1
-                    split_other.write(root_name)
+                    split_other.write(root_name+"\n")
 
 print (f"found {count_rect} rectangular windows and {count_other} with other shapes ")
