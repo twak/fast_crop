@@ -1,5 +1,7 @@
 import glob
 import os
+import sys
+
 import process_labels
 from PIL import Image
 import numpy as np
@@ -21,7 +23,7 @@ def to_greyscale_labels(png_file, out_folder):
 
     tol = 10
 
-    pretty_map = process_labels.colours_for_mode(process_labels.PRETTY_FILMIC)
+    pretty_map = process_labels.colours_for_mode(process_labels.PRETTY)
     output = np.zeros(pretty.size, dtype=int)
 
     for i, label_name in enumerate (process_labels.LABEL_SEQ):
@@ -37,15 +39,14 @@ def to_greyscale_labels(png_file, out_folder):
     Image.fromarray(np.uint8(output)).save( output_path )
 
 
-_pool = concurrent.futures.ThreadPoolExecutor()
+_pool = concurrent.futures.ThreadPoolExecutor(max_workers=4)
 
 labels = []
 
-labels.extend(glob.glob(os.path.join( r"/ibex/scratch/kellyt/windowz/winsyn_king/", "labels", "*.png")))
+labels.extend(glob.glob(os.path.join( sys.argv[1], "labels", "*.png")))
 
-
-out_dir = r"/ibex/scratch/kellyt/windowz/winsyn_king/labels_8bit"
-os.path.makedirs(out_dir, exit_okay=True)
+out_dir = os.path.join (sys.argv[1], "labels_8bit" )
+os.makedirs(out_dir, exist_ok=True)
 
 for lab in labels:
     _pool.submit ( to_greyscale_labels, lab, out_dir, )

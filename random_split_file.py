@@ -4,10 +4,11 @@ import random
 import sys
 from pathlib import Path
 
+# create a text file with an entry for n data points
 def random_split(location, count):
 
     label_src = []
-    label_src.extend(glob.glob(os.path.join(location, "*.png")))
+    label_src.extend(glob.glob(os.path.join(location, "labels_8bit", "*.png")))
     if len (label_src) < count:
         print("not enough labels!")
 

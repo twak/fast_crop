@@ -17,6 +17,7 @@ import PIL.Image as Image
 from PIL import ImageOps
 import numpy as np
 from sys import platform
+import hashlib
 
 colors = {}
 
@@ -39,7 +40,7 @@ def colours_for_mode (mode):
         colors["window frame"] = (255, 128, 128)
         colors["open-window"]  = (0, 0, 0)
         colors["wall frame"]   = (233, 175, 198)
-        colors["wall"]         = (204, 204, 204)
+        colors["wall"]         = (168, 168, 168) #used to be 204..?
         colors["door"]         = (164, 120, 192)
         colors["shutter"]      = (255, 153, 85)
         colors["blind"]        = (255, 230, 128)
@@ -277,6 +278,9 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, folder_per_b
         label_img  = crop(label_img , res, mode, resample=Image.Resampling.NEAREST, background_col="white")
 
         base_name = os.path.splitext(crop_name)[0]
+
+        # base_name = base_name.replace("_new", "") # patch names sent to labellers
+        # base_name = base_name.replace("IMG_0276", hashlib.md5(crop_photo.tobytes()).hexdigest() )
 
         if folder_per_batch: # split by country
 

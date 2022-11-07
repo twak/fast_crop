@@ -1,61 +1,87 @@
 import glob
 import os
+import sys
 from pathlib import Path
 import contextlib
 import concurrent.futures
 
 # if blender rendering is interupted, we may not have all data for each image. Delete those which aren't complete...
+from PIL import Image
 
-def valid_syn_pairs(rgb_file):
+def valid_syn_pairs(root, base):
 
-    path = Path(rgb_file) # png
-    lab_file = path.parent.parent.joinpath("labels").joinpath(path.name)
-    lab8_file = path.parent.parent.joinpath("labels_8bit").joinpath(path.name)
-    attribs_file = path.parent.parent.joinpath("attribs").joinpath( os.path.splitext(path.name)[0]+".txt")
+    global dirs
+    files = []
 
-    print (path)
+    for d, e in dirs:
+        files.append(os.path.join(base, e, f"{d}.{e}"))
+
+    print (root)
     good = lambda f: os.path.exists(f) and os.path.getsize(f) > 0
-    if good(rgb_file) and good (lab_file) and good(attribs_file) and good (lab8_file):
-        return 1 # good
+
+    bad = False
+    try:
+        for d, e in dirs:
+            file = os.path.join(base, e, f"{d}.{e}")
+            if e in ["png", "jpg"]:
+                img = Image.open(file)
+                img.verify()
+                if img is None:
+                    bad = True
+
+            if not good(file):
+                bad = True
+
+    except:
+        bad = True
+
+    if not bad:
+        return 0 # good
     else:
-        with contextlib.suppress(FileNotFoundError):
-            print ("removing " + rgb_file)
+        for d, e in dirs:
+            file = os.path.join(base, e, f"{d}.{e}")
+            if not good(file):
+                print(f"missing {e}")
 
-            if not good(rgb_file): print("missing rgb")
-            if not good(lab_file): print("missing lab")
-            if not good(attribs_file): print("missing attribs")
-            if not good(lab8_file): print("missing lab8")
+            if len (sys.argv) > 2:
+                print("removing " + str ( file ) )
+                with contextlib.suppress(FileNotFoundError):
+                    os.remove(file)
+        else:
+            print ( "if this wasn't a dry run, I'd be removing " + file )
 
-            # os.remove(rgb_file)
-            # os.remove(lab_file)
-            # os.remove(lab8_file)
-            # os.remove(attribs_file)
+        return 1 # bad
 
-        return 0 # bad
 
-#rgbs = []
+def find_roots(files):
+    out = {}
+    for f in files:
+        out[os.path.splitext(Path(f).name)[0]] = True
 
-#rgbs.extend(glob.glob(os.path.join( r"/ibex/scratch/kellyt/windowz/winsyn_king/", "rgb", "*.png")))
+    return list ( out.keys() )
 
+
+dirs = [ ["rgb","png"], ["labels","png"], ["label_8bit", "png"], ["attribs", "txt"] ]
 
 _pool = concurrent.futures.ThreadPoolExecutor()
 
-rgbs = []
+roots = []
 
-rgbs.extend(glob.glob(os.path.join( r"/ibex/scratch/kellyt/windowz/winsyn_king/", "rgb", "*.png")))
+for d, e in dirs:
+    roots.extend(glob.glob(os.path.join( sys.argv[1], d+"."+e )))
+
+find_roots(roots)
 
 processes = []
 count = 0
-for rgb in rgbs:
+for root in roots:
 
-    processes.append(_pool.submit ( valid_syn_pairs, rgb ))
+    processes.append(_pool.submit ( valid_syn_pairs, root, sys.argv[1] ))
 
     for r in concurrent.futures.as_completed(processes):
         count += r.result()
 
-# count =	0
-# for lab in rgbs:
-#     if valid_syn_pairs ( lab ):
-# 	    count+=1
-
-print (f"have deleted {count}")
+if len (sys.argv) > 2:
+    print (f"have deleted {count}")
+else:
+    print(f"if this wasn't a dry run, I would have deleted {count}")
