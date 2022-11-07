@@ -7,7 +7,7 @@ from pathlib import Path
 def random_split(location, count):
 
     label_src = []
-    label_src.extend(glob.glob(os.path.join(location, "labels_8bit", "*.png")))
+    label_src.extend(glob.glob(os.path.join(location, "labels", "*.png")))
     if len (label_src) < count:
         print("not enough labels!")
 
