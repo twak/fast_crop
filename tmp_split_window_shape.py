@@ -31,7 +31,7 @@ with open("./split_rects.txt", "w") as split_rects:
                 for line in fp:
                     res = re.search("([^:]*):(.*)", line)
                     if res:
-                        print (f" {res.group(1)}   {res.group(2)} ")
+                        # print (f" {res.group(1)}   {res.group(2)} ")
                         key = res.group(1)
                         value = res.group(2)
                         if key == "shape_border_gen":
