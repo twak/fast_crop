@@ -96,8 +96,7 @@ def batch_summary(dataset_root, batch):
                 else:
                     stats["rect_crops_win"] += 1
 
-                crop_bounds = r["crop"]
-                crop_photo = img.crop(crop_bounds)
+                crop_photo = img.crop( ( r[0], r[1], r[2], r[3] ) )
                 crop_save_img(basename, count, batch, dataset_root, crop_photo)
 
                 count += 1
