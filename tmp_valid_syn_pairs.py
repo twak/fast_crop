@@ -8,28 +8,29 @@ import concurrent.futures
 # if blender rendering is interupted, we may not have all data for each image. Delete those which aren't complete...
 from PIL import Image
 
-def valid_syn_pairs(root, base):
+def valid_syn_pairs(base, dataset_root):
 
     global dirs
     files = []
 
     for d, e in dirs:
-        files.append(os.path.join(base, d, f"{root}.{e}"))
+        files.append(os.path.join(dataset_root, d, f"{base}.{e}"))
 
-    print (root)
+    print (base)
     good = lambda f: os.path.exists(f) and os.path.getsize(f) > 0
 
     bad = False
     try:
         for d, e in dirs:
-            file = os.path.join(base, e, f"{d}.{e}")
+            file = os.path.join(dataset_root, d, f"{base}.{e}")
             if e in ["png", "jpg"]:
                 img = Image.open(file)
                 img.verify()
                 if img is None:
                     bad = True
+                    print(f"failed to verify {dataset_root}!")
 
-            if not good(file):
+            if not os.path.exists(file) and os.path.getsize(file):
                 bad = True
 
     except:
@@ -39,7 +40,7 @@ def valid_syn_pairs(root, base):
         return 0 # good
     else:
         for d, e in dirs:
-            file = os.path.join(base, e, f"{d}.{e}")
+            file = os.path.join(dataset_root, d, f"{base}.{e}")
             if not good(file):
                 print(f"missing {e}")
 
