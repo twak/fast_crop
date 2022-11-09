@@ -42,7 +42,7 @@ def valid_syn_pairs(base, dataset_root):
         for d, e in dirs:
             file = os.path.join(dataset_root, d, f"{base}.{e}")
             if not good(file):
-                print(f"missing {e}")
+                print(f"missing {d} -> {base}.{e}")
 
             if len (sys.argv) > 2:
                 print("removing " + str ( file ) )
