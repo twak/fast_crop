@@ -58,6 +58,7 @@ print("starting hash run.")
 hash_root = "./metadata_hashes"
 
 read_only = len ( sys.argv ) == 1
+print("running in read-only mode" if read_only else "running in write mode")
 
 terminal = sys.stdout
 log = open(f"hash_result{int(time.time())}.log", "a")
