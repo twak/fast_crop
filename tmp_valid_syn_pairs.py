@@ -47,8 +47,8 @@ def valid_syn_pairs(root, base):
                 print("removing " + str ( file ) )
                 with contextlib.suppress(FileNotFoundError):
                     os.remove(file)
-        else:
-            print ( "if this wasn't a dry run, I'd be removing " + file )
+            else:
+                print ( "if this wasn't a dry run, I'd be removing " + file )
 
         return 1 # bad
 
@@ -68,7 +68,7 @@ _pool = concurrent.futures.ThreadPoolExecutor()
 roots = []
 
 for d, e in dirs:
-    roots.extend(glob.glob(os.path.join( sys.argv[1], d+"."+e )))
+    roots.extend(glob.glob(os.path.join( sys.argv[1], d, "*."+e )))
 
 find_roots(roots)
 

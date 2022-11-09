@@ -388,15 +388,15 @@ def render_metadata_single(images, output_dir, clear_log = False, sub_dirs = Tru
                 if not ( "window" in r[1] or "glass_facade" in r[1] or "shop" in r[1] or "church" in r[1] or "abnormal" in r[1] ):
                     continue
 
-                r = r[0]
+                c = r[0]
 
-                if r[2] - r[0] < min_dim or r[3] - r[1] < min_dim:
+                if c[2] - c[0] < min_dim or c[3] - c[1] < min_dim:
                     print("skipping small rect")
                     continue
 
-                log.write("%s [%d, %d, %d, %d]\n" % (im_file, r[0], r[1], r[2], r[3]) )
+                log.write("%s [%d, %d, %d, %d]\n" % (im_file, c[0], c[1], c[2], c[3]) )
 
-                crop_im = im.crop( ( r[0], r[1], r[2], r[3] ) )
+                crop_im = im.crop( ( c[0], c[1], c[2], c[3] ) )
                 crop_im = crop(crop_im, resolution, crop_mode)
 
                 save(crop_im, out_name)
