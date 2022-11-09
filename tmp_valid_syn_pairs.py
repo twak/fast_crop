@@ -14,7 +14,7 @@ def valid_syn_pairs(root, base):
     files = []
 
     for d, e in dirs:
-        files.append(os.path.join(base, e, f"{d}.{e}"))
+        files.append(os.path.join(base, d, f"{root}.{e}"))
 
     print (root)
     good = lambda f: os.path.exists(f) and os.path.getsize(f) > 0
@@ -70,7 +70,7 @@ roots = []
 for d, e in dirs:
     roots.extend(glob.glob(os.path.join( sys.argv[1], d, "*."+e )))
 
-find_roots(roots)
+roots = find_roots(roots)
 
 processes = []
 count = 0
