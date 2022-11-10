@@ -57,12 +57,13 @@ print("starting hash run.")
 
 hash_root = "./metadata_hashes"
 os.makedirs(hash_root, exist_ok=True)
-
+print ("here")
 read_only = len ( sys.argv ) == 1
 if read_only:
     print("running in read-only mode")
 else:
     print("running in write mode")
+print ("there")
 
 terminal = sys.stdout
 log = open(f"./metadata_hashes/hash_result{int(time.time())}.log", "a")
