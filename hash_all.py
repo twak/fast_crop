@@ -56,12 +56,13 @@ def walk (dirr, hash_loc, read_only = False):
 print("starting hash run.")
 
 hash_root = "./metadata_hashes"
+os.makedirs(hash_root, exist_ok=True)
 
 read_only = len ( sys.argv ) == 1
 print("running in read-only mode" if read_only else "running in write mode")
 
 terminal = sys.stdout
-log = open(f"hash_result{int(time.time())}.log", "a")
+log = open(f"./metadata_hashes/hash_result{int(time.time())}.log", "a")
 
 for filename in os.listdir("."):
     if os.path.isdir(filename) and "metadata_hashes" not in filename and "metadata_website" not in filename:
