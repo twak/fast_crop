@@ -109,7 +109,7 @@ def batch_summary(dataset_root, batch):
 
         stats["jpgs"] +=1
 
-        for extension in ["CRW", "CR2", "CR3", "RAW", "RW2", "ARW", "RW2", "NEF", "ERF", "ORF", "PEF", "SRF", "SRF2"]:
+        for extension in ["CRW", "CR2", "CR3", "RAW", "RW2", "ARW", "RW2", "NEF", "ERF", "RAF", "ORF", "PEF", "SRF", "SRF2"]:
             if Path(photo_file).with_suffix("."+extension).exists():
                 stats["raws"] += 1
 
