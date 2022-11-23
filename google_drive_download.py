@@ -1,6 +1,6 @@
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
-import os, time
+import os, time, sys
 
 gauth = GoogleAuth()
 # Try to load saved client credentials
@@ -20,7 +20,7 @@ gauth.SaveCredentialsFile("mycreds.txt")
 
 drive = GoogleDrive(gauth)
 
-file_list = drive.ListFile({'q': "'FIXME' in parents and trashed=false"}).GetList()
+file_list = drive.ListFile({'q': f"'{sys.argv[1]}' in parents and trashed=false"}).GetList()
 
 while not len(file_list) == 0: #for file1 in file_list:
 
