@@ -22,6 +22,8 @@ drive = GoogleDrive(gauth)
 
 file_list = drive.ListFile({'q': f"'{sys.argv[1]}' in parents and trashed=false"}).GetList()
 
+print(f"found {len(file_list)} top-level files")
+
 while not len(file_list) == 0: #for file1 in file_list:
 
     file1 = file_list.pop(0)
