@@ -1,6 +1,6 @@
-from pydrive.auth import GoogleAuth
-from pydrive.drive import GoogleDrive
-import os, time
+from pydrive2.auth import GoogleAuth
+from pydrive2.drive import GoogleDrive
+import os, time, sys
 
 gauth = GoogleAuth()
 # Try to load saved client credentials
@@ -20,7 +20,9 @@ gauth.SaveCredentialsFile("mycreds.txt")
 
 drive = GoogleDrive(gauth)
 
-file_list = drive.ListFile({'q': "'FIXME' in parents and trashed=false"}).GetList()
+file_list = drive.ListFile({'q': f"'{sys.argv[1]}' in parents and trashed=false"}).GetList()
+
+print(f"found {len(file_list)} top-level files")
 
 while not len(file_list) == 0: #for file1 in file_list:
 
@@ -33,11 +35,12 @@ while not len(file_list) == 0: #for file1 in file_list:
             print (f"found subdir {file1['title']}. indexed.")
             continue
 
-        if os.path.exists(file1['title']) and os.path.getsize(file1) > 0:
+        if os.path.exists(file1['title']) and os.path.getsize(file1['title']) > 0:
             print(f"{file1['title']} exists, skipping")
             continue
 
         print('title: %s, id: %s, mt %s' % (file1['title'], file1['id'], file1['mimeType']))
+
         if gauth.access_token_expired:
             gauth.Refresh()
 
