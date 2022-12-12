@@ -45,35 +45,9 @@ def split(rgb_files, output_folder, label_names=[["labels", "png"]], output_spli
             cpi += 1
 
 
-#rgbs.extend(glob.glob(os.path.join( r"/ibex/scratch/kellyt/winlab_1/rgb", "*.jpg")))
-#split ( rgbs, r"/ibex/scratch/kellyt/winlab_2",
-#        label_names=[["labels", "png"]],
-#       output_split=[[50, "val"], [50, "test"]] )
-
-#rgbs.extend(glob.glob(os.path.join( r"/ibex/scratch/kellyt/winlab_1/england/rgb", "*.jpg")))
-#split ( rgbs, r"/ibex/scratch/kellyt/winlab_england_50_50",
-#        label_names=[["labels", "png"]],
-#        output_split=[[50, "val"], [50, "test"]] )
- 
 rgbs = []
 
-rgbs.extend(glob.glob(os.path.join( r"/ibex/scratch/kellyt/winlab_1/austria/rgb", "*.jpg")))
+rgbs.extend(glob.glob(os.path.join( r"/ibex/scratch/kellyt/windowz/winsyn_cold/rgb", "*.jpg")))
 split ( rgbs, r"/ibex/scratch/kellyt/winlab_austria_50_50",
         label_names=[["labels", "png"]],
         output_split=[[50, "val"], [50, "test"]] )
-
-rgbs = []
-
-
-rgbs.extend(glob.glob(os.path.join( r"/ibex/scratch/kellyt/winlab_1/austria/rgb", "*.jpg")))
-split ( rgbs, r"/ibex/scratch/kellyt/winlab_austria_80_10_10",
-        label_names=[["labels", "png"]],
-        output_split=[[80, "train"],[50, "val"], [50, "test"]] )
-
-rgbs = []
-
-rgbs.extend(glob.glob(os.path.join( r"/ibex/scratch/kellyt/winlab_1/england/rgb", "*.jpg")))
-split ( rgbs, r"/ibex/scratch/kellyt/winlab_england_80_10_10",
-        label_names=[["labels", "png"]],
-        output_split=[[80, "train"],[50, "val"], [50, "test"]] )
- 
