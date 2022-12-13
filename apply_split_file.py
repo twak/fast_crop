@@ -6,9 +6,9 @@ dirs = [ ["rgb","png"], ["labels","png"], ["labels_8bit", "png"], ["attribs", "t
 
 with open(sys.argv[1]) as f:
     for line in f:
-        print (line)
-        line = line.replace("\n", "")
 
-        for dir, ext in dirs:
-            os.makedirs(os.path.join(sys.argv[2], dir), exist_ok=True )
-            shutil.copyfile(os.path.join(dir, f"{line}.{ext}"), os.path.join(sys.argv[2], dir, f"{line}.{ext}"))
+        line = line.replace("\n", "")
+        print(line)
+        for dur, ext in dirs:
+            os.makedirs(os.path.join(sys.argv[2], dur), exist_ok=True)
+            shutil.copyfile(os.path.join(dur, f"{line}.{ext}"), os.path.join(sys.argv[2], dur, f"{line}.{ext}"))
