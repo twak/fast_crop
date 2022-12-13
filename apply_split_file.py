@@ -2,8 +2,13 @@ import os
 import shutil
 import sys
 
+dirs = [ ["rgb","png"], ["labels","png"], ["labels_8bit", "png"], ["attribs", "txt"] ]
+
 with open(sys.argv[1]) as f:
     for line in f:
+        print (line)
         line = line.replace("\n", "")
-        shutil.copyfile(os.path.join("labels", f"{line}.png"), os.path.join(sys.argv[2], "labels", f"{line}.png"))
-        shutil.copyfile(os.path.join("rgb", f"{line}.png"), os.path.join(sys.argv[2], "rgb", f"{line}.png"))
+
+        for dir, ext in dirs:
+            os.makedirs(os.path.join(sys.argv[2], dir) )
+            shutil.copyfile(os.path.join(dir, f"{line}.{ext}"), os.path.join(sys.argv[2], dir, f"{line}.{ext}"))
