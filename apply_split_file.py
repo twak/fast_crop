@@ -10,5 +10,5 @@ with open(sys.argv[1]) as f:
         line = line.replace("\n", "")
 
         for dir, ext in dirs:
-            os.makedirs(os.path.join(sys.argv[2], dir) )
+            os.makedirs(os.path.join(sys.argv[2], dir), exist_ok=True )
             shutil.copyfile(os.path.join(dir, f"{line}.{ext}"), os.path.join(sys.argv[2], dir, f"{line}.{ext}"))
