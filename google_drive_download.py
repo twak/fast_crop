@@ -41,8 +41,6 @@ while not len(file_list) == 0: #for file1 in file_list:
 
         print('title: %s, id: %s, mt %s' % (file1['title'], file1['id'], file1['mimeType']))
 
-        if gauth.access_token_expired:
-            gauth.Refresh()
 
         file6 = drive.CreateFile({'id': file1['id']})
         file6.GetContentFile(file1['title']) # note: no directory structures here
@@ -50,6 +48,10 @@ while not len(file_list) == 0: #for file1 in file_list:
     except Exception as e:
 
         print (f"failed to download {file1['title']}; sent to back of queue:\n {e}")
+
+        if gauth.access_token_expired:
+            gauth.Refresh()
+
         file_list.append (file1)
         time.sleep(1)
 

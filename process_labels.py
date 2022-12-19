@@ -47,6 +47,7 @@ def colours_for_mode (mode):
         colors["bars"]         = (110, 110, 110)
         colors["balcony"]      = (222, 170, 135)
         colors["misc object"]  = (174, 233, 174)
+        colors["roof"]         = (166, 52, 61)
     if mode == PRETTY_FILMIC: # pretty colors if i forgot to set blender's color management view transform
         colors["none"]         = (255, 255, 255)
         colors["window pane"]  = (143, 168, 194)
@@ -60,7 +61,8 @@ def colours_for_mode (mode):
         colors["bars"]         = (110, 110, 110)
         colors["balcony"]      = (222, 170, 135)
         colors["misc object"]  = (174, 233, 174)
-    elif mode == UGLY: # blender/label dataset colors
+        colors["roof"]         = (166, 52, 61)
+    elif mode == UGLY:
         colors["none"]         = (0, 0, 255)
         colors["window pane"]  = (0, 182, 206)
         colors["window frame"] = (206, 0, 0)
@@ -73,6 +75,7 @@ def colours_for_mode (mode):
         colors["bars"]         = (110, 110, 110)
         colors["balcony"]      = (222, 170, 135)
         colors["misc object"]  = (174, 233, 174)
+        colors["roof"]         = (166, 52, 61)
     elif mode == GREY: # blender/label dataset colors
         colors["none"]         = (0)
         colors["window pane"]  = (1)
