@@ -41,16 +41,18 @@ def not_seen(jpgs):
 
         if base not in sss[batch]:
             out.append(j)
-        else:
-            print(f"ignoring already labelled {j}")
+        # else:
+        #     print(f"ignoring already labelled {j}")
 
     return out
 
 for limit, batches, country in [
     (1500, [x for x in all_batches if "michaela_vienna" in x], "austria"),
     (500 , [x for x in all_batches if "michaela_berlin" in x], "germany"),
-    (300 , [x for x in all_batches if "tom" in x], "uk")
+    (300 , [x for x in all_batches if "tom"             in x], "uk")
     ]:
+
+    print( f"trying to take {limit} photos from {country}" )
 
     photos = set()
     for b in batches:
