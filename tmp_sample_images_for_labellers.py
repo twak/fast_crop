@@ -34,10 +34,10 @@ def not_seen(jpgs):
         sss[Path(s).parent.name].add(Path(s).with_suffix("").name)
 
     for j in jpgs:
-        batch = Path(j).parent.name
-        base = Path(s).with_suffix("").name
+        ba = Path(j).parent.name
+        base = Path(j).with_suffix("").name
 
-        if base not in sss[batch]:
+        if base not in sss[ba]:
             out.append(j)
         # else:
         #     print(f"ignoring already labelled {j}")
