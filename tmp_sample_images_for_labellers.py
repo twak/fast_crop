@@ -46,6 +46,8 @@ def not_seen(jpgs):
 
     return out
 
+print(all_batches)
+
 for limit, batches, country in [
     (1500, [x for x in all_batches if "michaela_vienna" in x], "austria"),
     (500 , [x for x in all_batches if "michaela_berlin" in x], "germany"),
@@ -60,9 +62,9 @@ for limit, batches, country in [
         if platform == "linux":
             photos.add(glob(f'./photos/{b}/*.JPG'))
 
-    print( f"all photos {len(photos)}" )
+    print( f"  found {len(photos)} photos" )
     photos = not_seen(photos)
-    print(f"after removing labelled {len(photos) }" )
+    print(f"  and after removing labelled we have {len(photos)} photos" )
 
     COUNT = 0
 
