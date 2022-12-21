@@ -128,5 +128,5 @@ for limit, batches, country in [
         else:
             print("skipping: missing json file")
 
-
 log.close()
+print(f"wrote dataset to {output_dir}")
