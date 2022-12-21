@@ -56,9 +56,9 @@ for limit, batches, country in [
 
     photos = set()
     for b in batches:
-        photos.update (glob(f'./photos/{b}/*.jpg'))
+        photos.update(glob(f'./photos/{b}/*.jpg'))
         if platform == "linux":
-            photos.add(glob(f'./photos/{b}/*.JPG'))
+            photos.update(glob(f'./photos/{b}/*.JPG'))
 
     print( f"  found {len(photos)} photos" )
     photos = not_seen(photos)
