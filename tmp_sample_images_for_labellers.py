@@ -6,10 +6,8 @@ import random
 import time
 from collections import defaultdict
 from pathlib import Path
-import PIL
 from PIL import Image, ImageOps
-
-import platform
+from sys import platform
 
 # script 19th December 22 to select unlabelled window crops for labelling.
 
