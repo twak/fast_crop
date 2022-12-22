@@ -35,6 +35,16 @@ def crop_save_img(basename, count, batch, dataset_root, img):
     img = img.resize((512, 512))  # , resample=resample)
     img.save(os.path.join(dataset_root, "metadata_summary", batch, f"{basename}_{count}.jpg"))
 
+
+def wild(path, extn):
+
+    out = []
+    out.extend(glob.glob(os.path.join(path, f"*.{extn.lower()}")))
+    if platform == "linux":
+        out.extend(glob.glob(os.path.join(path, f"*.{extn.upper()}")))
+
+    return out
+
 def batch_summary(dataset_root, batch):
 
     summary_file = os.path.join(dataset_root, "metadata_summary", batch, "summary.json")
@@ -43,27 +53,32 @@ def batch_summary(dataset_root, batch):
 
     os.makedirs(Path(summary_file).parent, exist_ok= True)
 
-    photo_src = []
-    photo_src.extend(glob.glob(os.path.join(dataset_root, "photos", batch, "*.jpg")))
-    if platform == "linux":
-        photo_src.extend(glob.glob(os.path.join(dataset_root, "photos", batch, "*.JPG")))
+
+    photo_src = wild( os.path.join( dataset_root, "photos", batch), "jpg" )
+
+
 
     stats = {}
     stats["jpgs"] = 0
     stats["raws"] = 0
     stats["invalid_jpgs"] = 0
     stats["megapixels"] = 0
+    stats["rect_crops_files"] = len ( wild( os.path.join( dataset_root, "metadata_single_elements", batch), "json" ) )
     stats["rect_crops_win"] = 0
     stats["rect_crops_other"] = 0
+    stats["label_files"] = len(wild(os.path.join(dataset_root, "metadata_window_labels", batch), "json"))
     stats["labelled_windows"] = 0
     stats["soft_deleted"] = 0
+
+
+
 
     for photo_file in photo_src:
 
         pp = Path(photo_file)
         print (pp.name)
         basename = os.path.splitext(pp.name)[0]
-        count = 1
+        # count = 1
 
         img = Image.open(photo_file)
 
@@ -96,14 +111,14 @@ def batch_summary(dataset_root, batch):
                 else:
                     stats["rect_crops_win"] += 1
 
-                crop = r[0]
-                crop_photo = img.crop( ( crop[0], crop[1], crop[2], crop[3] ) )
-                crop_save_img(basename, count, batch, dataset_root, crop_photo)
-
-                count += 1
-
-        if count == 1:
-            crop_save_img(basename, 0, batch, dataset_root, img)
+        #         crop = r[0]
+        #         crop_photo = img.crop( ( crop[0], crop[1], crop[2], crop[3] ) )
+        #         crop_save_img(basename, count, batch, dataset_root, crop_photo)
+        #
+        #         count += 1
+        #
+        # if count == 1:
+        #     crop_save_img(basename, 0, batch, dataset_root, img)
 
         stats["megapixels"] += img.width * img.height
 
@@ -128,7 +143,7 @@ for batch in os.listdir(os.path.join(dataset_root, "photos")):
     print(" >>>>>>>>>>> "+ batch)
     batch_summary (dataset_root, batch)
 
-keys = ["jpgs","raws","invalid_jpgs","megapixels","rect_crops_win","rect_crops_other","labelled_windows","soft_deleted"]
+keys = ["jpgs","raws","invalid_jpgs","megapixels", "rect_crops_files", "rect_crops_win", "rect_crops_other", "label_files", "labelled_windows","soft_deleted"]
 
 print(f"stats!, ", end='')
 for key in keys:
