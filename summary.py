@@ -56,8 +56,6 @@ def batch_summary(dataset_root, batch):
 
     photo_src = wild( os.path.join( dataset_root, "photos", batch), "jpg" )
 
-
-
     stats = {}
     stats["jpgs"] = 0
     stats["raws"] = 0
@@ -69,9 +67,6 @@ def batch_summary(dataset_root, batch):
     stats["label_files"] = len(wild(os.path.join(dataset_root, "metadata_window_labels", batch), "json"))
     stats["labelled_windows"] = 0
     stats["soft_deleted"] = 0
-
-
-
 
     for photo_file in photo_src:
 
@@ -143,7 +138,7 @@ for batch in os.listdir(os.path.join(dataset_root, "photos")):
     print(" >>>>>>>>>>> "+ batch)
     batch_summary (dataset_root, batch)
 
-keys = ["jpgs","raws","invalid_jpgs","megapixels", "rect_crops_files", "rect_crops_win", "rect_crops_other", "label_files", "labelled_windows","soft_deleted"]
+keys = ["jpgs", "raws", "invalid_jpgs", "megapixels", "rect_crops_files", "rect_crops_win", "rect_crops_other", "label_files", "labelled_windows","soft_deleted"]
 
 print(f"stats!, ", end='')
 for key in keys:
