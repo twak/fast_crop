@@ -26,8 +26,8 @@ UGLY   = 1
 GREY   = 2
 PRETTY_FILMIC = 3
 
-COLOR_MODE = GREY
-LABEL_SEQ = ["none","window pane","window frame","open-window","wall frame","wall","door","shutter","blind","bars","balcony","misc object"]
+COLOR_MODE = PRETTY
+LABEL_SEQ = ["none","window pane","window frame","open-window","wall frame","wall","door","shutter","blind","bars","balcony","misc object", "roof", "door-pane"]
 
 def colours_for_mode (mode):
 
@@ -40,14 +40,15 @@ def colours_for_mode (mode):
         colors["window frame"] = (255, 128, 128)
         colors["open-window"]  = (0, 0, 0)
         colors["wall frame"]   = (233, 175, 198)
-        colors["wall"]         = (168, 168, 168) #used to be 204..?
-        colors["door"]         = (164, 120, 192)
-        colors["shutter"]      = (255, 153, 85)
+        colors["wall"]         = (204, 204, 204)
+        colors["door"]         = (180, 151, 198)
+        colors["shutter"]      = (255, 153,  85)
         colors["blind"]        = (255, 230, 128)
-        colors["bars"]         = (110, 110, 110)
+        colors["bars"]         = (90,   90,  90)
         colors["balcony"]      = (222, 170, 135)
         colors["misc object"]  = (174, 233, 174)
-        colors["roof"]         = (166, 52, 61)
+        colors["roof"]         = (167, 167, 167)
+        colors["door-pane"]    = (124, 200, 185)
     if mode == PRETTY_FILMIC: # pretty colors if i forgot to set blender's color management view transform
         colors["none"]         = (255, 255, 255)
         colors["window pane"]  = (143, 168, 194)
@@ -62,6 +63,7 @@ def colours_for_mode (mode):
         colors["balcony"]      = (222, 170, 135)
         colors["misc object"]  = (174, 233, 174)
         colors["roof"]         = (166, 52, 61)
+        colors["door-pane"] = (112, 164, 174)
     elif mode == UGLY:
         colors["none"]         = (0, 0, 255)
         colors["window pane"]  = (0, 182, 206)
@@ -76,6 +78,7 @@ def colours_for_mode (mode):
         colors["balcony"]      = (222, 170, 135)
         colors["misc object"]  = (174, 233, 174)
         colors["roof"]         = (166, 52, 61)
+        colors["door-pane"] = (112, 164, 174)
     elif mode == GREY: # blender/label dataset colors
         colors["none"]         = (0)
         colors["window pane"]  = (1)
@@ -89,6 +92,8 @@ def colours_for_mode (mode):
         colors["bars"]         = (9)
         colors["balcony"]      = (10)
         colors["misc object"]  = (11)
+        # colors["roof"]         = (12)
+        # colors["door-pane"]    = (13)
 
     return colors
 
@@ -424,7 +429,7 @@ if __name__ == "__main__":
     else:
         dataset_root = r"/mnt/vision/data/archinet/data"
 
-    output_folder = r"C:\Users\twak\Downloads\winlab_native"
+    output_folder = r"C:\Users\twak\Downloads\winlab_first3k_egs"
 
     # render single-windows crops
     # cut_n_shut(...)
@@ -445,7 +450,7 @@ if __name__ == "__main__":
 
     for f in json_src:
         # render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=True, res=640, mode='square_crop', np_data=np_data)
-        render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=True, res=-1, mode='none', np_data=np_data)
+        render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=True, res=512, mode='none', np_data=np_data)
 
     if np_data is not None:
         all_data = np.concatenate(tuple(np_data), 0)

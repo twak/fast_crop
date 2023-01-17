@@ -17,14 +17,14 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, res=512, mod
     print (f"rendering crops from {json_file} @ {res}:{mode}")
 
     pj = Path(json_file)
-    photo_file = pj.parent.parent.joinpath(pj.with_suffix(".JPG").name)
+    photo_file = pj.with_suffix(".jpg").name
 
     os.makedirs(os.path.join(output_folder, "rgb"   ), exist_ok=True)
     os.makedirs(os.path.join(output_folder, "labels"), exist_ok=True)
     os.makedirs(os.path.join(output_folder, "twofer"), exist_ok=True)
 
     # read src input
-    photo = Image.open(os.path.join(dataset_root, photo_file))
+    photo = Image.open(os.path.join(dataset_root, "crops", photo_file))
     # photo = ImageOps.exif_transpose(photo)
 
     with open(json_file, "r") as f:
@@ -58,7 +58,7 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, res=512, mod
             for poly in polies:
                 poly = [tuple(x) for x in poly]
                 draw_label_photo.polygon( poly, colors[cat])
-                draw_label_trans.polygon( poly, (* ( colors[cat]), 180), outline = (0,0,0), width=2 )
+                draw_label_trans.polygon( poly, (* ( colors[cat]), 180), outline = (0,0,0), width=6 )
 
                 dwg.add ( dwg.polygon(poly, fill=f'rgb({colors[cat][0]},{colors[cat][1]},{colors[cat][2]})') )
 
@@ -91,17 +91,17 @@ if __name__ == "__main__":
 
 
     if platform == "win32":
-        dataset_root = r"C:\Users\twak\Documents\architecture_net\dataset"
+        dataset_root = r"C:\Users\twak\Documents\architecture_net\windows_part3"
     else:
         dataset_root = r"/mnt/vision/data/archinet/data"
 
-    output_folder = r"C:\Users\twak\Downloads\pilot_debug"
+    output_folder = r"C:\Users\twak\Documents\architecture_net\windows_part3\triplets"
 
     json_src = []
     #json_src.extend(glob.glob(r'/home/twak/Downloads/LYD__KAUST_batch_2_24.06.2022/LYD<>KAUST_batch_2_24.06.2022/**.json'))
-    json_src.extend(glob.glob(os.path.join(r"C:\Users\twak\Downloads\Pilot\Pilot (with layers)\jsons", "*.json")))
+    json_src.extend(glob.glob(os.path.join(r"C:\Users\twak\Documents\architecture_net\windows_part3\labels", "*.json")))
 
-    #json_src.extend(glob.glob(os.path.join(dataset_root, "metadata_window_labels", "tom_archive_19000102", "*.json")))
+    # json_src.extend(glob.glob(os.path.join(dataset_root, "metadata_window_labels", "tom_archive_19000102", "*.json")))
     # json_src.extend(glob.glob(r'C:\Users\twak\Documents\architecture_net\dataset\metadata_window_labels\from_labellers\LYD__KAUST_batch_1_fixed_24.06.2022\**.json'))
     # render labels over whole photos for the website
 
