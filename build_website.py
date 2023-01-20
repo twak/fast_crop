@@ -34,15 +34,12 @@ for metadata_type in os.listdir(dataset_root):  # entry in an md folder gets you
         all_tags.append(metadata_type)
 
 
-def thumbnail(orig_path, thumb_path, rect=None, use_cache = False):
+def thumbnail(orig_path, thumb_path, metadata, rect=None, use_cache = False):
 
     if use_cache and os.path.exists(thumb_path):
         return
 
-    im = Image.open(orig_path)
-    if len(im.getbands()) > 3:  # pngs..
-        im = im.convert("RGB")
-    im = ImageOps.exif_transpose(im)
+    im = process_labels.open_and_rotate(orig_path, metadata)
 
     if rect is not None:
         im = im.crop((rect[0], rect[1], rect[2], rect[3]))
@@ -178,13 +175,6 @@ for batch in os.listdir(orig):
                 labels_json_path = os.path.join(labels_dir, pre + ".json")
                 labels_png_path = os.path.join(labels_dir, pre + ".png")
 
-                # use image-with labels as thumbnail where available
-                if os.path.exists(labels_json_path): # render json to image if required
-                    process_labels.render_labels_web(dataset_root, labels_json_path, flush_html=False, use_cache=False)
-                    thumbnail( os.path.join(labels_dir, photo), os.path.join(batch_thumbs, photo), use_cache=False )
-                else:
-                    thumbnail(os.path.join(photos_dir, photo), os.path.join(batch_thumbs, photo), use_cache=use_cache)
-
                 # read in the crop metadata
                 if os.path.exists (json_file_path):
                     metadata = json.load( open( json_file_path, "r" ) )
@@ -192,6 +182,15 @@ for batch in os.listdir(orig):
                     metadata = {}
                     metadata["tags"] = ["no_meta"]
                     metadata["rects"] = []
+
+                # use image-with labels as thumbnail where available
+                if os.path.exists(labels_json_path): # render json to image if required
+                    process_labels.render_labels_web(dataset_root, labels_json_path, flush_html=False, use_cache=False)
+                    thumbnail( os.path.join(labels_dir, photo), os.path.join(batch_thumbs, photo), metadata, use_cache=False )
+                else:
+                    thumbnail(os.path.join(photos_dir, photo), os.path.join(batch_thumbs, photo), metadata, use_cache=use_cache)
+
+
 
                 tags = set(metadata["tags"]) # whole image tags
                 # tags.add(batch) - no! we shall all batches because we now use radio
@@ -218,7 +217,7 @@ for batch in os.listdir(orig):
                             print ("skipping small rect")
                             continue
 
-                        thumbnail(os.path.join(photos_dir, photo),  os.path.join(batch_thumbs, crop_file), rect=r[0], use_cache=use_cache)
+                        thumbnail(os.path.join(photos_dir, photo),  os.path.join(batch_thumbs, crop_file), metadata, rect=r[0], use_cache=use_cache)
 
                         rects_append += (
                             f'<div class="{" ".join(rect_tags)}">'

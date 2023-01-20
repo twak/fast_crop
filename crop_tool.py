@@ -9,8 +9,11 @@ from functools import lru_cache
 import PIL.Image
 import pygame, sys
 from PIL import Image, ImageOps
+from PIL.Image import Transpose
 from pathlib import Path
 import tags
+
+ROTS = ["rot90", "rot180", "rot270"]
 
 class ROI:
 
@@ -46,13 +49,13 @@ class ROI:
         self.rect_tags[pygame.K_f] = ( tags.glass_facade, "f: Glass Facade Window" ) # glass panel windows
         self.rect_tags[pygame.K_c] = ( tags.church      , "c: Church Window" )# complex church feature
         self.rect_tags[pygame.K_s] = ( tags.shop        , "s: Shop Window")  # street level/wide angle of window/shop frontage
-        self.rect_tags[pygame.K_a] = ( tags.abnormal    , "a: Abnormal Window")  # street level/wide angle shot
+        self.rect_tags[pygame.K_z] = ( tags.abnormal    , "z: Abnormal Window")  # street level/wide angle shot
         self.rect_tags[pygame.K_d] = ( tags.door        , "d: Door")  # a door!
         self.rect_tags[pygame.K_f] = ( tags.facade      , "f: Facade")  # a large amount of a building
         self.rect_tags[pygame.K_w] = ( tags.window      , "w: Window (regular!)")  # we are creating windows
         self.rect_tags[pygame.K_m] = ( tags.material    , "m: Material")  # we are marking materials
 
-        self.default_tags = [tags.window]
+        self.default_tags   = [tags.window]
         self.exclusive_tags = [tags.window, tags.material, tags.door, tags.facade] # picking one removes others
 
     def displayImage(self):
@@ -212,6 +215,13 @@ class ROI:
                     if event.key == pygame.K_F1:
                         self.show_help ^= True
 
+                    if event.key == pygame.K_r:
+                        self.incRot(1)
+                        self.rects = []
+                        self.current_rect = None
+                        self.im = self.im.transpose(Transpose.ROTATE_90)
+                        self.px = ROI.pilImageToSurface(self.im)
+
                     if self.current_rect != None:
                         for key, tag_desc in self.rect_tags.items():
                             if event.key == key:
@@ -244,6 +254,32 @@ class ROI:
                         sys.exit(0)
 
             self.displayImage()
+
+    def incRot(self, i):
+        # angle is exif rotation + 90 * rot (counter clockwise)
+        global ROTS
+
+        rot = (self.getRot() + i) % 4
+
+        for r in ROTS:
+            if r in self.tags:
+                self.tags.remove (r)
+
+        if rot != 0:
+            self.tags.append(ROTS[rot-1])
+
+        print(f"incRot {rot}")
+
+        return rot
+
+    def getRot(self):
+
+        # angle is exif rotation + 90 * this (counter clockwise)
+        for i, r in enumerate(ROTS):
+            if r in self.tags:
+                return i + 1
+
+        return 0
 
     def pilImageToSurface(pilImage): #https://stackoverflow.com/a/64182629/708802
         return pygame.image.fromstring(
@@ -308,9 +344,11 @@ class ROI:
             if "tags" in prev:
                 self.tags = prev["tags"]
 
-
         if os.path.exists(self.input_loc):
             self.im = self.load_maybe_cache(self.input_loc)
+            rot = self.getRot()
+            if rot > 0:
+                self.im = self.im.transpose( [Transpose.ROTATE_90, Transpose.ROTATE_180, Transpose.ROTATE_270][rot-1] )
         else:
             self.rects = None
             self.im = Image.new("RGB", (10,10))

@@ -18,6 +18,7 @@ from PIL import ImageOps
 import numpy as np
 from sys import platform
 import hashlib
+from PIL.Image import Transpose
 
 colors = {}
 
@@ -106,6 +107,26 @@ def label_color_mode():
     else:
         return "RGBA"
 
+def open_and_rotate(image_file, crop_data):
+    photo = Image.open(os.path.join(dataset_root, "photos", image_file))
+
+    if len(photo.getbands()) > 3:  # pngs..
+        photo = photo.convert("RGB")
+
+    # rotation usually encoded into photo...
+    photo = ImageOps.exif_transpose(photo)
+
+    # ...occasionally the crop tool allows defines a custom rotation
+    rot = 0
+    for i, r in enumerate(["rot90", "rot180", "rot270"]):
+        if r in crop_data["tags"]:
+            rot = i + 1
+
+    if rot > 0:
+        photo = photo.transpose([Transpose.ROTATE_90, Transpose.ROTATE_180, Transpose.ROTATE_270][rot - 1])
+
+    return photo
+
 def render_labels_web (dataset_root, label_json_file, flush_html = False, use_cache = False):
 
     colors = colours_for_mode(PRETTY)
@@ -120,13 +141,11 @@ def render_labels_web (dataset_root, label_json_file, flush_html = False, use_ca
 
     photo_file = find_photo_for_json(dataset_root, label_json_file)
 
-    # read src input
-    photo = Image.open(os.path.join (dataset_root, "photos", photo_file ))
-    photo = ImageOps.exif_transpose(photo)
-    draw_label_trans = ImageDraw.Draw(photo, 'RGBA')
-
     with open(label_json_file, "r") as f:
         data = json.load(f)
+
+    photo = open_and_rotate( os.path.join (dataset_root, "photos", photo_file ), data)
+    draw_label_trans = ImageDraw.Draw(photo, 'RGBA')
 
     label_photo = Image.new("RGB", (photo.width, photo.height) )
     draw_label_photo = ImageDraw.Draw(label_photo, 'RGBA')
@@ -254,14 +273,13 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, folder_per_b
     os.makedirs(os.path.join(output_folder, "rgb"   ), exist_ok=True)
     os.makedirs(os.path.join(output_folder, "labels"), exist_ok=True)
 
-    # read src input
-    photo = Image.open(os.path.join(dataset_root, photo_file))
-    photo = ImageOps.exif_transpose(photo)
 
     batch_name = Path(json_file).parent.name
 
     with open(json_file, "r") as f:
         data = json.load(f)
+
+    photo = open_and_rotate( os.path.join(dataset_root, photo_file), data )
 
     label_mode = label_color_mode()
 
@@ -377,9 +395,8 @@ def render_metadata_single(images, output_dir, clear_log = False, sub_dirs = Tru
 
         if os.path.exists(os.path.join (".",json_file ) ): # crop
 
-            im = ImageOps.exif_transpose(Image.open(im_file))
-
             prev = json.load(open(json_file, "r") )
+            im = open_and_rotate( im_file, prev )
             rects = prev["rects"]
 
             tags = []

@@ -14,6 +14,8 @@ from sys import platform
 
 from itertools import filterfalse
 
+import process_labels
+
 output_dir = f"./metadata_for_labellers/to_labellers_cook{time.time()}"
 os.makedirs(output_dir, exist_ok=True)
 
@@ -82,9 +84,9 @@ for limit, batches, country in [
 
         if os.path.exists(os.path.join (".",json_file ) ): # crop
 
-            im = ImageOps.exif_transpose(Image.open(photo))
-
             prev = json.load(open(json_file, "r") )
+            im = process_labels.open_and_rotate( photo, prev )
+
             rects = prev["rects"]
 
             tags = []

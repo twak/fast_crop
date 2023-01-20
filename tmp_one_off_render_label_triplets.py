@@ -23,12 +23,10 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, res=512, mod
     os.makedirs(os.path.join(output_folder, "labels"), exist_ok=True)
     os.makedirs(os.path.join(output_folder, "twofer"), exist_ok=True)
 
-    # read src input
-    photo = Image.open(os.path.join(dataset_root, "crops", photo_file))
-    # photo = ImageOps.exif_transpose(photo)
-
     with open(json_file, "r") as f:
         data = json.load(f)
+
+    photo = process_labels.open_and_rotate( os.path.join(dataset_root, "crops", photo_file), data )
 
     label_mode = "RGBA"
 
