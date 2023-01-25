@@ -6,6 +6,7 @@ from pathlib import Path
 from PIL import Image, ImageOps
 import tags
 import process_labels
+import datetime
 
 dataset_root = Path.cwd()
 orig     = os.path.join(dataset_root, "photos")
@@ -122,10 +123,8 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                             f"                document.addEventListener('DOMContentLoaded', function() {{"
                             f"set_batch('{first_batch}_c')"
                             f"}}, false);\n")
-            html_file.write ("""
-                </script>
-                <div id='batch'></div>
-                </body></html>""" )
+
+            html_file.write (f"</script><div id='batch'></div><p>All content including photos &copy; 2022-{ datetime.date.today().strftime('%Y') } Peter Wonka </p></body></html>" )
 
         index_html.write("</body></html>\n")
     rects_html.write("</body></html>\n")
