@@ -108,7 +108,11 @@ def label_color_mode():
         return "RGBA"
 
 def open_and_rotate(image_file, crop_data):
-    photo = Image.open(os.path.join(dataset_root, "photos", image_file))
+
+    if "dataset_root" in vars():
+        photo = Image.open(os.path.join(dataset_root, "photos", image_file))
+    else:
+        photo = Image.open(image_file)
 
     if len(photo.getbands()) > 3:  # pngs..
         photo = photo.convert("RGB")

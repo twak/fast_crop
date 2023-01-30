@@ -26,8 +26,7 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, res=512, mod
     with open(json_file, "r") as f:
         data = json.load(f)
 
-    photo = process_labels.open_and_rotate( os.path.join(dataset_root, "crops", photo_file), data )
-
+    photo = Image.open( os.path.join(dataset_root, "crops", photo_file) )
     label_mode = "RGBA"
 
     # crop to each defined region
@@ -51,9 +50,11 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, res=512, mod
         dwg.add(dwg.text(crop_name, insert=(0, 0.2), fill='black'))
 
 
-        for cat, polies in crop_data["labels"].items():
+        for catl in crop_data["labels"]:
 
-            for poly in polies:
+            cat=catl[0]
+
+            for poly in catl[1]:
                 poly = [tuple(x) for x in poly]
                 draw_label_photo.polygon( poly, colors[cat])
                 draw_label_trans.polygon( poly, (* ( colors[cat]), 180), outline = (0,0,0), width=6 )
