@@ -47,7 +47,7 @@ class ROI:
         self.photo_tags[ pygame.K_0 ] = ( tags.deleted, "0: Deleted")  # soft-delete: whole image not processed to dataset
 
         self.rect_tags[pygame.K_f] = ( tags.glass_facade, "f: Glass Facade Window" ) # glass panel windows
-        self.rect_tags[pygame.K_c] = ( tags.church      , "c: Church Window" )# complex church feature
+        self.rect_tags[pygame.K_h] = ( tags.church      , "h: Church Window" )# complex church feature
         self.rect_tags[pygame.K_s] = ( tags.shop        , "s: Shop Window")  # street level/wide angle of window/shop frontage
         self.rect_tags[pygame.K_z] = ( tags.abnormal    , "z: Abnormal Window")  # street level/wide angle shot
         self.rect_tags[pygame.K_d] = ( tags.door        , "d: Door")  # a door!
