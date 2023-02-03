@@ -329,8 +329,8 @@ class ROI:
         self.current_n += incr
 
         self.input_loc = self.images[(self.current_n + len(self.images) ) % len(self.images)]
-        print ("loading %s" % self.input_loc)
-        pygame.display.set_caption(self.input_loc)
+        print (f"loading {self.input_loc} ({self.current_n}/{len(self.images)})")
+        pygame.display.set_caption(f"{self.input_loc} ({self.current_n}/{len(self.images)})")
 
         json_file = self.json_file()
         if os.path.exists(json_file):
