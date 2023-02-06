@@ -41,7 +41,7 @@ with open(r"../log_part_3.txt", "r") as index_f: # images from previous log file
         # crop_region = [*map(lambda x: int(x.strip()), crop_region.split(","))]
         LOG_LOOKUP[Path(src_file_name).parent.name].add(Path(src_file_name).with_suffix("").name)
 
-print (f"exluding {sum([item for sublist in LOG_LOOKUP for item in sublist])} looking at log file")
+print (f"exluding {len([item for sublist in LOG_LOOKUP for item in sublist])} looking at log file")
 
 # SEEN =
 # SEEN = set(glob(os.path.join("./metadata_window_labels", "*", "*.json")))
@@ -49,7 +49,7 @@ print (f"exluding {sum([item for sublist in LOG_LOOKUP for item in sublist])} lo
 for s in set(glob(os.path.join(r"./metadata_window_labels", "*", "*.json"))): # already completely labelled images
     LOG_LOOKUP[Path(s).parent.name].add(Path(s).with_suffix("").name)
 
-print (f"exluding {sum([item for sublist in LOG_LOOKUP for item in sublist])} including existing labels")
+print (f"exluding {len([item for sublist in LOG_LOOKUP for item in sublist])} including existing labels")
 
 def not_seen(jpgs):
     global LOG_LOOKUP
