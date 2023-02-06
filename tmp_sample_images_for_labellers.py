@@ -30,7 +30,7 @@ all_batches = os.listdir(r"./photos")
 
 LOG_LOOKUP = defaultdict(lambda: set())
 
-with open(r"..\log_part_3.txt", "r") as index_f: # images from previous log file
+with open(r"../log_part_3.txt", "r") as index_f: # images from previous log file
     lines = index_f.readlines()
     for i in range(int(len(lines) / 2)):
         img_line = lines[i * 2]
