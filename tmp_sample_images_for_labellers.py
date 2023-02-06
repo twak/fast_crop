@@ -10,6 +10,8 @@ from PIL import Image, ImageOps
 from sys import platform
 
 # script 19th December 22 to select unlabelled window crops for labelling.
+# updated Feb 6th to update
+
 
 
 from itertools import filterfalse
@@ -21,37 +23,54 @@ os.makedirs(output_dir, exist_ok=True)
 
 log = open(os.path.join(output_dir, 'log.txt'), "w")
 
-all_batches = os.listdir("./photos")
+all_batches = os.listdir(r"./photos")
 # batches = [x for x in batches if "michaela" in x]
 # batches.extend(["tom_london_20220418", "tom_york_20220411", "angela_prilep_20221022"])
 
-SEEN = set(glob(os.path.join("./metadata_window_labels", "*", "*.json")))
+
+LOG_LOOKUP = defaultdict(lambda: set())
+
+with open(r"..\log_part_3.txt", "r") as index_f: # images from previous log file
+    lines = index_f.readlines()
+    for i in range(int(len(lines) / 2)):
+        img_line = lines[i * 2]
+        crop_line = lines[i * 2 + 1].replace('"', '').strip()
+        splits = img_line.split("[")
+        src_file_name = splits[0]
+        # crop_region = splits[1].replace("]", "").strip()
+        # crop_region = [*map(lambda x: int(x.strip()), crop_region.split(","))]
+        LOG_LOOKUP[Path(src_file_name).parent.name].add(Path(src_file_name).with_suffix("").name)
+
+print (f"exluding {sum([item for sublist in LOG_LOOKUP for item in sublist])} looking at log file")
+
+# SEEN =
+# SEEN = set(glob(os.path.join("./metadata_window_labels", "*", "*.json")))
+# SSS = defaultdict(lambda: set())
+for s in set(glob(os.path.join(r"./metadata_window_labels", "*", "*.json"))): # already completely labelled images
+    LOG_LOOKUP[Path(s).parent.name].add(Path(s).with_suffix("").name)
+
+print (f"exluding {sum([item for sublist in LOG_LOOKUP for item in sublist])} including existing labels")
 
 def not_seen(jpgs):
-    global SEEN
-    sss = defaultdict(lambda: set())
+    global LOG_LOOKUP
     out = []
-
-    for s in SEEN:
-        sss[Path(s).parent.name].add(Path(s).with_suffix("").name)
 
     for j in jpgs:
         ba = Path(j).parent.name
         base = Path(j).with_suffix("").name
 
-        if base not in sss[ba]:
+        if base not in LOG_LOOKUP[ba]:
             out.append(j)
-        # else:
-        #     print(f"ignoring already labelled {j}")
 
     return out
 
 print(all_batches)
 
+
 for limit, batches, country in [
-    (1500, [x for x in all_batches if "michaela_vienna" in x], "austria"),
-    (500 , [x for x in all_batches if "michaela_berlin" in x], "germany"),
-    (300 , [x for x in all_batches if "tom"             in x], "uk")
+    (2500, ["peter_washington_20221129", "kaitlyn_ny_20221205", "brian_la_20220905", "scarlette_chicago_20221022", "kalinia_la_20230128"], "usa"),
+    # (500 , [x for x in all_batches if "michaela_berlin" in x], "germany"),
+    # (300 , [x for x in all_batches if "tom"             in x], "uk")
     ]:
 
     print( f"trying to take {limit} photos from {country}" )
@@ -100,7 +119,7 @@ for limit, batches, country in [
 
             r = random.choice(rects)
 
-            if "window" not in r[1] and "glass_facade" not in r[1] and "shop" not in r[1] and "church" not in r[1] and "abnormal" not in r[1]:
+            if "window" not in r[1] and "glass_facade" not in r[1] and "shop" not in r[1] and "church" and "door" not in r[1] and "abnormal" not in r[1]:
                 print("skipping not-a-window " + " ".join(tags))
                 continue
 
