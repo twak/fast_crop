@@ -94,11 +94,13 @@ if __name__ == "__main__":
     else:
         dataset_root = r"/mnt/vision/data/archinet/data"
 
-    output_folder = r"C:\Users\twak\Documents\architecture_net\windows_part3\triplets"
+    s = "_lyd_9_2"
+
+    output_folder = r"C:\Users\twak\Documents\architecture_net\windows_part3\triplets"+s
 
     json_src = []
     #json_src.extend(glob.glob(r'/home/twak/Downloads/LYD__KAUST_batch_2_24.06.2022/LYD<>KAUST_batch_2_24.06.2022/**.json'))
-    json_src.extend(glob.glob(os.path.join(r"C:\Users\twak\Documents\architecture_net\windows_part3\labels", "*.json")))
+    json_src.extend(glob.glob(os.path.join(r"C:\Users\twak\Documents\architecture_net\windows_part3\labels"+s, "*.json")))
 
     # json_src.extend(glob.glob(os.path.join(dataset_root, "metadata_window_labels", "tom_archive_19000102", "*.json")))
     # json_src.extend(glob.glob(r'C:\Users\twak\Documents\architecture_net\dataset\metadata_window_labels\from_labellers\LYD__KAUST_batch_1_fixed_24.06.2022\**.json'))

@@ -37,7 +37,7 @@ with open(r"../log_part_3.txt", "r") as index_f: # images from previous log file
         crop_line = lines[i * 2 + 1].replace('"', '').strip()
         splits = img_line.split("[")
         src_file_name = splits[0].replace("\\", "/")
-        print (src_file_name)
+        # print (src_file_name)
         # crop_region = splits[1].replace("]", "").strip()
         # crop_region = [*map(lambda x: int(x.strip()), crop_region.split(","))]
         LOG_LOOKUP[Path(src_file_name).parent.name].add(Path(src_file_name).with_suffix("").name)
