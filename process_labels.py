@@ -122,9 +122,10 @@ def open_and_rotate(image_file, crop_data):
 
     # ...occasionally the crop tool allows defines a custom rotation
     rot = 0
-    for i, r in enumerate(["rot90", "rot180", "rot270"]):
-        if r in crop_data["tags"]:
-            rot = i + 1
+    if "tags" in crop_data:
+        for i, r in enumerate(["rot90", "rot180", "rot270"]):
+            if r in crop_data["tags"]:
+                rot = i + 1
 
     if rot > 0:
         photo = photo.transpose([Transpose.ROTATE_90, Transpose.ROTATE_180, Transpose.ROTATE_270][rot - 1])
