@@ -478,7 +478,7 @@ if __name__ == "__main__":
     np_data = None #[]
 
 
-    if False: # render labels
+    if False: # render crops + labels
         for f in json_src:
             # render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=True, res=640, mode='square_crop', np_data=np_data)
             render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=False, res=512, mode='square_crop', np_data=np_data)
@@ -486,7 +486,7 @@ if __name__ == "__main__":
         if np_data is not None:
             all_data = np.concatenate(tuple(np_data), 0)
             print(f"mean [{np.mean(all_data, axis=(0,1))}] std [{np.std(all_data, axis=(0,1))}]")
-    else: # render crops
+    else: # render only crops
     # generate dataset from all metadata_single_element
         photo_src = []
         photo_src.extend(glob.glob(r'./photos/*/*.JPG'))
