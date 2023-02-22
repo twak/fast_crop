@@ -270,6 +270,14 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, folder_per_b
 
     print (f"rendering crops from {json_file} @ {res}:{mode}")
 
+    batch_name = Path(json_file).parent.name
+
+    if not "tom_" in batch_name and not "michaela_" in batch_name:
+        return
+
+    if "archive" in batch_name or "copenhagen" in batch_name:
+        return
+
     global colors
 
     photo_file = find_photo_for_json(dataset_root, json_file )
@@ -327,14 +335,14 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, folder_per_b
                 os.makedirs(os.path.join(country_loc, "rgb"), exist_ok=True)
                 os.makedirs(os.path.join(country_loc, "labels"), exist_ok=True)
 
-                crop_photo.save(os.path.join(country_loc, "rgb", base_name + ".jpg"))
+                crop_photo.save(os.path.join(country_loc, "rgb", base_name + ".png"))
                 label_img.save (os.path.join(country_loc, "labels", base_name + ".png"))
 
             # base_name = os.path.join ( batch_name, base_name )
             # os.makedirs(os.path.join(output_folder, "rgb", batch_name), exist_ok=True)
             # os.makedirs(os.path.join(output_folder, "labels", batch_name), exist_ok=True)
 
-        crop_photo.save(os.path.join(output_folder, "rgb"   , base_name + ".jpg"))
+        crop_photo.save(os.path.join(output_folder, "rgb"   , base_name + ".png"))
         label_img .save(os.path.join(output_folder, "labels", base_name + ".png"))
 
         if np_data is not None:
@@ -448,9 +456,9 @@ if __name__ == "__main__":
     if platform == "win32":
         dataset_root = r"C:\Users\twak\Documents\architecture_net\dataset"
     else:
-        dataset_root = r"/mnt/vision/data/archinet/data"
+        dataset_root = r"/datawaha/cggroup/kellyt/archinet_backup/complete_2401/data"
 
-    output_folder = r"C:\Users\twak\Downloads\winlab_native"
+    output_folder = r"/datawaha/cggroup/kellyt/winlab_4_png"
 
     # render single-windows crops
     # cut_n_shut(...)
@@ -471,7 +479,7 @@ if __name__ == "__main__":
 
     for f in json_src:
         # render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=True, res=640, mode='square_crop', np_data=np_data)
-        render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=True, res=-1, mode='none', np_data=np_data)
+        render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=False, res=512, mode='square_crop', np_data=np_data)
 
     if np_data is not None:
         all_data = np.concatenate(tuple(np_data), 0)
