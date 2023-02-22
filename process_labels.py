@@ -215,7 +215,7 @@ def find_photo_for_json(dataset_root, json_file ):
 def crop( img, res=-1, mode='none', resample=None, background_col="black"):
 
     if resample == None:
-        resample = Image.Resampling.BOXs
+        resample = Image.Resampling.BOX
 
     if mode == 'none':
 
