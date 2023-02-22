@@ -6,6 +6,7 @@ from pathlib import Path
 from PIL import Image, ImageOps
 import tags
 import process_labels
+import datetime
 
 dataset_root = Path.cwd()
 orig     = os.path.join(dataset_root, "photos")
@@ -34,15 +35,12 @@ for metadata_type in os.listdir(dataset_root):  # entry in an md folder gets you
         all_tags.append(metadata_type)
 
 
-def thumbnail(orig_path, thumb_path, rect=None, use_cache = False):
+def thumbnail(orig_path, thumb_path, metadata, rect=None, use_cache = False):
 
     if use_cache and os.path.exists(thumb_path):
         return
 
-    im = Image.open(orig_path)
-    if len(im.getbands()) > 3:  # pngs..
-        im = im.convert("RGB")
-    im = ImageOps.exif_transpose(im)
+    im = process_labels.open_and_rotate(orig_path, metadata)
 
     if rect is not None:
         im = im.crop((rect[0], rect[1], rect[2], rect[3]))
@@ -125,10 +123,8 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                             f"                document.addEventListener('DOMContentLoaded', function() {{"
                             f"set_batch('{first_batch}_c')"
                             f"}}, false);\n")
-            html_file.write ("""
-                </script>
-                <div id='batch'></div>
-                </body></html>""" )
+
+            html_file.write (f"</script><div id='batch'></div><p>All content including photos &copy; 2022-{ datetime.date.today().strftime('%Y') } Peter Wonka </p></body></html>" )
 
         index_html.write("</body></html>\n")
     rects_html.write("</body></html>\n")
@@ -178,13 +174,6 @@ for batch in os.listdir(orig):
                 labels_json_path = os.path.join(labels_dir, pre + ".json")
                 labels_png_path = os.path.join(labels_dir, pre + ".png")
 
-                # use image-with labels as thumbnail where available
-                if os.path.exists(labels_json_path): # render json to image if required
-                    process_labels.render_labels_web(dataset_root, labels_json_path, flush_html=False, use_cache=False)
-                    thumbnail( os.path.join(labels_dir, photo), os.path.join(batch_thumbs, photo), use_cache=False )
-                else:
-                    thumbnail(os.path.join(photos_dir, photo), os.path.join(batch_thumbs, photo), use_cache=use_cache)
-
                 # read in the crop metadata
                 if os.path.exists (json_file_path):
                     metadata = json.load( open( json_file_path, "r" ) )
@@ -192,6 +181,15 @@ for batch in os.listdir(orig):
                     metadata = {}
                     metadata["tags"] = ["no_meta"]
                     metadata["rects"] = []
+
+                # use image-with labels as thumbnail where available
+                if os.path.exists(labels_json_path): # render json to image if required
+                    process_labels.render_labels_web(dataset_root, labels_json_path, flush_html=False, use_cache=False)
+                    thumbnail( os.path.join(labels_dir, photo), os.path.join(batch_thumbs, photo), metadata, use_cache=False )
+                else:
+                    thumbnail(os.path.join(photos_dir, photo), os.path.join(batch_thumbs, photo), metadata, use_cache=use_cache)
+
+
 
                 tags = set(metadata["tags"]) # whole image tags
                 # tags.add(batch) - no! we shall all batches because we now use radio
@@ -203,29 +201,32 @@ for batch in os.listdir(orig):
                 photo_pre, ext = os.path.splitext(photo)
                 index_tags = tags.copy()
 
-                for thumb_idx, r in enumerate ( metadata["rects"] ):
+                if 'deleted' in tags:
+                    print("skipping deleted photo")
+                else:
+                    for thumb_idx, r in enumerate ( metadata["rects"] ):
 
-                    print ("    crop %d" % thumb_idx)
-                    crop_file = photo+"_crop_%d.jpg" % thumb_idx
+                        print ("    crop %d" % thumb_idx)
+                        crop_file = photo+"_crop_%d.jpg" % thumb_idx
 
-                    rect_tags = tags.copy().union(set(r[1])) # per-photo-tags too
-                    rect = r[0]
+                        rect_tags = tags.copy().union(set(r[1])) # per-photo-tags too
+                        rect = r[0]
 
-                    if rect[2] - rect[0] < 20 or rect [3] - rect[1] < 20:
-                        print ("skipping small rect")
-                        continue
+                        if rect[2] - rect[0] < 20 or rect [3] - rect[1] < 20:
+                            print ("skipping small rect")
+                            continue
 
-                    thumbnail(os.path.join(photos_dir, photo),  os.path.join(batch_thumbs, crop_file), rect=r[0], use_cache=use_cache)
+                        thumbnail(os.path.join(photos_dir, photo),  os.path.join(batch_thumbs, crop_file), metadata, rect=r[0], use_cache=use_cache)
 
-                    rects_append += (
-                        f'<div class="{" ".join(rect_tags)}">'
-                        f'<a href="{batch}/{photo_pre}.html">'
-                               f'<img src="{batch+"/"+crop_file}" alt="{batch}:{photo}:{thumb_idx}" width="64" height="64" loading="lazy" border="1"></a>\n'
-                        f'</div>')
+                        rects_append += (
+                            f'<div class="{" ".join(rect_tags)}">'
+                            f'<a href="{batch}/{photo_pre}.html">'
+                                   f'<img src="{batch+"/"+crop_file}" alt="{batch}:{photo}:{thumb_idx}" width="64" height="64" loading="lazy" border="1"></a>\n'
+                            f'</div>')
 
-                    # photo page takes tags of all crops
-                    index_tags = index_tags.union(set(r[1]))
-                    rect_count += 1
+                        # photo page takes tags of all crops
+                        index_tags = index_tags.union(set(r[1]))
+                        rect_count += 1
 
                 photo_page_path = os.path.join(web_dir, batch, pre + ".html")
                 if not ( use_cache and os.path.exists(photo_page_path) ):
@@ -240,13 +241,20 @@ for batch in os.listdir(orig):
                         if os.path.exists(labels_png_path):
                             photo_html.write(f"<a href='../../metadata_window_labels/{batch}/{pre}.png'><img src='../../metadata_window_labels/{batch}/{pre}.png' height='640'></a><br><br>\n")
 
-                        for thumb_idx, r in enumerate(metadata["rects"]):
-                            crop_file = photo+"_crop_%d.jpg" % thumb_idx
-                            if rect[2] - rect[0] < 20 or rect[3] - rect[1] < 20:
-                                print("skipping small rect")
-                                continue
-                            photo_html.write(f'crop {thumb_idx} with tags: {", ".join(r[1])}<br>')
-                            photo_html.write(f'<img src="{crop_file}" alt="{batch}:{photo}:{thumb_idx}" width="128" height="128" loading="lazy"><br><br>')
+                        if 'deleted' in tags:
+                            print("skipping deleted photo")
+                            photo_html.write(f"no crops, photo deleted<br/>")
+                        else:
+                            for thumb_idx, r in enumerate(metadata["rects"]):
+                                crop_file = photo+"_crop_%d.jpg" % thumb_idx
+
+                                if rect[2] - rect[0] < 20 or rect[3] - rect[1] < 20:
+                                    print("skipping small rect")
+                                    photo_html.write(f"skipping small rect<br/>")
+                                    continue
+
+                                photo_html.write(f'crop {thumb_idx} with tags: {", ".join(r[1])}<br>')
+                                photo_html.write(f'<img src="{crop_file}" alt="{batch}:{photo}:{thumb_idx}" width="128" height="128" loading="lazy"><br><br>')
 
                         photo_html.write(f"<br><p>all metadata:</p><ul>")
                         for md in os.listdir(dataset_root):

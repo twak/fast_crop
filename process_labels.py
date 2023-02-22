@@ -18,6 +18,7 @@ from PIL import ImageOps
 import numpy as np
 from sys import platform
 import hashlib
+from PIL.Image import Transpose
 
 colors = {}
 
@@ -26,8 +27,8 @@ UGLY   = 1
 GREY   = 2
 PRETTY_FILMIC = 3
 
-COLOR_MODE = GREY
-LABEL_SEQ = ["none","window pane","window frame","open-window","wall frame","wall","door","shutter","blind","bars","balcony","misc object"]
+COLOR_MODE = PRETTY
+LABEL_SEQ = ["none","window pane","window frame","open-window","wall frame","wall","door","shutter","blind","bars","balcony","misc object", "roof", "door-pane"]
 
 def colours_for_mode (mode):
 
@@ -40,13 +41,15 @@ def colours_for_mode (mode):
         colors["window frame"] = (255, 128, 128)
         colors["open-window"]  = (0, 0, 0)
         colors["wall frame"]   = (233, 175, 198)
-        colors["wall"]         = (168, 168, 168) #used to be 204..?
-        colors["door"]         = (164, 120, 192)
-        colors["shutter"]      = (255, 153, 85)
+        colors["wall"]         = (204, 204, 204)
+        colors["door"]         = (180, 151, 198)
+        colors["shutter"]      = (255, 153,  85)
         colors["blind"]        = (255, 230, 128)
-        colors["bars"]         = (110, 110, 110)
+        colors["bars"]         = (90,   90,  90)
         colors["balcony"]      = (222, 170, 135)
         colors["misc object"]  = (174, 233, 174)
+        colors["roof"]         = (167, 167, 167)
+        colors["door-pane"]    = (124, 200, 185)
     if mode == PRETTY_FILMIC: # pretty colors if i forgot to set blender's color management view transform
         colors["none"]         = (255, 255, 255)
         colors["window pane"]  = (143, 168, 194)
@@ -60,7 +63,9 @@ def colours_for_mode (mode):
         colors["bars"]         = (110, 110, 110)
         colors["balcony"]      = (222, 170, 135)
         colors["misc object"]  = (174, 233, 174)
-    elif mode == UGLY: # blender/label dataset colors
+        colors["roof"]         = (166, 52, 61)
+        colors["door-pane"] = (112, 164, 174)
+    elif mode == UGLY:
         colors["none"]         = (0, 0, 255)
         colors["window pane"]  = (0, 182, 206)
         colors["window frame"] = (206, 0, 0)
@@ -73,6 +78,8 @@ def colours_for_mode (mode):
         colors["bars"]         = (110, 110, 110)
         colors["balcony"]      = (222, 170, 135)
         colors["misc object"]  = (174, 233, 174)
+        colors["roof"]         = (166, 52, 61)
+        colors["door-pane"] = (112, 164, 174)
     elif mode == GREY: # blender/label dataset colors
         colors["none"]         = (0)
         colors["window pane"]  = (1)
@@ -86,6 +93,8 @@ def colours_for_mode (mode):
         colors["bars"]         = (9)
         colors["balcony"]      = (10)
         colors["misc object"]  = (11)
+        # colors["roof"]         = (12)
+        # colors["door-pane"]    = (13)
 
     return colors
 
@@ -97,6 +106,30 @@ def label_color_mode():
         return "L"
     else:
         return "RGBA"
+
+def open_and_rotate(image_file, crop_data):
+
+    if "dataset_root" in vars():
+        photo = Image.open(os.path.join(dataset_root, "photos", image_file))
+    else:
+        photo = Image.open(image_file)
+
+    if len(photo.getbands()) > 3:  # pngs..
+        photo = photo.convert("RGB")
+
+    # rotation usually encoded into photo...
+    photo = ImageOps.exif_transpose(photo)
+
+    # ...occasionally the crop tool allows defines a custom rotation
+    rot = 0
+    for i, r in enumerate(["rot90", "rot180", "rot270"]):
+        if r in crop_data["tags"]:
+            rot = i + 1
+
+    if rot > 0:
+        photo = photo.transpose([Transpose.ROTATE_90, Transpose.ROTATE_180, Transpose.ROTATE_270][rot - 1])
+
+    return photo
 
 def render_labels_web (dataset_root, label_json_file, flush_html = False, use_cache = False):
 
@@ -112,13 +145,11 @@ def render_labels_web (dataset_root, label_json_file, flush_html = False, use_ca
 
     photo_file = find_photo_for_json(dataset_root, label_json_file)
 
-    # read src input
-    photo = Image.open(os.path.join (dataset_root, "photos", photo_file ))
-    photo = ImageOps.exif_transpose(photo)
-    draw_label_trans = ImageDraw.Draw(photo, 'RGBA')
-
     with open(label_json_file, "r") as f:
         data = json.load(f)
+
+    photo = open_and_rotate( os.path.join (dataset_root, "photos", photo_file ), data)
+    draw_label_trans = ImageDraw.Draw(photo, 'RGBA')
 
     label_photo = Image.new("RGB", (photo.width, photo.height) )
     draw_label_photo = ImageDraw.Draw(label_photo, 'RGBA')
@@ -239,14 +270,6 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, folder_per_b
 
     print (f"rendering crops from {json_file} @ {res}:{mode}")
 
-    batch_name = Path(json_file).parent.name
-
-    if not "tom_" in batch_name and not "michaela_" in batch_name:
-        return
-
-    if "archive" in batch_name or "copenhagen" in batch_name:
-        return
-
     global colors
 
     photo_file = find_photo_for_json(dataset_root, json_file )
@@ -254,14 +277,13 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, folder_per_b
     os.makedirs(os.path.join(output_folder, "rgb"   ), exist_ok=True)
     os.makedirs(os.path.join(output_folder, "labels"), exist_ok=True)
 
-    # read src input
-    photo = Image.open(os.path.join(dataset_root, photo_file))
-    photo = ImageOps.exif_transpose(photo)
 
-
+    batch_name = Path(json_file).parent.name
 
     with open(json_file, "r") as f:
         data = json.load(f)
+
+    photo = open_and_rotate( os.path.join(dataset_root, photo_file), data )
 
     label_mode = label_color_mode()
 
@@ -305,14 +327,14 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, folder_per_b
                 os.makedirs(os.path.join(country_loc, "rgb"), exist_ok=True)
                 os.makedirs(os.path.join(country_loc, "labels"), exist_ok=True)
 
-                crop_photo.save(os.path.join(country_loc, "rgb", base_name + ".png"))
+                crop_photo.save(os.path.join(country_loc, "rgb", base_name + ".jpg"))
                 label_img.save (os.path.join(country_loc, "labels", base_name + ".png"))
 
             # base_name = os.path.join ( batch_name, base_name )
             # os.makedirs(os.path.join(output_folder, "rgb", batch_name), exist_ok=True)
             # os.makedirs(os.path.join(output_folder, "labels", batch_name), exist_ok=True)
 
-        crop_photo.save(os.path.join(output_folder, "rgb"   , base_name + ".png"))
+        crop_photo.save(os.path.join(output_folder, "rgb"   , base_name + ".jpg"))
         label_img .save(os.path.join(output_folder, "labels", base_name + ".png"))
 
         if np_data is not None:
@@ -377,9 +399,8 @@ def render_metadata_single(images, output_dir, clear_log = False, sub_dirs = Tru
 
         if os.path.exists(os.path.join (".",json_file ) ): # crop
 
-            im = ImageOps.exif_transpose(Image.open(im_file))
-
             prev = json.load(open(json_file, "r") )
+            im = open_and_rotate( im_file, prev )
             rects = prev["rects"]
 
             tags = []
@@ -427,9 +448,9 @@ if __name__ == "__main__":
     if platform == "win32":
         dataset_root = r"C:\Users\twak\Documents\architecture_net\dataset"
     else:
-        dataset_root = r"/datawaha/cggroup/kellyt/archinet_backup/complete_2401/data"
+        dataset_root = r"/mnt/vision/data/archinet/data"
 
-    output_folder = r"/datawaha/cggroup/kellyt/winlab_4"
+    output_folder = r"C:\Users\twak\Downloads\winlab_native"
 
     # render single-windows crops
     # cut_n_shut(...)
@@ -450,7 +471,7 @@ if __name__ == "__main__":
 
     for f in json_src:
         # render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=True, res=640, mode='square_crop', np_data=np_data)
-        render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=False, res=512, mode='square_crop', np_data=np_data)
+        render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=True, res=-1, mode='none', np_data=np_data)
 
     if np_data is not None:
         all_data = np.concatenate(tuple(np_data), 0)
