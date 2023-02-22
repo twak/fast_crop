@@ -353,7 +353,7 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, folder_per_b
 
 def render_metadata_single(images, output_dir, clear_log = False, sub_dirs = True, crop_mode='square_crop', resolution=512, quality=98):
     '''
-    renders all each crop to a uniquely named file
+    renders all crops to a uniquely named file
     '''
 
     global VALID_CROPS
@@ -377,7 +377,6 @@ def render_metadata_single(images, output_dir, clear_log = False, sub_dirs = Tru
         jpg_out_file = "%s.jpg" % md5hash.hexdigest()
         log.write("\"%s\"\n" % jpg_out_file)
 
-
         out_path = os.path.join(output_dir, jpg_out_file)
 
         im.save(out_path, format="JPEG", quality=quality)
@@ -386,7 +385,7 @@ def render_metadata_single(images, output_dir, clear_log = False, sub_dirs = Tru
         print ("unknown crop mode %s. pick from: %s " % (crop_mode, " ".join(VALID_CROPS)))
         return
 
-    min_dim = 2048 # 1024 lost 77/3,100 at this resolution (12.4.22)
+    min_dim = 1024
     count = 0
 
     print (f"found {len(images)} jpgs")
@@ -423,7 +422,7 @@ def render_metadata_single(images, output_dir, clear_log = False, sub_dirs = Tru
 
             for r in rects:
 
-                if not ( "window" in r[1] or "glass_facade" in r[1] or "shop" in r[1] or "church" in r[1] or "abnormal" in r[1] ):
+                if not ( "window" in r[1] or "door" in r[1] or "glass_facade" in r[1] or "shop" in r[1] or "church" in r[1] or "abnormal" in r[1] ):
                     continue
 
                 c = r[0]
@@ -459,7 +458,7 @@ if __name__ == "__main__":
     else:
         dataset_root = r"/datawaha/cggroup/kellyt/archinet_backup/complete_2401/data"
 
-    output_folder = r"/datawaha/cggroup/kellyt/winlab_4_png"
+    output_folder = r"/datawaha/cggroup/kellyt/win_crops_1k" #f"./metadata_single_elements/dataset_cook{time.time()}
 
     # render single-windows crops
     # cut_n_shut(...)
@@ -478,16 +477,18 @@ if __name__ == "__main__":
 
     np_data = None #[]
 
-    for f in json_src:
-        # render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=True, res=640, mode='square_crop', np_data=np_data)
-        render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=False, res=512, mode='square_crop', np_data=np_data)
 
-    if np_data is not None:
-        all_data = np.concatenate(tuple(np_data), 0)
-        print(f"mean [{np.mean(all_data, axis=(0,1))}] std [{np.std(all_data, axis=(0,1))}]")
+    if False: # render labels
+        for f in json_src:
+            # render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=True, res=640, mode='square_crop', np_data=np_data)
+            render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=False, res=512, mode='square_crop', np_data=np_data)
 
+        if np_data is not None:
+            all_data = np.concatenate(tuple(np_data), 0)
+            print(f"mean [{np.mean(all_data, axis=(0,1))}] std [{np.std(all_data, axis=(0,1))}]")
+    else: # render crops
     # generate dataset from all metadata_single_element
-    # photo_src = []
-    # photo_src.extend(glob.glob(r'./photos/*/*.JPG'))
-    # photo_src.extend(glob.glob(r'./photos/*/*.jpg'))
-    # cut_n_shut(photo_src, f"./metadata_single_elements/dataset_cook{time.time()}", crop_mode="square_crop", resolution=1024, quality=95, sub_dirs=False )
+        photo_src = []
+        photo_src.extend(glob.glob(r'./photos/*/*.JPG'))
+        photo_src.extend(glob.glob(r'./photos/*/*.jpg'))
+        render_metadata_single(photo_src, output_folder, crop_mode="square_crop", resolution=1024, quality=95, sub_dirs=False )
