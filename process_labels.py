@@ -374,7 +374,7 @@ def render_metadata_single(images, output_dir, clear_log = False, sub_dirs = Tru
             return
 
         md5hash = hashlib.md5(im.tobytes())
-        jpg_out_file = "%s.jpg" % md5hash.hexdigest()
+        jpg_out_file = "%s.png" % md5hash.hexdigest()
         log.write("\"%s\"\n" % jpg_out_file)
 
         out_path = os.path.join(output_dir, jpg_out_file)
