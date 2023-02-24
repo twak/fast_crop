@@ -379,7 +379,7 @@ def render_metadata_single(images, output_dir, clear_log = False, sub_dirs = Tru
 
         out_path = os.path.join(output_dir, jpg_out_file)
 
-        im.save(out_path, format="JPEG", quality=quality)
+        im.save(out_path, format="PNG", quality=quality)
 
     if not crop_mode in VALID_CROPS:
         print ("unknown crop mode %s. pick from: %s " % (crop_mode, " ".join(VALID_CROPS)))
@@ -402,8 +402,15 @@ def render_metadata_single(images, output_dir, clear_log = False, sub_dirs = Tru
         out_name, out_ext = os.path.splitext ( os.path.basename(im_file) )
         out_ext = out_ext.lower()
 
-        batch = Path(im_file).parent.name
-        json_file = Path(im_file).parent.parent.parent.joinpath("metadata_single_elements").joinpath(batch).joinpath(f"{out_name}.json")
+        batch_name = Path(im_file).parent.name
+
+        if not "tom_" in batch_name and not "michaela_" in batch_name:
+            continue
+
+        if "archive" in batch_name or "copenhagen" in batch_name:
+            continue
+
+        json_file = Path(im_file).parent.parent.parent.joinpath("metadata_single_elements").joinpath(batch_name).joinpath(f"{out_name}.json")
 
         if os.path.exists(os.path.join (".",json_file ) ): # crop
 
@@ -452,33 +459,21 @@ VALID_CROPS = {'square_crop', 'square_expand', 'none'}
 
 if __name__ == "__main__":
 
-
     if platform == "win32":
         dataset_root = r"C:\Users\twak\Documents\architecture_net\dataset"
     else:
         dataset_root = r"/datawaha/cggroup/kellyt/archinet_backup/complete_2401/data"
 
-    output_folder = r"/datawaha/cggroup/kellyt/win_crops_1k" #f"./metadata_single_elements/dataset_cook{time.time()}
-
-    # render single-windows crops
-    # cut_n_shut(...)
-
-    json_src = []
-    #json_src.extend(glob.glob(r'/home/twak/Downloads/LYD__KAUST_batch_2_24.06.2022/LYD<>KAUST_batch_2_24.06.2022/**.json'))
-    json_src.extend(glob.glob(os.path.join(dataset_root, "metadata_window_labels", "*", "*.json")))
-
-    # json_src.extend(glob.glob(os.path.join(dataset_root, "metadata_window_labels", "tom_archive_19000102", "*.json")))
-    # json_src.extend(glob.glob(r'C:\Users\twak\Documents\architecture_net\dataset\metadata_window_labels\from_labellers\LYD__KAUST_batch_1_fixed_24.06.2022\**.json'))
-    # render labels over whole photos for the website
-
-    # photos = []
-    # photos.extend(glob.glob(os.path.join(dataset_root, "photos", "*", "*.JPG")))
-    # photos.extend(glob.glob(os.path.join(dataset_root, "photos", "*", "*.jpg")))
-
-    np_data = None #[]
-
+    output_folder = r"/datawaha/cggroup/kellyt/win_uk_aus_for_finetuning" #f"./metadata_single_elements/dataset_cook{time.time()}
 
     if False: # render crops + labels
+
+        json_src = []
+        # json_src.extend(glob.glob(r'/home/twak/Downloads/LYD__KAUST_batch_2_24.06.2022/LYD<>KAUST_batch_2_24.06.2022/**.json'))
+        json_src.extend(glob.glob(os.path.join(dataset_root, "metadata_window_labels", "*", "*.json")))
+
+        np_data = None  # []
+
         for f in json_src:
             # render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=True, res=640, mode='square_crop', np_data=np_data)
             render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=False, res=512, mode='square_crop', np_data=np_data)
@@ -491,4 +486,4 @@ if __name__ == "__main__":
         photo_src = []
         photo_src.extend(glob.glob(r'./photos/*/*.JPG'))
         photo_src.extend(glob.glob(r'./photos/*/*.jpg'))
-        render_metadata_single(photo_src, output_folder, crop_mode="square_crop", resolution=1024, quality=95, sub_dirs=False )
+        render_metadata_single(photo_src, output_folder, crop_mode="square_crop", resolution=512, quality=95, sub_dirs=False )
