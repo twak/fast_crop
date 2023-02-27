@@ -43,9 +43,9 @@ def split(rgb_files, output_split=[[50, "val"], [50, "test"]]):
 
 
 rgbs = []
-
-rgbs.extend(glob.glob(os.path.join(r"/ibex/scratch/kellyt/windowz/winsyn_snow/rgb", "*.png")))
-
 name = sys.argv[1]
+
+rgbs.extend(glob.glob(os.path.join(rf"/home/kellyt/archinet/winlab_4_png/{name}", "*.png")))
+
 split(rgbs, output_split=[[200, f"{name}_val"], [100000, f"{name}_test"]])
 
