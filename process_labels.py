@@ -122,9 +122,10 @@ def open_and_rotate(image_file, crop_data):
 
     # ...occasionally the crop tool allows defines a custom rotation
     rot = 0
-    for i, r in enumerate(["rot90", "rot180", "rot270"]):
-        if r in crop_data["tags"]:
-            rot = i + 1
+    if "tags" in crop_data:
+        for i, r in enumerate(["rot90", "rot180", "rot270"]):
+            if r in crop_data["tags"]:
+                rot = i + 1
 
     if rot > 0:
         photo = photo.transpose([Transpose.ROTATE_90, Transpose.ROTATE_180, Transpose.ROTATE_270][rot - 1])
@@ -214,7 +215,7 @@ def find_photo_for_json(dataset_root, json_file ):
 def crop( img, res=-1, mode='none', resample=None, background_col="black"):
 
     if resample == None:
-        resample = Image.Resampling.BOXs
+        resample = Image.Resampling.BOX
 
     if mode == 'none':
 
@@ -269,6 +270,14 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, folder_per_b
     '''
 
     print (f"rendering crops from {json_file} @ {res}:{mode}")
+
+    batch_name = Path(json_file).parent.name
+
+    # if not "tom_" in batch_name and not "michaela_" in batch_name:
+    #     return
+    #
+    # if "archive" in batch_name or "copenhagen" in batch_name:
+    #     return
 
     global colors
 
@@ -327,14 +336,14 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, folder_per_b
                 os.makedirs(os.path.join(country_loc, "rgb"), exist_ok=True)
                 os.makedirs(os.path.join(country_loc, "labels"), exist_ok=True)
 
-                crop_photo.save(os.path.join(country_loc, "rgb", base_name + ".jpg"))
+                crop_photo.save(os.path.join(country_loc, "rgb", base_name + ".png"))
                 label_img.save (os.path.join(country_loc, "labels", base_name + ".png"))
 
             # base_name = os.path.join ( batch_name, base_name )
             # os.makedirs(os.path.join(output_folder, "rgb", batch_name), exist_ok=True)
             # os.makedirs(os.path.join(output_folder, "labels", batch_name), exist_ok=True)
 
-        crop_photo.save(os.path.join(output_folder, "rgb"   , base_name + ".jpg"))
+        crop_photo.save(os.path.join(output_folder, "rgb"   , base_name + ".png"))
         label_img .save(os.path.join(output_folder, "labels", base_name + ".png"))
 
         if np_data is not None:
@@ -344,7 +353,7 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, folder_per_b
 
 def render_metadata_single(images, output_dir, clear_log = False, sub_dirs = True, crop_mode='square_crop', resolution=512, quality=98):
     '''
-    renders all each crop to a uniquely named file
+    renders all crops to a uniquely named file
     '''
 
     global VALID_CROPS
@@ -365,19 +374,18 @@ def render_metadata_single(images, output_dir, clear_log = False, sub_dirs = Tru
             return
 
         md5hash = hashlib.md5(im.tobytes())
-        jpg_out_file = "%s.jpg" % md5hash.hexdigest()
+        jpg_out_file = "%s.png" % md5hash.hexdigest()
         log.write("\"%s\"\n" % jpg_out_file)
-
 
         out_path = os.path.join(output_dir, jpg_out_file)
 
-        im.save(out_path, format="JPEG", quality=quality)
+        im.save(out_path, format="PNG", quality=quality)
 
     if not crop_mode in VALID_CROPS:
         print ("unknown crop mode %s. pick from: %s " % (crop_mode, " ".join(VALID_CROPS)))
         return
 
-    min_dim = 2048 # 1024 lost 77/3,100 at this resolution (12.4.22)
+    min_dim = 1024
     count = 0
 
     print (f"found {len(images)} jpgs")
@@ -394,8 +402,15 @@ def render_metadata_single(images, output_dir, clear_log = False, sub_dirs = Tru
         out_name, out_ext = os.path.splitext ( os.path.basename(im_file) )
         out_ext = out_ext.lower()
 
-        batch = Path(im_file).parent.name
-        json_file = Path(im_file).parent.parent.parent.joinpath("metadata_single_elements").joinpath(batch).joinpath(f"{out_name}.json")
+        batch_name = Path(im_file).parent.name
+
+        if not "tom_" in batch_name and not "michaela_" in batch_name:
+            continue
+
+        if "archive" in batch_name or "copenhagen" in batch_name or "thuwal" in batch_name:
+            continue
+
+        json_file = Path(im_file).parent.parent.parent.joinpath("metadata_single_elements").joinpath(batch_name).joinpath(f"{out_name}.json")
 
         if os.path.exists(os.path.join (".",json_file ) ): # crop
 
@@ -414,7 +429,7 @@ def render_metadata_single(images, output_dir, clear_log = False, sub_dirs = Tru
 
             for r in rects:
 
-                if not ( "window" in r[1] or "glass_facade" in r[1] or "shop" in r[1] or "church" in r[1] or "abnormal" in r[1] ):
+                if not ( "window" in r[1] or "door" in r[1] or "glass_facade" in r[1] or "shop" in r[1] or "church" in r[1] or "abnormal" in r[1] ):
                     continue
 
                 c = r[0]
@@ -444,41 +459,31 @@ VALID_CROPS = {'square_crop', 'square_expand', 'none'}
 
 if __name__ == "__main__":
 
-
     if platform == "win32":
         dataset_root = r"C:\Users\twak\Documents\architecture_net\dataset"
     else:
-        dataset_root = r"/mnt/vision/data/archinet/data"
+        dataset_root = r"/datawaha/cggroup/kellyt/archinet_backup/complete_2401/data"
 
-    output_folder = r"C:\Users\twak\Downloads\winlab_first3k_egs"
+    output_folder = r"/datawaha/cggroup/kellyt/win_uk_aus_for_finetuning" #f"./metadata_single_elements/dataset_cook{time.time()}
 
-    # render single-windows crops
-    # cut_n_shut(...)
+    if False: # render crops + labels
 
-    json_src = []
-    #json_src.extend(glob.glob(r'/home/twak/Downloads/LYD__KAUST_batch_2_24.06.2022/LYD<>KAUST_batch_2_24.06.2022/**.json'))
-    json_src.extend(glob.glob(os.path.join(dataset_root, "metadata_window_labels", "*", "*.json")))
+        json_src = []
+        # json_src.extend(glob.glob(r'/home/twak/Downloads/LYD__KAUST_batch_2_24.06.2022/LYD<>KAUST_batch_2_24.06.2022/**.json'))
+        json_src.extend(glob.glob(os.path.join(dataset_root, "metadata_window_labels", "*", "*.json")))
 
-    # json_src.extend(glob.glob(os.path.join(dataset_root, "metadata_window_labels", "tom_archive_19000102", "*.json")))
-    # json_src.extend(glob.glob(r'C:\Users\twak\Documents\architecture_net\dataset\metadata_window_labels\from_labellers\LYD__KAUST_batch_1_fixed_24.06.2022\**.json'))
-    # render labels over whole photos for the website
+        np_data = None  # []
 
-    # photos = []
-    # photos.extend(glob.glob(os.path.join(dataset_root, "photos", "*", "*.JPG")))
-    # photos.extend(glob.glob(os.path.join(dataset_root, "photos", "*", "*.jpg")))
+        for f in json_src:
+            # render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=True, res=640, mode='square_crop', np_data=np_data)
+            render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=False, res=512, mode='square_crop', np_data=np_data)
 
-    np_data = None #[]
-
-    for f in json_src:
-        # render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=True, res=640, mode='square_crop', np_data=np_data)
-        render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=True, res=512, mode='none', np_data=np_data)
-
-    if np_data is not None:
-        all_data = np.concatenate(tuple(np_data), 0)
-        print(f"mean [{np.mean(all_data, axis=(0,1))}] std [{np.std(all_data, axis=(0,1))}]")
-
+        if np_data is not None:
+            all_data = np.concatenate(tuple(np_data), 0)
+            print(f"mean [{np.mean(all_data, axis=(0,1))}] std [{np.std(all_data, axis=(0,1))}]")
+    else: # render only crops
     # generate dataset from all metadata_single_element
-    # photo_src = []
-    # photo_src.extend(glob.glob(r'./photos/*/*.JPG'))
-    # photo_src.extend(glob.glob(r'./photos/*/*.jpg'))
-    # cut_n_shut(photo_src, f"./metadata_single_elements/dataset_cook{time.time()}", crop_mode="square_crop", resolution=1024, quality=95, sub_dirs=False )
+        photo_src = []
+        photo_src.extend(glob.glob(r'./photos/*/*.JPG'))
+        photo_src.extend(glob.glob(r'./photos/*/*.jpg'))
+        render_metadata_single(photo_src, output_folder, crop_mode="square_crop", resolution=512, quality=95, sub_dirs=False )
