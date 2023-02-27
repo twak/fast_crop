@@ -1,5 +1,6 @@
 import glob
 import os
+import sys
 from pathlib import Path
 from random import shuffle
 
@@ -15,13 +16,13 @@ def split(rgb_files, output_split=[[50, "val"], [50, "test"]]):
         fh = Path(f"{n}.txt").open(mode="w")
         nses.append([total, p, n, fh])
 
-    if total > len(rgb_files):
-        print("error, not enough data!")
-        return
+    # if total > len(rgb_files):
+    #     print("error, not enough data!")
+    #     return
 
     cpi = 0
     for i, rgb in enumerate(rgb_files):
-        print(f"copying {i} {rgb}")
+        print(f"adding {i} {rgb}")
 
         tpn = nses[cpi]
         prgb = Path(rgb)
@@ -45,5 +46,6 @@ rgbs = []
 
 rgbs.extend(glob.glob(os.path.join(r"/ibex/scratch/kellyt/windowz/winsyn_snow/rgb", "*.png")))
 
-split(rgbs, output_split=[[10000, "train10k"], [10000, "train_second_10k"], [2000, "test"]])
+name = sys.argv[1]
+split(rgbs, output_split=[[200, f"{name}_val"], [100000, f"{name}_test"]])
 

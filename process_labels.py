@@ -404,11 +404,11 @@ def render_metadata_single(images, output_dir, clear_log = False, sub_dirs = Tru
 
         batch_name = Path(im_file).parent.name
 
-        if not "tom_" in batch_name and not "michaela_" in batch_name:
-            continue
-
-        if "archive" in batch_name or "copenhagen" in batch_name or "thuwal" in batch_name:
-            continue
+        # if not "tom_" in batch_name and not "michaela_" in batch_name:
+        #     continue
+        #
+        # if "archive" in batch_name or "copenhagen" in batch_name or "thuwal" in batch_name:
+        #     continue
 
         json_file = Path(im_file).parent.parent.parent.joinpath("metadata_single_elements").joinpath(batch_name).joinpath(f"{out_name}.json")
 
