@@ -2,9 +2,17 @@ from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
 import os, time, sys
 
-gauth = GoogleAuth()
+gauth = GoogleAuth(settings={
+        "client_config_backend": "file",
+        "client_config_file":  os.path.join (os.path.expanduser('~'),"client_secrets.json"),
+        "save_credentials": False,
+        "oauth_scope": ["https://www.googleapis.com/auth/drive"],
+    })
+
 # Try to load saved client credentials
-gauth.LoadCredentialsFile("mycreds.txt")
+cred_file = os.path.join (os.path.expanduser('~'), "mycreds.txt")
+gauth.LoadCredentialsFile(cred_file)
+
 if gauth.credentials is None:
     # Authenticate if they're not there
     gauth.CommandLineAuth()
@@ -16,7 +24,7 @@ else:
     gauth.Authorize()
 
     # Save the current credentials to a file
-gauth.SaveCredentialsFile("mycreds.txt")
+gauth.SaveCredentialsFile( cred_file )
 
 drive = GoogleDrive(gauth)
 

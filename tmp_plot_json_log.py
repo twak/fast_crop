@@ -1,6 +1,9 @@
 import pandas as pd
 import json
+import matplotlib
 import matplotlib.pyplot as plt
+
+matplotlib.use('TkAgg')
 
 def read(file):
     with open(file, 'r') as myfile:
@@ -14,17 +17,17 @@ def read(file):
         df = pd.DataFrame(d)
     return df
 
-dfl = read(r'/home/twak/Downloads/20221028_011829.log.json')
-dfs = read(r'/home/twak/Downloads/20221028_204117.log.json')
+dfl = read(r'C:\Users\twak\Desktop\diffuse_results\beit2_0031_diffuse_180\20230221_124754.log.json')
+dfs = read(r'C:\Users\twak\Desktop\diffuse_results\beit2_0032_not_diffuse_180\20230221_124742.log.json')
 #print (dfl)
 
-fig = plt.figure(figsize=(12,5))
+fig = plt.figure() #figsize=(12,5)
 
-plt.plot(dfl['loss'], alpha=0.2, color="blue")
-plt.plot(dfl.ewm(alpha=0.1).mean().loss, alpha=0.8, color="orange")
+plt.plot(dfl['loss'], alpha=0.2, color="green")
+plt.plot(dfl.ewm(alpha=0.1).mean().loss, alpha=0.8, color="blue")
 
-# plt.plot(dfs['loss'], alpha=0.2, color="green")
-# plt.plot(dfs.ewm(alpha=0.1).mean().loss, alpha=0.8, color="red")
+plt.plot(dfs['loss'], alpha=0.2, color="orange")
+plt.plot(dfs.ewm(alpha=0.1).mean().loss, alpha=0.8, color="red")
 
 
 n = 500

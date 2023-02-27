@@ -94,7 +94,7 @@ if __name__ == "__main__":
     else:
         dataset_root = r"/mnt/vision/data/archinet/data"
 
-    s = "_lyd_9_2"
+    s = "_lyd_24_2"
 
     output_folder = r"C:\Users\twak\Documents\architecture_net\windows_part3\triplets"+s
 
