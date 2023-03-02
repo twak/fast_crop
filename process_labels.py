@@ -14,6 +14,7 @@ from pathlib import Path
 import PIL
 import PIL.ImageDraw as ImageDraw
 import PIL.Image as Image
+import svgwrite
 from PIL import ImageOps
 import numpy as np
 from sys import platform
@@ -285,6 +286,7 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, folder_per_b
 
     os.makedirs(os.path.join(output_folder, "rgb"   ), exist_ok=True)
     os.makedirs(os.path.join(output_folder, "labels"), exist_ok=True)
+    os.makedirs(os.path.join(output_folder, "svg"), exist_ok=True)
 
 
     batch_name = Path(json_file).parent.name
@@ -343,8 +345,29 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, folder_per_b
             # os.makedirs(os.path.join(output_folder, "rgb", batch_name), exist_ok=True)
             # os.makedirs(os.path.join(output_folder, "labels", batch_name), exist_ok=True)
 
-        crop_photo.save(os.path.join(output_folder, "rgb"   , base_name + ".png"))
+        crop_photo.save(os.path.join(output_folder, "rgb"   , base_name + ".jpg"))
         label_img .save(os.path.join(output_folder, "labels", base_name + ".png"))
+
+
+        if True:
+
+            label_img = Image.new(label_mode, (crop_photo.width, crop_photo.height))
+            draw_label_photo = ImageDraw.Draw(label_img, label_mode)
+            draw_label_photo.rectangle([(0, 0), (label_img.width, label_img.height)], fill=colors["none"])
+            dwg = svgwrite.Drawing(os.path.join(output_folder, "svg", crop_name + ".svg"), profile='tiny')
+            dwg.add(dwg.line((0, 0), (10, 0), stroke=svgwrite.rgb(10, 10, 16, '%')))
+            dwg.add(dwg.text(crop_name, insert=(0, 0.2), fill='black'))
+
+            for catl in crop_data["labels"]:
+
+                cat = catl[0]
+
+                for poly in catl[1]:
+                    poly = [tuple(x) for x in poly]
+                    draw_label_photo.polygon(poly, colors[cat])
+                    dwg.add(dwg.polygon(poly, fill=f'rgb({colors[cat][0]},{colors[cat][1]},{colors[cat][2]})'))
+
+            dwg.save()
 
         if np_data is not None:
             np_data.append( np.asarray(crop_photo) )
@@ -464,9 +487,11 @@ if __name__ == "__main__":
     else:
         dataset_root = r"/datawaha/cggroup/kellyt/archinet_backup/complete_2401/data"
 
-    output_folder = r"/datawaha/cggroup/kellyt/win_uk_aus_for_finetuning" #f"./metadata_single_elements/dataset_cook{time.time()}
+    output_folder = r"/datawaha/cggroup/kellyt/render_iccv" #f"./metadata_single_elements/dataset_cook{time.time()}
 
-    if False: # render crops + labels
+    os.makedirs(output_folder, exist_ok=True)
+
+    if True: # render crops + labels
 
         json_src = []
         # json_src.extend(glob.glob(r'/home/twak/Downloads/LYD__KAUST_batch_2_24.06.2022/LYD<>KAUST_batch_2_24.06.2022/**.json'))
@@ -476,7 +501,7 @@ if __name__ == "__main__":
 
         for f in json_src:
             # render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=True, res=640, mode='square_crop', np_data=np_data)
-            render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=False, res=512, mode='square_crop', np_data=np_data)
+            render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=False, res=-1, mode='none', np_data=np_data)
 
         if np_data is not None:
             all_data = np.concatenate(tuple(np_data), 0)
