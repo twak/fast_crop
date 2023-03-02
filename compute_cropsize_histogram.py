@@ -8,8 +8,8 @@ import process_labels
 
 from pathlib import Path
 
-# dataset_root = r"/datawaha/cggroup/kellyt/archinet_backup/complete_2401/data"
-dataset_root = r"C:\Users\twak\Downloads\egs_for_paper"
+dataset_root = r"/datawaha/cggroup/kellyt/archinet_backup/complete_2401/data"
+#dataset_root = r"C:\Users\twak\Downloads\egs_for_paper"
 
 label_src = []
 label_src.extend(glob.glob(os.path.join(dataset_root, "labels", "*.png")))
