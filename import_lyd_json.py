@@ -90,7 +90,9 @@ def write_label_jsons( src_lookup, lyd_json):
 
             src_split = re.split(r'[\\]|[.]', src_file)
 
-            out_file_name = os.path.join(".", "metadata_window_labels", src_split[0], src_split[1]+".json" )
+            out_file_name = os.path.join ( r"C:\Users\twak\Documents\architecture_net\windows_part3\labels", crop_file_name[:-4]+".json")
+
+            # out_file_name = os.path.join(".", "metadata_window_labels", src_split[0], src_split[1]+".json" )
             os.makedirs(Path(out_file_name).parent, exist_ok=True)
 
             if os.path.exists(out_file_name):
@@ -186,13 +188,12 @@ json_src = []
 #           "LYD__KAUST_batch_6_fixed_24_08", "LYD__KAUST_batch_7_fixed_24_08", "LYD__KAUST_batch_8", "LYD__KAUST_all_batches_old", "LYD__KAUST_all_batches", "LYD__KAUST_batch_9" ]:
 #     json_src.extend(glob.glob(rf'C:\Users\twak\Documents\architecture_net\dataset\old_metadata_window_labels\from_labellers\{s}\**.json'))
 
-json_src.extend(glob.glob(r'.\old_metadata_window_labels\from_labellers\LYD__KAUST_all_batches\*\**.json'))
-json_src.extend(glob.glob(r'C:\Users\twak\Documents\architecture_net\dataset\old_metadata_window_labels\from_labellers\LYD__KAUST_batch_9\**.json'))
+# json_src.extend(glob.glob(r'.\old_metadata_window_labels\from_labellers\LYD__KAUST_all_batches\*\**.json'))
+json_src.extend(glob.glob(r'C:\Users\twak\Documents\architecture_net\windows_part3\lyd\LYD__KAUST_1_09.01.2023\*.json'))
 
 # src_lookup = build_src_lookup(r"/home/twak/Downloads/input_locations_first_1500.txt")
 
-src_lookup = build_src_lookup([r".\old_metadata_window_labels\from_labellers\input_locations_first_1500.txt",
-                               r".\old_metadata_window_labels\from_labellers\input_locations_second_1500.txt"] )
+src_lookup = build_src_lookup ( [ r"C:\Users\twak\Documents\architecture_net\windows_part3\log_part_3.txt"] )
 
 
 # filter second labellers file
