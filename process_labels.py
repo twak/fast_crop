@@ -349,7 +349,7 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, folder_per_b
         label_img .save(os.path.join(output_folder, "labels", base_name + ".png"))
 
 
-        if True:
+        if True: # svg
 
             label_img = Image.new(label_mode, (crop_photo.width, crop_photo.height))
             draw_label_photo = ImageDraw.Draw(label_img, label_mode)
@@ -358,11 +358,12 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, folder_per_b
             dwg.add(dwg.line((0, 0), (10, 0), stroke=svgwrite.rgb(10, 10, 16, '%')))
             dwg.add(dwg.text(crop_name, insert=(0, 0.2), fill='black'))
 
-            for catl in crop_data["labels"]:
+            for cat, polies in crop_data["labels"].items():
+            # for catl in crop_data["labels"]:
 
-                cat = catl[0]
+                # cat = catl[0]
 
-                for poly in catl[1]:
+                for poly in polies:
                     poly = [tuple(x) for x in poly]
                     draw_label_photo.polygon(poly, colors[cat])
                     dwg.add(dwg.polygon(poly, fill=f'rgb({colors[cat][0]},{colors[cat][1]},{colors[cat][2]})'))
