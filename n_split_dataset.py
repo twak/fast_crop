@@ -45,7 +45,7 @@ def split(rgb_files, output_split=[[50, "val"], [50, "test"]]):
 rgbs = []
 name = sys.argv[1]
 
-rgbs.extend(glob.glob(os.path.join(rf"/home/kellyt/archinet/winlab_4_png/{name}", "*.png")))
+rgbs.extend(glob.glob(os.path.join(rf"/ibex/ai/home/kellyt/winlab_4_png/{name}", "*.png")))
 
 split(rgbs, output_split=[[200, f"{name}_val"], [100000, f"{name}_test"]])
 
