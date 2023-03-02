@@ -28,6 +28,8 @@ json_src.extend(glob.glob(os.path.join(dataset_root, "metadata_window_labels", "
 np_data = None  # []
 
 for json_file in json_src:
+    print (json_file)
+
     batch_name = Path(json_file).parent.name
 
     with open(json_file, "r") as f:
@@ -49,5 +51,5 @@ total_y = np.sum(xes)
 
 
 for i in range ( buckets ):
-    print ( "%s, %d, %d, %f" % (i, total_w[i], total_y[i]  ) )
+    print ( "%d, %f, %f" % (i, total_w[i], total_y[i]  ) )
     # print ("\n")
