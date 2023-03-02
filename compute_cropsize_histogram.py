@@ -14,8 +14,8 @@ dataset_root = r"/datawaha/cggroup/kellyt/archinet_backup/complete_2401/data"
 label_src = []
 label_src.extend(glob.glob(os.path.join(dataset_root, "labels", "*.png")))
 
-buckets = 16
-max = 8000
+buckets = 20
+max = 10000
 
 xes = np.zeros((buckets))
 yes = np.zeros((buckets)) # images which have this element
