@@ -428,7 +428,7 @@ def render_metadata_single(images, output_dir, clear_log = False, sub_dirs = Tru
         batch_name = Path(im_file).parent.name
 
         if sub_dirs:
-            sub_dir = os.path.split ( os.path.split(im_file)[0] )[1]
+            # sub_dir = os.path.split ( os.path.split(im_file)[0] )[1]
             dir = os.path.join(output_dir, batch_name)
             os.makedirs( dir, exist_ok=True)
 
