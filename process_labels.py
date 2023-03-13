@@ -388,7 +388,7 @@ def render_metadata_single(images, output_dir, clear_log = False, sub_dirs = Tru
     fm = 'w' if clear_log else 'a'
     log = open( os.path.join ( output_dir, 'log.txt'), fm)
 
-    def save(im, out_name):
+    def save(im, out_name, subdir=None):
 
         if len (im.getbands() ) > 3: # pngs..
              im = im.convert("RGB")
@@ -401,7 +401,10 @@ def render_metadata_single(images, output_dir, clear_log = False, sub_dirs = Tru
         jpg_out_file = "%s.png" % md5hash.hexdigest()
         log.write("\"%s\"\n" % jpg_out_file)
 
-        out_path = os.path.join(output_dir, jpg_out_file)
+        if sub_dirs:
+            out_path = os.path.join(output_dir, subdir, jpg_out_file)
+        else:
+            out_path = os.path.join(output_dir, jpg_out_file)
 
         im.save(out_path, format="PNG", quality=quality)
 
@@ -409,17 +412,13 @@ def render_metadata_single(images, output_dir, clear_log = False, sub_dirs = Tru
         print ("unknown crop mode %s. pick from: %s " % (crop_mode, " ".join(VALID_CROPS)))
         return
 
-    min_dim = 1024
+    min_dim = 512
     count = 0
 
     print (f"found {len(images)} jpgs")
 
     for im_file in images:
 
-        if sub_dirs:
-            sub_dir = os.path.split ( os.path.split(im_file)[0] )[1]
-            dir = os.path.join(output_dir, sub_dir)
-            os.makedirs( dir, exist_ok=True)
 
         print ('processing %s...' % im_file)
 
@@ -427,6 +426,11 @@ def render_metadata_single(images, output_dir, clear_log = False, sub_dirs = Tru
         out_ext = out_ext.lower()
 
         batch_name = Path(im_file).parent.name
+
+        if sub_dirs:
+            sub_dir = os.path.split ( os.path.split(im_file)[0] )[1]
+            dir = os.path.join(output_dir, batch_name)
+            os.makedirs( dir, exist_ok=True)
 
         # if not "tom_" in batch_name and not "michaela_" in batch_name:
         #     continue
@@ -467,7 +471,7 @@ def render_metadata_single(images, output_dir, clear_log = False, sub_dirs = Tru
                 crop_im = im.crop( ( c[0], c[1], c[2], c[3] ) )
                 crop_im = crop(crop_im, resolution, crop_mode)
 
-                save(crop_im, out_name)
+                save(crop_im, out_name, batch_name if sub_dirs else None)
                 count = count + 1
 
                 print(f"count {count}")
@@ -488,11 +492,11 @@ if __name__ == "__main__":
     else:
         dataset_root = r"/datawaha/cggroup/kellyt/archinet_backup/complete_2401/data"
 
-    output_folder = r"/datawaha/cggroup/kellyt/render_iccv" #f"./metadata_single_elements/dataset_cook{time.time()}
+    output_folder = r"/datawaha/cggroup/kellyt/iccf_add_mat/photos" #f"./metadata_single_elements/dataset_cook{time.time()}
 
     os.makedirs(output_folder, exist_ok=True)
 
-    if True: # render crops + labels
+    if False: # render crops + labels
 
         json_src = []
         # json_src.extend(glob.glob(r'/home/twak/Downloads/LYD__KAUST_batch_2_24.06.2022/LYD<>KAUST_batch_2_24.06.2022/**.json'))
@@ -512,4 +516,4 @@ if __name__ == "__main__":
         photo_src = []
         photo_src.extend(glob.glob(r'./photos/*/*.JPG'))
         photo_src.extend(glob.glob(r'./photos/*/*.jpg'))
-        render_metadata_single(photo_src, output_folder, crop_mode="square_crop", resolution=512, quality=95, sub_dirs=False )
+        render_metadata_single(photo_src, output_folder, crop_mode="square_crop", resolution=512, quality=95, sub_dirs=True )
