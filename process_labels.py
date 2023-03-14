@@ -492,7 +492,7 @@ if __name__ == "__main__":
     else:
         dataset_root = r"/datawaha/cggroup/kellyt/archinet_backup/complete_2401/data"
 
-    output_folder = r"/datawaha/cggroup/kellyt/iccf_add_mat/photos" #f"./metadata_single_elements/dataset_cook{time.time()}
+    output_folder = r"/datawaha/cggroup/kellyt/iccv_add_mat/photos" #f"./metadata_single_elements/dataset_cook{time.time()}
 
     os.makedirs(output_folder, exist_ok=True)
 
