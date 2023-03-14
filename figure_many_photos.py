@@ -108,12 +108,6 @@ def grid_o_crops(name, images, output_dir, quality=98):
 
         batch_name = Path(im_file).parent.name
 
-        if sub_dirs:
-            # sub_dir = os.path.split ( os.path.split(im_file)[0] )[1]
-            dir = os.path.join(output_dir, batch_name)
-            os.makedirs( dir, exist_ok=True)
-
-
         json_file = Path(im_file).parent.parent.parent.joinpath("metadata_single_elements").joinpath(batch_name).joinpath(f"{out_name}.json")
 
         if os.path.exists(os.path.join (".",json_file ) ): # crop
