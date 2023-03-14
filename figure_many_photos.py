@@ -74,7 +74,7 @@ def crop( img, res=-1, mode='none', resample=None, background_col="black"):
         return img
 
 
-def grid_o_crops(images, output_dir, clear_log = False, sub_dirs = True, crop_mode='square_crop', resolution=512, quality=98):
+def grid_o_crops(name, images, output_dir, quality=98):
     '''
     creates svg with many crops of images
     '''
@@ -82,41 +82,14 @@ def grid_o_crops(images, output_dir, clear_log = False, sub_dirs = True, crop_mo
     os.makedirs(output_dir, exist_ok=True)
     name_map = {}
 
-    fm = 'w' if clear_log else 'a'
+    fm = 'w'
     log = open( os.path.join ( output_dir, 'log.txt'), fm)
 
-    svg_out = svgwrite.Drawing(os.path.join(output_folder, "many.svg"), profile='tiny')
-    # dwg.add(dwg.line((0, 0), (10, 0), stroke=svgwrite.rgb(10, 10, 16, '%')))
-    # dwg.add(dwg.text(crop_name, insert=(0, 0.2), fill='black'))
+    svg_out = svgwrite.Drawing(os.path.join(output_folder, name+".svg"), profile='tiny')
 
     random.shuffle(images)
 
-    def save(im, out_name, subdir=None):
-
-        if len (im.getbands() ) > 3: # pngs..
-             im = im.convert("RGB")
-
-        if im.width == 0 or im.height == 0:
-            print("skipping zero sized rect in %s" % out_name)
-            return
-
-        md5hash = hashlib.md5(im.tobytes())
-        jpg_out_file = "%s.png" % md5hash.hexdigest()
-        log.write("\"%s\"\n" % jpg_out_file)
-
-        if sub_dirs:
-            out_path = os.path.join(output_dir, subdir, jpg_out_file)
-        else:
-            out_path = os.path.join(output_dir, jpg_out_file)
-
-        im.save(out_path, format="PNG", quality=quality)
-
-    if not crop_mode in VALID_CROPS:
-        print ("unknown crop mode %s. pick from: %s " % (crop_mode, " ".join(VALID_CROPS)))
-        return
-
     min_dim = 512
-    count = 0
 
     print (f"found {len(images)} jpgs")
 
@@ -192,10 +165,10 @@ def grid_o_crops(images, output_dir, clear_log = False, sub_dirs = True, crop_mo
                 xoff = size *(max_x+1) + xpos_p * width + (size - width) / 2  # , ypos * size + yoff
                 yoff = ypos_p * size + (size - height) / 2
 
+            print ( f" max col {ypos_l} {ypos_p}")
 
             if ypos_l > max_y or ypos_p > max_y:
                 break
-
 
             svg_out.add(svg_out.image(href=s_im_name, insert=(xoff, yoff), size=(width, height) ) )
 
@@ -209,7 +182,6 @@ def grid_o_crops(images, output_dir, clear_log = False, sub_dirs = True, crop_mo
                 if c[2] - c[0] < min_dim or c[3] - c[1] < min_dim:
                     print("skipping small rect")
                     continue
-
 
                 svg_out.add(svg_out.rect((
                     ( c[0] * width / im_l.width + xoff ),
@@ -244,8 +216,28 @@ if __name__ == "__main__":
     photo_src = []
     # photo_src.extend(glob.glob(r'./photos/tom_ambleside_20230101/*.JPG'))
 
-    for batch in [ "tom_ambleside_20230101", "tom_bramley_20220406", "tom_cams_20220418", "tom_dales_20220403",
-            "tom_leeds_docks_20220404", "tom_london_20220418", "tom_saffron_20220418", "tom_york_20220411" ]:
-        photo_src.extend(glob.glob( os.path.join(dataset_root, "photos", batch, "*.JPG" )) )
+    for name, batches in [("uk", [ "tom_ambleside_20230101", "tom_bramley_20220406", "tom_cams_20220418", "tom_dales_20220403",
+            "tom_leeds_docks_20220404", "tom_london_20220418", "tom_saffron_20220418", "tom_york_20220411" ] ),
 
-    grid_o_crops(photo_src, output_folder, crop_mode="square_crop", resolution=512, quality=80, sub_dirs=True)
+                          ("usa", ["brian_la_20220905", "kaitlyn_ny_20221205", "kalinia_la_20230128", "nicklaus_miami_20230301",
+            "peter_washington_20221129", "scarlette_chicago_20221022"] ),
+
+                        ("aus", ["michaela_vienna_20220425",     "michaela_vienna_20220426",     "michaela_vienna_20220427",     "michaela_vienna_20220428",
+    "michaela_vienna_20220429",    "michaela_vienna_20220502",     "michaela_vienna_20220503",     "michaela_vienna_20220603",
+    "michaela_vienna_20220608",     "michaela_vienna_20220609",    "michaela_vienna_20220611",    "michaela_vienna_20220614",
+    "michaela_vienna_20220615",    "michaela_vienna_20220617",    "michaela_vienna_20220618",    "michaela_vienna_20220628",
+    "michaela_vienna_20220629",    "michaela_vienna_20220704",    "michaela_vienna_20220705",    "michaela_vienna_20220706",
+    "michaela_vienna_20220707",    "michaela_vienna_20220712",    "michaela_vienna_20220713",    "michaela_vienna_20220714"]),
+
+                          ("ger", ["michaela_berlin_20221000", "michaela_berlin_20221018", "michaela_berlin_20221019", "michaela_berlin_20221020",
+    "michaela_berlin_20221021", "michaela_berlin_20221024", "michaela_berlin_20221025", "michaela_berlin_20221026",
+    "michaela_berlin_20221027", "michaela_berlin_20221028"]),
+                          ]:
+        for batch in batches:
+            photo_src.extend(glob.glob( os.path.join(dataset_root, "photos", batch, "*.JPG" )) )
+        grid_o_crops(name, photo_src, output_folder, quality=80)
+
+
+
+    # for batch in :
+
