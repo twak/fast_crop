@@ -90,7 +90,7 @@ if __name__ == "__main__":
         output_folder = r"C:\Users\twak\Downloads\ad_syn"
     else:
         dataset_root = r"/home/kellyt/is/windowz/winsyn_snow"
-        output_folder = r"/home/kellyt"
+        output_folder = r"/home/kellyt/ad_synlab"
 
     os.makedirs(output_folder, exist_ok=True)
 
