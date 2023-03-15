@@ -224,8 +224,8 @@ if __name__ == "__main__":
     "michaela_berlin_20221021", "michaela_berlin_20221024", "michaela_berlin_20221025", "michaela_berlin_20221026",
     "michaela_berlin_20221027", "michaela_berlin_20221028"]),
                           ]:
+        photo_src = []
         for batch in batches:
-            photo_src = []
             photo_src.extend(glob.glob( os.path.join(dataset_root, "photos", batch, "*.JPG" )) )
         grid_o_crops(name, photo_src, output_folder, quality=80)
 
