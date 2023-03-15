@@ -14,6 +14,7 @@ from pathlib import Path
 import PIL
 import PIL.ImageDraw as ImageDraw
 import PIL.Image as Image
+import svgwrite
 from PIL import ImageOps
 import numpy as np
 from sys import platform
@@ -285,6 +286,7 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, folder_per_b
 
     os.makedirs(os.path.join(output_folder, "rgb"   ), exist_ok=True)
     os.makedirs(os.path.join(output_folder, "labels"), exist_ok=True)
+    os.makedirs(os.path.join(output_folder, "svg"), exist_ok=True)
 
 
     batch_name = Path(json_file).parent.name
@@ -343,8 +345,30 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, folder_per_b
             # os.makedirs(os.path.join(output_folder, "rgb", batch_name), exist_ok=True)
             # os.makedirs(os.path.join(output_folder, "labels", batch_name), exist_ok=True)
 
-        crop_photo.save(os.path.join(output_folder, "rgb"   , base_name + ".png"))
+        crop_photo.save(os.path.join(output_folder, "rgb"   , base_name + ".jpg"))
         label_img .save(os.path.join(output_folder, "labels", base_name + ".png"))
+
+
+        if True: # svg
+
+            label_img = Image.new(label_mode, (crop_photo.width, crop_photo.height))
+            draw_label_photo = ImageDraw.Draw(label_img, label_mode)
+            draw_label_photo.rectangle([(0, 0), (label_img.width, label_img.height)], fill=colors["none"])
+            dwg = svgwrite.Drawing(os.path.join(output_folder, "svg", crop_name + ".svg"), profile='tiny')
+            dwg.add(dwg.line((0, 0), (10, 0), stroke=svgwrite.rgb(10, 10, 16, '%')))
+            dwg.add(dwg.text(crop_name, insert=(0, 0.2), fill='black'))
+
+            for cat, polies in crop_data["labels"].items():
+            # for catl in crop_data["labels"]:
+
+                # cat = catl[0]
+
+                for poly in polies:
+                    poly = [tuple(x) for x in poly]
+                    draw_label_photo.polygon(poly, colors[cat])
+                    dwg.add(dwg.polygon(poly, fill=f'rgb({colors[cat][0]},{colors[cat][1]},{colors[cat][2]})'))
+
+            dwg.save()
 
         if np_data is not None:
             np_data.append( np.asarray(crop_photo) )
@@ -364,7 +388,7 @@ def render_metadata_single(images, output_dir, clear_log = False, sub_dirs = Tru
     fm = 'w' if clear_log else 'a'
     log = open( os.path.join ( output_dir, 'log.txt'), fm)
 
-    def save(im, out_name):
+    def save(im, out_name, subdir=None):
 
         if len (im.getbands() ) > 3: # pngs..
              im = im.convert("RGB")
@@ -377,7 +401,10 @@ def render_metadata_single(images, output_dir, clear_log = False, sub_dirs = Tru
         jpg_out_file = "%s.png" % md5hash.hexdigest()
         log.write("\"%s\"\n" % jpg_out_file)
 
-        out_path = os.path.join(output_dir, jpg_out_file)
+        if sub_dirs:
+            out_path = os.path.join(output_dir, subdir, jpg_out_file)
+        else:
+            out_path = os.path.join(output_dir, jpg_out_file)
 
         im.save(out_path, format="PNG", quality=quality)
 
@@ -385,17 +412,13 @@ def render_metadata_single(images, output_dir, clear_log = False, sub_dirs = Tru
         print ("unknown crop mode %s. pick from: %s " % (crop_mode, " ".join(VALID_CROPS)))
         return
 
-    min_dim = 1024
+    min_dim = 512
     count = 0
 
     print (f"found {len(images)} jpgs")
 
     for im_file in images:
 
-        if sub_dirs:
-            sub_dir = os.path.split ( os.path.split(im_file)[0] )[1]
-            dir = os.path.join(output_dir, sub_dir)
-            os.makedirs( dir, exist_ok=True)
 
         print ('processing %s...' % im_file)
 
@@ -403,6 +426,11 @@ def render_metadata_single(images, output_dir, clear_log = False, sub_dirs = Tru
         out_ext = out_ext.lower()
 
         batch_name = Path(im_file).parent.name
+
+        if sub_dirs:
+            # sub_dir = os.path.split ( os.path.split(im_file)[0] )[1]
+            dir = os.path.join(output_dir, batch_name)
+            os.makedirs( dir, exist_ok=True)
 
         # if not "tom_" in batch_name and not "michaela_" in batch_name:
         #     continue
@@ -443,7 +471,7 @@ def render_metadata_single(images, output_dir, clear_log = False, sub_dirs = Tru
                 crop_im = im.crop( ( c[0], c[1], c[2], c[3] ) )
                 crop_im = crop(crop_im, resolution, crop_mode)
 
-                save(crop_im, out_name)
+                save(crop_im, out_name, batch_name if sub_dirs else None)
                 count = count + 1
 
                 print(f"count {count}")
@@ -464,7 +492,9 @@ if __name__ == "__main__":
     else:
         dataset_root = r"/datawaha/cggroup/kellyt/archinet_backup/complete_2401/data"
 
-    output_folder = r"/datawaha/cggroup/kellyt/win_uk_aus_for_finetuning" #f"./metadata_single_elements/dataset_cook{time.time()}
+    output_folder = r"/datawaha/cggroup/kellyt/iccv_add_mat/photos" #f"./metadata_single_elements/dataset_cook{time.time()}
+
+    os.makedirs(output_folder, exist_ok=True)
 
     if False: # render crops + labels
 
@@ -476,7 +506,7 @@ if __name__ == "__main__":
 
         for f in json_src:
             # render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=True, res=640, mode='square_crop', np_data=np_data)
-            render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=False, res=512, mode='square_crop', np_data=np_data)
+            render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=False, res=-1, mode='none', np_data=np_data)
 
         if np_data is not None:
             all_data = np.concatenate(tuple(np_data), 0)
@@ -486,4 +516,4 @@ if __name__ == "__main__":
         photo_src = []
         photo_src.extend(glob.glob(r'./photos/*/*.JPG'))
         photo_src.extend(glob.glob(r'./photos/*/*.jpg'))
-        render_metadata_single(photo_src, output_folder, crop_mode="square_crop", resolution=512, quality=95, sub_dirs=False )
+        render_metadata_single(photo_src, output_folder, crop_mode="square_crop", resolution=512, quality=95, sub_dirs=True )
