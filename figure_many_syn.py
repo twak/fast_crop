@@ -89,8 +89,8 @@ if __name__ == "__main__":
         dataset_root = r"C:\Users\twak\Downloads\snow_200"
         output_folder = r"C:\Users\twak\Downloads\ad_syn"
     else:
-        dataset_root = r"/datawaha/cggroup/kellyt/archinet_backup/complete_2401/data"
-        output_folder = r"/datawaha/cggroup/kellyt/iccv_add_mat/labels"
+        dataset_root = r"/home/kellyt/is/windowz/winsyn_snow"
+        output_folder = r"/home/kellyt"
 
     os.makedirs(output_folder, exist_ok=True)
 
