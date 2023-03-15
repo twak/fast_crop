@@ -207,9 +207,6 @@ if __name__ == "__main__":
 
     os.makedirs(output_folder, exist_ok=True)
 
-    photo_src = []
-    # photo_src.extend(glob.glob(r'./photos/tom_ambleside_20230101/*.JPG'))
-
     for name, batches in [("uk", [ "tom_ambleside_20230101", "tom_bramley_20220406", "tom_cams_20220418", "tom_dales_20220403",
             "tom_leeds_docks_20220404", "tom_london_20220418", "tom_saffron_20220418", "tom_york_20220411" ] ),
 
@@ -228,6 +225,7 @@ if __name__ == "__main__":
     "michaela_berlin_20221027", "michaela_berlin_20221028"]),
                           ]:
         for batch in batches:
+            photo_src = []
             photo_src.extend(glob.glob( os.path.join(dataset_root, "photos", batch, "*.JPG" )) )
         grid_o_crops(name, photo_src, output_folder, quality=80)
 
