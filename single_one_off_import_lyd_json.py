@@ -115,67 +115,70 @@ def write_label_jsons( lyd_json):
         COUNT += 1
 
 
+if __name__ == "__main__":
 
-json_src = []
+    json_src = []
 
-# newer corrections from labellers overwrite old version
+    # newer corrections from labellers overwrite old version
 
-# for s in ["LYD__KAUST_Batch_1(100images)_16.06.22_", "LYD__KAUST_1_batch_(100_frames)_21.06.2022",
-#           "LYD__KAUST_batch_1_fixed_24.06.2022", "LYD__KAUST_batch_2_24.06.2022", "LYD__KAUST_batch2_updated", "LYD__KAUST_batch1_fixed_2tasks", "LYD__KAUST_batch_1_updated", "LYD__KAUST_batch_3_fixed", "LYD__KAUST_batch_4", "LYD__KAUST_batch4_fixed_22.07.22", "LYD__KAUST_batch5_22.07.22", "LYD__KAUST_batch4-5_fixed", "LYD__KAUST_batch_6_04.08.2022", "LYD__KAUST_batch_6_fixed", "LYD__KAUST_batch_7",
-#           "LYD__KAUST_batch_6_fixed_24_08", "LYD__KAUST_batch_7_fixed_24_08", "LYD__KAUST_batch_8", "LYD__KAUST_all_batches_old", "LYD__KAUST_all_batches", "LYD__KAUST_batch_9" ]:
-#     json_src.extend(glob.glob(rf'C:\Users\twak\Documents\architecture_net\dataset\old_metadata_window_labels\from_labellers\{s}\**.json'))
+    # for s in ["LYD__KAUST_Batch_1(100images)_16.06.22_", "LYD__KAUST_1_batch_(100_frames)_21.06.2022",
+    #           "LYD__KAUST_batch_1_fixed_24.06.2022", "LYD__KAUST_batch_2_24.06.2022", "LYD__KAUST_batch2_updated", "LYD__KAUST_batch1_fixed_2tasks", "LYD__KAUST_batch_1_updated", "LYD__KAUST_batch_3_fixed", "LYD__KAUST_batch_4", "LYD__KAUST_batch4_fixed_22.07.22", "LYD__KAUST_batch5_22.07.22", "LYD__KAUST_batch4-5_fixed", "LYD__KAUST_batch_6_04.08.2022", "LYD__KAUST_batch_6_fixed", "LYD__KAUST_batch_7",
+    #           "LYD__KAUST_batch_6_fixed_24_08", "LYD__KAUST_batch_7_fixed_24_08", "LYD__KAUST_batch_8", "LYD__KAUST_all_batches_old", "LYD__KAUST_all_batches", "LYD__KAUST_batch_9" ]:
+    #     json_src.extend(glob.glob(rf'C:\Users\twak\Documents\architecture_net\dataset\old_metadata_window_labels\from_labellers\{s}\**.json'))
 
-json_src.extend(glob.glob(r'C:\Users\twak\Documents\architecture_net\windows_part3\lyd_24_2\**.json'))
-# json_src.extend(glob.glob(r'C:\Users\twak\Documents\architecture_net\dataset\old_metadata_window_labels\from_labellers\LYD__KAUST_batch_9\**.json'))
-src_lookup = build_src_lookup([r"C:\Users\twak\Documents\architecture_net\windows_part3\log_part_3.txt"])
-# src_lookup = build_src_lookup([r".\old_metadata_window_labels\from_labellers\input_locations_first_1500.txt",
-#                                r".\old_metadata_window_labels\from_labellers\input_locations_second_1500.txt"] )
+    json_src.extend(glob.glob(r'C:\Users\twak\Documents\architecture_net\windows_part3\lyd_15_3_to_val\**.json'))
+    # json_src.extend(glob.glob(r'C:\Users\twak\Documents\architecture_net\dataset\old_metadata_window_labels\from_labellers\LYD__KAUST_batch_9\**.json'))
+    src_lookup = build_src_lookup([r"C:\Users\twak\Documents\architecture_net\windows_part3\log_part_3.txt",
+                                   r"C:\Users\twak\Documents\architecture_net\windows_part3\log_part_4.txt"])
+    # src_lookup = build_src_lookup([r".\old_metadata_window_labels\from_labellers\input_locations_first_1500.txt",
+    #                                r".\old_metadata_window_labels\from_labellers\input_locations_second_1500.txt"] )
 
 
-# filter second labellers file
+    # filter second labellers file
 
-# tmp_out = r"./subset_labellers_second_1500/"
-#
-# for key, value in src_lookup.items():
-#     src = value["src"]
-#     srcs = src.split("\\")
-#
-#     in_p = os.path.join(".", "photos", srcs[0], srcs[1])
-#     out_p = os.path.join(".", "subset_labellers_second_1500", srcs[0])
-#     os.makedirs(out_p, exist_ok=True)
-#     out_p = os.path.join(out_p, srcs[1])
-#     shutil.copyfile(in_p, out_p)
+    # tmp_out = r"./subset_labellers_second_1500/"
+    #
+    # for key, value in src_lookup.items():
+    #     src = value["src"]
+    #     srcs = src.split("\\")
+    #
+    #     in_p = os.path.join(".", "photos", srcs[0], srcs[1])
+    #     out_p = os.path.join(".", "subset_labellers_second_1500", srcs[0])
+    #     os.makedirs(out_p, exist_ok=True)
+    #     out_p = os.path.join(out_p, srcs[1])
+    #     shutil.copyfile(in_p, out_p)
 
-COUNT  = 0
-COUNT2 = 0
-COUNT3 = 0
-CITY_COUNT = {}
-TOTAL_VERTS = 0
-TOTAL_POLYGONS = 0
-CAT_COUNT = {}
 
-for f in json_src:
-    print(f)
-    write_label_jsons( f )
+    COUNT  = 0
+    COUNT2 = 0
+    COUNT3 = 0
+    CITY_COUNT = {}
+    TOTAL_VERTS = 0
+    TOTAL_POLYGONS = 0
+    CAT_COUNT = {}
 
-print ( f"processed {COUNT3} index entries in lyd json" )
-print (f"unique files mentioned {len ( ALL_NAMES ) }")
+    for f in json_src:
+        print(f)
+        write_label_jsons( f )
 
-total_rects = 0
-for i in JSON_NAMES.values():
-    total_rects += i
+    print ( f"processed {COUNT3} index entries in lyd json" )
+    print (f"unique files mentioned {len ( ALL_NAMES ) }")
 
-print ( f"{COUNT2} failures" )
-print ( f"processed {COUNT} windows" )
+    total_rects = 0
+    for i in JSON_NAMES.values():
+        total_rects += i
 
-print (f"unique json files {len ( JSON_NAMES ) } containing {total_rects} crops\n")
+    print ( f"{COUNT2} failures" )
+    print ( f"processed {COUNT} windows" )
 
-for c,n in CITY_COUNT.items():
-    print( f"{c}, {n}")
+    print (f"unique json files {len ( JSON_NAMES ) } containing {total_rects} crops\n")
 
-print("\n")
+    for c,n in CITY_COUNT.items():
+        print( f"{c}, {n}")
 
-for c,n in CAT_COUNT.items():
-    print( f"{c}, {n}")
+    print("\n")
 
-print (f"total verts {TOTAL_VERTS}, total polys {TOTAL_POLYGONS}")
+    for c,n in CAT_COUNT.items():
+        print( f"{c}, {n}")
+
+    print (f"total verts {TOTAL_VERTS}, total polys {TOTAL_POLYGONS}")

@@ -30,19 +30,19 @@ all_batches = os.listdir(r"./photos")
 
 LOG_LOOKUP = defaultdict(lambda: set())
 
-with open(r"../log_part_3.txt", "r") as index_f: # images from previous log file
-    lines = index_f.readlines()
-    for i in range(int(len(lines) / 2)):
-        img_line = lines[i * 2]
-        crop_line = lines[i * 2 + 1].replace('"', '').strip()
-        splits = img_line.split("[")
-        src_file_name = splits[0].replace("\\", "/")
-        # print (src_file_name)
-        # crop_region = splits[1].replace("]", "").strip()
-        # crop_region = [*map(lambda x: int(x.strip()), crop_region.split(","))]
-        LOG_LOOKUP[Path(src_file_name).parent.name].add(Path(src_file_name).with_suffix("").name)
-
-print (f"exluding {len([item for sublist in LOG_LOOKUP for item in sublist])} looking at log file")
+# with open(r"../log_part_3.txt", "r") as index_f: # images from previous log file
+#     lines = index_f.readlines()
+#     for i in range(int(len(lines) / 2)):
+#         img_line = lines[i * 2]
+#         crop_line = lines[i * 2 + 1].replace('"', '').strip()
+#         splits = img_line.split("[")
+#         src_file_name = splits[0].replace("\\", "/")
+#         # print (src_file_name)
+#         # crop_region = splits[1].replace("]", "").strip()
+#         # crop_region = [*map(lambda x: int(x.strip()), crop_region.split(","))]
+#         LOG_LOOKUP[Path(src_file_name).parent.name].add(Path(src_file_name).with_suffix("").name)
+#
+# print (f"exluding {len([item for sublist in LOG_LOOKUP for item in sublist])} looking at log file")
 
 # SEEN =
 # SEEN = set(glob(os.path.join("./metadata_window_labels", "*", "*.json")))
@@ -50,7 +50,12 @@ print (f"exluding {len([item for sublist in LOG_LOOKUP for item in sublist])} lo
 for s in set(glob(os.path.join(r"./metadata_window_labels", "*", "*.json"))): # already completely labelled images
     LOG_LOOKUP[Path(s).parent.name].add(Path(s).with_suffix("").name)
 
-print (f"exluding {len([item for sublist in LOG_LOOKUP for item in sublist])} including existing labels")
+print (f"exluding {len([item for sublist in LOG_LOOKUP for item in sublist])} including existing labels using list 1")
+
+for s in set(glob(os.path.join(r"./metadata_window_labels_2", "*", "*.json"))): # already completely labelled images
+    LOG_LOOKUP[Path(s).parent.name].add(Path(s).with_suffix("").name)
+
+print (f"exluding {len([item for sublist in LOG_LOOKUP for item in sublist])} including existing labels using list 1 & 2")
 
 def not_seen(jpgs):
     global LOG_LOOKUP
@@ -67,11 +72,16 @@ def not_seen(jpgs):
 
 print(all_batches)
 
-
 for limit, batches, country in [
-    (2500, ["peter_washington_20221129", "kaitlyn_ny_20221205", "brian_la_20220905", "scarlette_chicago_20221022", "kalinia_la_20230128"], "usa"),
-    # (500 , [x for x in all_batches if "michaela_berlin" in x], "germany"),
-    # (300 , [x for x in all_batches if "tom"             in x], "uk")
+
+    (800 , [x for x in all_batches if "michaela_berlin" in x]              , "germany"  ),
+    (150 , [x for x in all_batches if "michaela_vienna" in x]              , "austria"  ),
+    (2200 , ["maria_mardelplata_20221103", "ignacio_buenos_aires_20221124"], "argentina"),
+
+    (1200 , ["kubra_istanbul_20220827", "brian_la_20220905","chris_bangkok_20220907","serhii_poznan_20221001",
+        "angela_prilep_20221022","maria_mardelplata_20221103","ignacio_buenos_aires_20221124",
+        "tadiyos_dhaka_20221124","scarlette_chicago_20221022","vasileios_athens_20221122","artur_dublin_20221121","artur_saopaulo_20230208",
+        "mihai_bucharest_20221201", "aleksandr_cyprus_20221207",], "mixed"),
     ]:
 
     print( f"trying to take {limit} photos from {country}" )
@@ -100,6 +110,7 @@ for limit, batches, country in [
         min_dim = 2048
 
         out_name, out_ext = os.path.splitext(os.path.basename(photo))
+
         json_file = Path(photo).parent.parent.parent.joinpath("metadata_single_elements").joinpath(batch).joinpath(f"{out_name}.json")
 
         if os.path.exists(os.path.join (".",json_file ) ): # crop
