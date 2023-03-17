@@ -50,12 +50,12 @@ LOG_LOOKUP = defaultdict(lambda: set())
 for s in set(glob(os.path.join(r"./metadata_window_labels", "*", "*.json"))): # already completely labelled images
     LOG_LOOKUP[Path(s).parent.name].add(Path(s).with_suffix("").name)
 
-print (f"exluding {len([item for sublist in LOG_LOOKUP for item in sublist])} including existing labels using list 1")
+print (f"exluding {len ( [a for item in LOG_LOOKUP for a in LOG_LOOKUP[item]] )} including existing labels using list 1")
 
 for s in set(glob(os.path.join(r"./metadata_window_labels_2", "*", "*.json"))): # already completely labelled images
     LOG_LOOKUP[Path(s).parent.name].add(Path(s).with_suffix("").name)
 
-print (f"exluding {len([item for sublist in LOG_LOOKUP for item in sublist])} including existing labels using list 1 & 2")
+print (f"exluding {len ( [a for item in LOG_LOOKUP for a in LOG_LOOKUP[item]] )} including existing labels using list 1 & 2")
 
 def not_seen(jpgs):
     global LOG_LOOKUP
