@@ -18,14 +18,17 @@ for jpg in jpgs:
     name, ext = os.path.splitext(Path(jpg).name)
     # name = x[0]
     # ext = x[1]
-    raw = os.path.join ( Path(jpg).parent, name +"."+ raw)
+    raw_file = os.path.join ( Path(jpg).parent, name +"."+ raw)
 
     extra = 0
-    d_path = os.path.join( dest, f"{name}.{ext}" )
+    d_path = os.path.join( dest, f"{name}{ext}" )
     while os.path.exists ( d_path ):
         extra +=1
-        d_path = os.path.join ( dest, f"{name}_{extra}.{ext}" )
+        d_path = os.path.join ( dest, f"{name}_{extra}{ext}" )
         print (f"trying {Path(jpg).name} to {d_path} ")
 
     shutil.copyfile(jpg, d_path)
-    shutil.copyfile(raw, os.path.join ( dest, f"{name}_{extra}.{raw}" ))
+    if os.path.exists (raw_file):
+        shutil.copyfile(raw_file, os.path.join ( dest, f"{name}_{extra}.{raw}" ))
+    else:
+        print ( f"missing raw {name}.{raw}" )
