@@ -147,6 +147,10 @@ def render_labels_web (dataset_root, label_json_file, out_dir, flush_html = Fals
 
     photo_file = find_photo_for_json(dataset_root, label_json_file)
 
+    if os.stat(label_json_file).st_size == 0: # while the labelling is in progress, some label files are empty placeholders.
+        print (f"skipping empty label file {label_json_file}")
+        return
+
     with open(label_json_file, "r") as f:
         data = json.load(f)
 
@@ -159,26 +163,26 @@ def render_labels_web (dataset_root, label_json_file, out_dir, flush_html = Fals
 
     # crop to each defined region
     for crop_name, crop_data in data.items():
-
         crop_bounds = crop_data["crop"]
+        if isinstance( crop_data["labels"], dict ): # labels part 1, render each category separately
+            for cat, polies in crop_data["labels"].items():
+                for poly in polies:
 
-        # label_crop = Image.new("RGB", (crop_bounds[2] - crop_bounds[0], crop_bounds[3] - crop_bounds[1]))
-        # draw = ImageDraw.Draw(label_crop)
+                    poly = [tuple(x) for x in poly]
 
-        for cat, polies in crop_data["labels"].items():
-            for poly in polies:
+                    poly = [ (crop_bounds[0] + a, crop_bounds[1] + b) for (a,b) in poly ]
 
-                poly = [tuple(x) for x in poly]
+                    draw_label_photo.polygon ( poly, colors[cat] )
+                    draw_label_trans.polygon ( poly, (*colors[cat], 180), outline = (0,0,0), width=2 )
+        else:
+            for catl in crop_data["labels"]:
 
-                # draw.polygon(poly, colors[cat] ) #random.randrange(0,255))
+                cat=catl[0]
 
-                poly = [ (crop_bounds[0] + a, crop_bounds[1] + b) for (a,b) in poly ]
-
-                # for idx, pt in poly:
-                #     poly[idx] = (crop_bounds[0] + pt[0], crop_bounds[1] + pt[1])
-
-                draw_label_photo.polygon ( poly, colors[cat] )
-                draw_label_trans.polygon ( poly, (*colors[cat], 180), outline = (0,0,0) )
+                for poly in catl[1]:
+                    poly = [tuple(x) for x in poly]
+                    draw_label_photo.polygon( poly, colors[cat])
+                    draw_label_trans.polygon( poly, (* ( colors[cat]), 180), outline = (0,0,0), width=2 )
 
     label_photo.save(labels_path, "PNG" )
     photo      .save( photo_path, "JPEG")
@@ -288,8 +292,11 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, folder_per_b
     os.makedirs(os.path.join(output_folder, "labels"), exist_ok=True)
     os.makedirs(os.path.join(output_folder, "svg"), exist_ok=True)
 
-
     batch_name = Path(json_file).parent.name
+
+    if  os.stat(json_file).st_size == 0: # while the labelling is in progress, some label files are empty placeholders.
+        print ("skipping empty label file")
+        return
 
     with open(json_file, "r") as f:
         data = json.load(f)
@@ -308,11 +315,17 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, folder_per_b
         draw_label_photo = ImageDraw.Draw(label_img, label_mode)
         draw_label_photo.rectangle([(0, 0), (label_img.width, label_img.height)], fill=colors["none"] )
 
-        for cat, polies in crop_data["labels"].items():
-
-            for poly in polies:
-                poly = [tuple(x) for x in poly]
-                draw_label_photo.polygon( poly, colors[cat])
+        if isinstance( crop_data["labels"], dict ): # labels part 1, render each category separately
+            for cat, polies in crop_data["labels"].items():
+                for poly in polies:
+                    poly = [tuple(x) for x in poly]
+                    draw_label_photo.polygon( poly, colors[cat])
+        else: # labels part 2, render in order
+            for catl in crop_data["labels"]:
+                cat = catl[0]
+                for poly in catl[1]:
+                    poly = [tuple(x) for x in poly]
+                    draw_label_photo.polygon(poly, colors[cat])
 
         # crop down
         crop_photo = crop(crop_photo, res, mode, resample=Image.Resampling.LANCZOS, background_col="black")
@@ -349,7 +362,7 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, folder_per_b
         label_img .save(os.path.join(output_folder, "labels", base_name + ".png"))
 
 
-        if True: # svg
+        if False: # svg
 
             label_img = Image.new(label_mode, (crop_photo.width, crop_photo.height))
             draw_label_photo = ImageDraw.Draw(label_img, label_mode)
@@ -375,7 +388,7 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, folder_per_b
 
 
 
-def render_metadata_single(images, output_dir, clear_log = False, sub_dirs = True, crop_mode='square_crop', resolution=512, quality=98):
+def render_crops(images, output_dir, clear_log = False, sub_dirs = True, crop_mode='square_crop', resolution=512, quality=98):
     '''
     renders all crops to a uniquely named file
     '''
@@ -496,11 +509,12 @@ if __name__ == "__main__":
 
     os.makedirs(output_folder, exist_ok=True)
 
-    if False: # render crops + labels
+    if True: # render crops + labels
 
         json_src = []
         # json_src.extend(glob.glob(r'/home/twak/Downloads/LYD__KAUST_batch_2_24.06.2022/LYD<>KAUST_batch_2_24.06.2022/**.json'))
         json_src.extend(glob.glob(os.path.join(dataset_root, "metadata_window_labels", "*", "*.json")))
+        json_src.extend(glob.glob(os.path.join(dataset_root, "metadata_window_labels_2", "*", "*.json")))
 
         np_data = None  # []
 
@@ -516,4 +530,4 @@ if __name__ == "__main__":
         photo_src = []
         photo_src.extend(glob.glob(r'./photos/*/*.JPG'))
         photo_src.extend(glob.glob(r'./photos/*/*.jpg'))
-        render_metadata_single(photo_src, output_folder, crop_mode="square_crop", resolution=512, quality=95, sub_dirs=True )
+        render_crops(photo_src, output_folder, crop_mode="square_crop", resolution=512, quality=95, sub_dirs=True)
