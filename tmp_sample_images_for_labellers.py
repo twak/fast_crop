@@ -8,14 +8,7 @@ from collections import defaultdict
 from pathlib import Path
 from PIL import Image, ImageOps
 from sys import platform
-
-# script 19th December 22 to select unlabelled window crops for labelling.
-# updated Feb 6th to update
-
-
-
 from itertools import filterfalse
-
 import process_labels
 
 output_dir = f"./metadata_for_labellers/to_labellers_cook{time.time()}"

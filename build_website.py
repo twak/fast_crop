@@ -152,6 +152,7 @@ for batch in os.listdir(orig):
     else:
         single_element_dir = Path(orig).parent.joinpath("metadata_single_elements/%s" % os.path.basename(batch))
         labels_dir = Path(orig).parent.joinpath("metadata_window_labels/%s" % os.path.basename(batch))
+        labels_dir_2 = Path(orig).parent.joinpath("metadata_window_labels_2/%s" % os.path.basename(batch))
 
         photos_dir = os.path.join(orig, batch)
 
@@ -170,9 +171,11 @@ for batch in os.listdir(orig):
 
                 pre, _ = os.path.splitext(photo)
                 json_file = pre + ".json"
+
                 json_file_path = os.path.join(meta_dir, batch, json_file)
-                labels_json_path = os.path.join(labels_dir, pre + ".json")
-                labels_png_path = os.path.join(labels_dir, pre + ".png")
+
+
+                labels_png_path = os.path.join(batch_thumbs, pre + ".png")
 
                 # read in the crop metadata
                 if os.path.exists (json_file_path):
@@ -183,13 +186,16 @@ for batch in os.listdir(orig):
                     metadata["rects"] = []
 
                 # use image-with labels as thumbnail where available
+
+                labels_json_path = os.path.join(labels_dir, pre + ".json")
+                if not os.path.exists(labels_json_path): # we should never have two types of label for a single image...(?)
+                    labels_json_path = os.path.join(labels_dir_2, pre + ".json")
+
                 if os.path.exists(labels_json_path): # render json to image if required
-                    process_labels.render_labels_web(dataset_root, labels_json_path, flush_html=False, use_cache=False)
+                    process_labels.render_labels_web(dataset_root, labels_json_path, batch_thumbs, flush_html=False, use_cache=False)
                     thumbnail( os.path.join(labels_dir, photo), os.path.join(batch_thumbs, photo), metadata, use_cache=False )
                 else:
                     thumbnail(os.path.join(photos_dir, photo), os.path.join(batch_thumbs, photo), metadata, use_cache=use_cache)
-
-
 
                 tags = set(metadata["tags"]) # whole image tags
                 # tags.add(batch) - no! we shall all batches because we now use radio
@@ -235,11 +241,11 @@ for batch in os.listdir(orig):
                         photo_html.write(f"<h3>{batch} {photo}</h3><p>whole-image-tags: {' '.join(metadata['tags'])}</p>")
                         photo_html.write(f"<a href='../../photos/{batch}/{photo}'><img src='../../photos/{batch}/{photo}' height='640'></a><br><br>\n")
 
-                        if os.path.exists ( os.path.join(labels_dir, photo_pre+".jpg") ):
-                            photo_html.write(f"<a href='../../metadata_window_labels/{batch}/{photo}'><img src='../../metadata_window_labels/{batch}/{photo_pre}.jpg' height='640'></a><br><br>\n")
+                        if os.path.exists ( os.path.join(batch_thumbs, photo_pre+".with_labels.jpg") ):
+                            photo_html.write(f"<a href='{photo_pre}.with_labels.jpg'><img src='{photo_pre}.with_labels.jpg' height='640'></a><br><br>\n")
 
                         if os.path.exists(labels_png_path):
-                            photo_html.write(f"<a href='../../metadata_window_labels/{batch}/{pre}.png'><img src='../../metadata_window_labels/{batch}/{pre}.png' height='640'></a><br><br>\n")
+                            photo_html.write(f"<a href='{pre}.png'><img src='{pre}.png' height='640'></a><br><br>\n")
 
                         if 'deleted' in tags:
                             print("skipping deleted photo")

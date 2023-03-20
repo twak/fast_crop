@@ -133,14 +133,14 @@ def open_and_rotate(image_file, crop_data):
 
     return photo
 
-def render_labels_web (dataset_root, label_json_file, flush_html = False, use_cache = False):
+def render_labels_web (dataset_root, label_json_file, out_dir, flush_html = False, use_cache = False):
 
     colors = colours_for_mode(PRETTY)
 
     jp = Path(label_json_file)
     photo_name = os.path.splitext(jp.name)[0]
-    labels_path = os.path.join(jp.parent, photo_name + ".png")
-    photo_path = os.path.join(jp.parent, photo_name + ".jpg")
+    labels_path = os.path.join(out_dir, photo_name + ".png")
+    photo_path = os.path.join(out_dir, photo_name + ".with_labels.jpg")
 
     if use_cache and os.path.exists(labels_path) and os.path.exists(photo_path):
         return
