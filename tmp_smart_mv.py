@@ -18,7 +18,7 @@ for jpg in jpgs:
     name, ext = os.path.splitext(Path(jpg).name)
     # name = x[0]
     # ext = x[1]
-    raw = os.path.join ( Path(jpgf).parent, name +"."+ raw)
+    raw = os.path.join ( Path(jpg).parent, name +"."+ raw)
 
     extra = 0
     d_path = os.path.join( dest, f"{name}.{ext}" )
