@@ -17,17 +17,20 @@ if sys.platform != "win32":
 for jpg in jpgs:
     name, ext = os.path.splitext(Path(jpg).name)
 
+    src_raw_path = os.path.join(Path(jpg).parent, name + "." + raw)
+
     extra = 0
-    d_path = os.path.join( dest, f"{name}{ext}" )
-    r_path = os.path.join(Path(jpg).parent, name + "." + raw)
+    d_path = os.path.join(dest, f"{name}{ext}")
+    dr_path = os.path.join(dest, f"{name}.{raw}")
+
     while os.path.exists ( d_path ):
         extra +=1
-        d_path = os.path.join ( dest, f"{name}_{extra}{ext}" )
-    r_path = os.path.join(Path(jpg).parent, f"{name}_{extra}.{raw}")
+        d_path  = os.path.join ( dest, f"{name}_{extra}{ext}" )
+        dr_path = os.path.join ( dest, f"{name}_{extra}.{raw}")
         print (f"trying {Path(jpg).name} to {d_path} ")
 
     shutil.copyfile(jpg, d_path)
-    if os.path.exists (r_path):
-        shutil.copyfile(r_path, os.path.join (dest, f"{name}_{extra}.{raw}"))
+    if os.path.exists (src_raw_path):
+        shutil.copyfile(src_raw_path, dr_path)
     else:
-        print ( f"missing raw {name}.{raw}" )
+        print ( f"missing raw {src_raw_path}" )
