@@ -364,11 +364,11 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, folder_per_b
         crop_photo.save(os.path.join(output_folder, "rgb"   , base_name + ".jpg"))
         label_img .save(os.path.join(output_folder, "labels", base_name + ".png"))
 
-        with open ( os.path.join (output_folder, country+".txt"), "w" ) as log:
+        with open ( os.path.join (output_folder, country+".txt"), "a" ) as log:
             log.write(base_name+"\n")
             log.flush()
 
-        with open ( os.path.join (output_folder, "all.txt"), "w" ) as log:
+        with open ( os.path.join (output_folder, "all.txt"), "a" ) as log:
             log.write(base_name+"\n")
             log.flush()
 
