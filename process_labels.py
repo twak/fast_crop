@@ -503,9 +503,9 @@ if __name__ == "__main__":
     if platform == "win32":
         dataset_root = r"C:\Users\twak\Documents\architecture_net\dataset"
     else:
-        dataset_root = r"/datawaha/cggroup/kellyt/archinet_backup/complete_2401/data"
+        dataset_root = r"/home/twak/archinet/data" #/datawaha/cggroup/kellyt/archinet_backup/complete_2401/data"
 
-    output_folder = r"/datawaha/cggroup/kellyt/iccv_add_mat/photos" #f"./metadata_single_elements/dataset_cook{time.time()}
+    output_folder = r"/home/twak/labels_6k" #f"./metadata_single_elements/dataset_cook{time.time()}
 
     os.makedirs(output_folder, exist_ok=True)
 
@@ -520,7 +520,7 @@ if __name__ == "__main__":
 
         for f in json_src:
             # render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=True, res=640, mode='square_crop', np_data=np_data)
-            render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=False, res=-1, mode='none', np_data=np_data)
+            render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=False, res=512, mode='square_crop', np_data=np_data)
 
         if np_data is not None:
             all_data = np.concatenate(tuple(np_data), 0)
