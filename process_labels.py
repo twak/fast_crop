@@ -374,8 +374,11 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, folder_per_b
 
         with open ( os.path.join (output_folder, country+".txt"), "w" ) as log:
             log.write(base_name)
+            log.flush()
+
         with open ( os.path.join (output_folder, "all.txt"), "w" ) as log:
             log.write(base_name)
+            log.flush()
 
 
         if False: # svg
