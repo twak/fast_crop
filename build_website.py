@@ -123,6 +123,7 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                     batch_name = c.slice(0,-2);
 		            document.title = batch_name;
                     const contentDiv = document.getElementById("batch"); 
+                    contentDiv.innerHTML = await fetchHtmlAsText(batch_name+'/html_rects.html');                    
                 }
                 """)
 
