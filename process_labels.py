@@ -373,9 +373,9 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, folder_per_b
         label_img .save(os.path.join(output_folder, "labels", base_name + ".png"))
 
         with open ( os.path.join (output_folder, country+".txt"), "w" ) as log:
-            log.write(batch_name)
+            log.write(base_name)
         with open ( os.path.join (output_folder, "all.txt"), "w" ) as log:
-            log.write(batch_name)
+            log.write(base_name)
 
 
         if False: # svg
