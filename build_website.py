@@ -106,7 +106,9 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                         }
                     }
                 }
-                
+                        
+        		window.onload = checktabs();
+		
                 async function fetchHtmlAsText(url) {
                     return await (await fetch(url)).text();
                 }
@@ -123,11 +125,11 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                     const contentDiv = document.getElementById("batch"); 
                 """)
 
-            html_file.write(f"                contentDiv.innerHTML = await fetchHtmlAsText(batch_name+'/{file_name}.html')\n" # select the first batch after load
-                            f"}}\n"
-                            f"                document.addEventListener('DOMContentLoaded', function() {{"
-                            f"set_batch('{first_batch}_c')"
-                            f"}}, false);\n")
+            # html_file.write(f"                contentDiv.innerHTML = await fetchHtmlAsText(batch_name+'/{file_name}.html')\n" # select the first batch after load
+            #                 f"}}\n"
+            #                 f"                document.addEventListener('DOMContentLoaded', function() {{"
+            #                 f"set_batch('{first_batch}_c')"
+            #                 f"}}, false);\n")
 
             html_file.write (f"</script><p>All content including photos &copy; 2022-{ datetime.date.today().strftime('%Y') } Peter Wonka </p></body></html>" )
 
