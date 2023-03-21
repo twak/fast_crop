@@ -55,7 +55,7 @@ def thumbnail(orig_path, thumb_path, metadata, rect=None, use_cache = False):
 with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
     with open(os.path.join(web_dir,"index.html"), 'w') as index_html:
 
-        for html_file, title, file_name in zip ([rects_html, index_html], ["<h3>crops (<a href='index.html'>photos</a>)</h3>", "<h3>(<a href='crops.html'>crops</a>) photos</h3>"], ["html_rects", "html_index"]):
+        for html_file, title, file_name in zip ([rects_html, index_html], ["<h3>crops (<a href='index.html'>photos</a>, <a href='map.html'>map</a>) </h3>", "<h3>photos (<a href='crops.html'>crops</a>, <a href='map.html'>map</a>)</h3>"], ["html_rects", "html_index"]):
             html_file.write("<html><body>\n")
 
             html_file.write(title)
@@ -81,7 +81,7 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                 if os.path.isdir (os.path.join (dataset_root, tag_name)):
                     html_file.write(f'<input class="{tag_name}_c" type="checkbox" value="{tag_name}_c" name="{tag_name}_foo" {"checked" if tag_name == "photos" else ""}>{tag_name}\n')
 
-            html_file.write(f'<br><hr>')
+            html_file.write(f'<br><hr><div id="batch"></div>')
 
 
             # js to select a dataset for the professors
@@ -92,15 +92,19 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                   return matches ? matches[1] : null;
                 }
                 
-                // usage
-                var hash = getHashValue('tab');
-                const collection = document.getElementsByName("foo");
-                
-                for (let i = 0; i < collection.length; i++) {
-                  if (collection[i].type == "radio" && collection[i].value== hash+"_c" ) {
-                    collection[i].click();
-                  }
-                  if (hash == null && i == 0) collection[i].click();
+                function checktabs() {
+                    var hash = getHashValue('tab');
+                    const collection = document.getElementsByName("foo");
+                    
+                    if (hash == null) 
+                        collection[0].click();
+                    else {
+                        for (let i = 0; i < collection.length; i++) {
+                          if (collection[i].type == "radio" && collection[i].value== hash+"_c" ) {
+                            collection[i].click();
+                          }
+                        }
+                    }
                 }
                 
                 async function fetchHtmlAsText(url) {
@@ -114,7 +118,8 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                 }
                 
                 async function set_batch(c) { 
-                    batch_name = c.slice(0,-2)
+                    batch_name = c.slice(0,-2);
+		            document.title = batch_name;
                     const contentDiv = document.getElementById("batch"); 
                 """)
 
@@ -124,7 +129,7 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                             f"set_batch('{first_batch}_c')"
                             f"}}, false);\n")
 
-            html_file.write (f"</script><div id='batch'></div><p>All content including photos &copy; 2022-{ datetime.date.today().strftime('%Y') } Peter Wonka </p></body></html>" )
+            html_file.write (f"</script><p>All content including photos &copy; 2022-{ datetime.date.today().strftime('%Y') } Peter Wonka </p></body></html>" )
 
         index_html.write("</body></html>\n")
     rects_html.write("</body></html>\n")
