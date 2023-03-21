@@ -267,7 +267,22 @@ def crop( img, res=-1, mode='none', resample=None, background_col="black"):
 
         return img
 
+def country_from_batch(batch_name):
 
+    if "tom_" in batch_name and "copenhagen" not in batch_name and "thuwal" not in batch_name:
+        country = "uk"
+    elif "michaela_vienna" in batch_name:
+        country = "austria"
+    elif "michaela_berlin" in batch_name:
+        country = "germany"
+    elif "brian_la_20220905" in batch_name or "scarlette_chicago_20221022" in batch_name or "peter_washington_20221129" in batch_name or "kaitlyn_ny_20221205" in batch_name or "samantha_newyork_20230313" in batch_name or "nicklaus_miami_20230301" in batch_name or "kalinia_la_20230128" in batch_name:
+        country = "usa"
+    elif "elsayed_" in batch_name:
+        country = "egypt"
+    else:
+        country = "other"
+
+    return country
 
 def render_labels_per_crop( dataset_root, json_file, output_folder, folder_per_batch=False, res=512, mode='None', np_data=None):
     '''
@@ -293,6 +308,8 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, folder_per_b
     os.makedirs(os.path.join(output_folder, "svg"), exist_ok=True)
 
     batch_name = Path(json_file).parent.name
+
+    country = country_from_batch(batch_name)
 
     if  os.stat(json_file).st_size == 0: # while the labelling is in progress, some label files are empty placeholders.
         print ("skipping empty label file")
@@ -336,30 +353,29 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, folder_per_b
         # base_name = base_name.replace("_new", "") # patch names sent to labellers
         # base_name = base_name.replace("IMG_0276", hashlib.md5(crop_photo.tobytes()).hexdigest() )
 
-        if folder_per_batch: # split by country
-
-            if "tom_" in batch_name:
-                country = "england"
-            elif "michaela_" in batch_name:
-                country = "austria"
-            else:
-                country = None
-
-            if country is not None:
-                country_loc = os.path.join(output_folder, country)
-
-                os.makedirs(os.path.join(country_loc, "rgb"), exist_ok=True)
-                os.makedirs(os.path.join(country_loc, "labels"), exist_ok=True)
-
-                crop_photo.save(os.path.join(country_loc, "rgb", base_name + ".png"))
-                label_img.save (os.path.join(country_loc, "labels", base_name + ".png"))
-
-            # base_name = os.path.join ( batch_name, base_name )
-            # os.makedirs(os.path.join(output_folder, "rgb", batch_name), exist_ok=True)
-            # os.makedirs(os.path.join(output_folder, "labels", batch_name), exist_ok=True)
+        # if folder_per_batch: # split by country
+        #
+        #
+        #     if country is not None:
+        #         country_loc = os.path.join(output_folder, country)
+        #
+        #         os.makedirs(os.path.join(country_loc, "rgb"), exist_ok=True)
+        #         os.makedirs(os.path.join(country_loc, "labels"), exist_ok=True)
+        #
+        #         crop_photo.save(os.path.join(country_loc, "rgb", base_name + ".png"))
+        #         label_img.save (os.path.join(country_loc, "labels", base_name + ".png"))
+        #
+        #     # base_name = os.path.join ( batch_name, base_name )
+        #     # os.makedirs(os.path.join(output_folder, "rgb", batch_name), exist_ok=True)
+        #     # os.makedirs(os.path.join(output_folder, "labels", batch_name), exist_ok=True)
 
         crop_photo.save(os.path.join(output_folder, "rgb"   , base_name + ".jpg"))
         label_img .save(os.path.join(output_folder, "labels", base_name + ".png"))
+
+        with open ( os.path.join (output_folder, country+".txt"), "w" ) as log:
+            log.write(batch_name)
+        with open ( os.path.join (output_folder, "all.txt"), "w" ) as log:
+            log.write(batch_name)
 
 
         if False: # svg
