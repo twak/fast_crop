@@ -140,7 +140,10 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
 
 for batch in os.listdir(orig):
 
-    if not os.path.isdir(os.path.join(orig, batch)):
+    if not os.path.isdir(os.path.join(orig, batch)): # random text files...john?
+        continue
+
+    if batch[0] == '.': # git
         continue
 
     total_jpgs = 0
@@ -153,9 +156,7 @@ for batch in os.listdir(orig):
     append_rect_file  = os.path.join(batch_thumbs, "html_rects.html")
 
     if use_cache and os.path.exists (append_index_file) and os.path.exists (append_rect_file):
-
-        # cache files found, let's use those
-        print(f"using cached version for {batch}")
+        print(f"using cached version for {batch}") # cache files found, let's use those
         index_append = open(append_index_file, "r").read()
         rects_append = open(append_rect_file , "r").read()
     else:
@@ -200,7 +201,7 @@ for batch in os.listdir(orig):
                 if not os.path.exists(labels_json_path): # we should never have two types of label for a single image...(?)
                     labels_json_path = os.path.join(labels_dir_2, pre + ".json")
 
-                if os.path.exists(labels_json_path): # render json to image if required
+                if os.path.exists(labels_json_path): # render labels if they exist
                     process_labels.render_labels_web(dataset_root, labels_json_path, batch_thumbs, flush_html=False, use_cache=False)
                     thumbnail( os.path.join(labels_dir, photo), os.path.join(batch_thumbs, photo), metadata, use_cache=False )
                 else:
@@ -273,16 +274,18 @@ for batch in os.listdir(orig):
 
                         photo_html.write(f"<br><p>all metadata:</p><ul>")
                         for md in os.listdir(dataset_root):
-                            for photo_data in glob.glob(os.path.join(dataset_root, md, batch)+"/"+pre+"*"):
-                                md_path, md_ext = os.path.splitext(photo_data)
-                                md_path_strs = os.path.split(photo_data)
-
-                                if os.path.isdir(photo_data):
-                                    if (os.path.exists(os.path.join(photo_data, "clean", "mesh.zip"))):
-                                        photo_html.write(f'<li><a href="../OBJViewer.html?fileURL=../{md}/{batch}/{md_path_strs[1]}/clean/mesh.zip"> {md} mesh</a></li>')
-                                        photo_html.write(f'<li><a href="../../{md}/{batch}/{md_path_strs[1]}">{md} mesh photo dir</a></li>')
-                                else:
+                            if md[0] != '.':
+                                for photo_data in glob.glob(os.path.join(dataset_root, md, batch)+"/"+pre+"*"):
+                                    md_path, md_ext = os.path.splitext(photo_data)
+                                    md_path_strs = os.path.split(photo_data)
                                     photo_html.write(f'<li><a href="../../{md}/{batch}/{md_path_strs[1]}">{md} {md_ext.lower()}</a></li>')
+
+                                    # if os.path.isdir(photo_data):
+                                    #     if (os.path.exists(os.path.join(photo_data, "clean", "mesh.zip"))):
+                                    #         photo_html.write(f'<li><a href="../OBJViewer.html?fileURL=../{md}/{batch}/{md_path_strs[1]}/clean/mesh.zip"> {md} mesh</a></li>')
+                                    #         photo_html.write(f'<li><a href="../../{md}/{batch}/{md_path_strs[1]}">{md} mesh photo dir</a></li>')
+                                    # else:
+
 
                         photo_html.write(f'</ul>')
 

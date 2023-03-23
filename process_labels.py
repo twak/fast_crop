@@ -184,6 +184,7 @@ def render_labels_web (dataset_root, label_json_file, out_dir, flush_html = Fals
                     draw_label_photo.polygon( poly, colors[cat])
                     draw_label_trans.polygon( poly, (* ( colors[cat]), 180), outline = (0,0,0), width=2 )
 
+    print (f"saving labels to {labels_path} and transparents to {photo_path}")
     label_photo.save(labels_path, "PNG" )
     photo      .save( photo_path, "JPEG")
 
