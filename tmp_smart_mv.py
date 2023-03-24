@@ -24,11 +24,13 @@ for jpg in jpgs:
     d_path = os.path.join(dest, f"{name}{ext}")
     dr_path = os.path.join(dest, f"{name}.{raw}")
 
-    while os.path.exists ( d_path ):
+    while os.path.exists ( d_path ) and os.path.getsize(d_path) == os.path.getsize(jpg):
         extra +=1
         d_path  = os.path.join ( dest, f"{name}_{extra}{ext}" )
         dr_path = os.path.join ( dest, f"{name}_{extra}.{raw}")
         print (f"trying {Path(jpg).name} to {d_path} ")
+
+    print (f"{extra} :: {name} ")
 
     shutil.copyfile(jpg, d_path)
     if os.path.exists (src_raw_path):
