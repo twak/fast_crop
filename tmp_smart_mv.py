@@ -5,14 +5,15 @@ from pathlib import Path
 import shutil
 
 raw = sys.argv[1]
-src = sys.argv[2]
-dest = sys.argv[3]
-
+dest = sys.argv[2]
+srcs = sys.argv[3:]
 
 jpgs = []
-jpgs.extend(glob.glob( os.path.join (src, "*.JPG")) )
-if sys.platform != "win32":
-    jpgs.extend(glob.glob( os.path.join (src, "*.jpg")) )
+
+for src in srcs:
+    jpgs.extend(glob.glob( os.path.join (src, "*.JPG")) )
+    if sys.platform != "win32":
+        jpgs.extend(glob.glob( os.path.join (src, "*.jpg")) )
 
 for jpg in jpgs:
     name, ext = os.path.splitext(Path(jpg).name)
