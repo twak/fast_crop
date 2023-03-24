@@ -24,11 +24,17 @@ for jpg in jpgs:
     d_path = os.path.join(dest, f"{name}{ext}")
     dr_path = os.path.join(dest, f"{name}.{raw}")
 
-    while os.path.exists ( d_path ) and os.path.getsize(d_path) == os.path.getsize(jpg):
-        extra +=1
-        d_path  = os.path.join ( dest, f"{name}_{extra}{ext}" )
-        dr_path = os.path.join ( dest, f"{name}_{extra}.{raw}")
-        print (f"trying {Path(jpg).name} to {d_path} ")
+    if os.path.exists(d_path):
+
+        if os.path.getsize(d_path) == os.path.getsize(jpg):
+            print (f"skipping duplicate (same sized) file {name}")
+            continue
+
+        while os.path.exists ( d_path ):
+            extra +=1
+            d_path  = os.path.join ( dest, f"{name}_{extra}{ext}" )
+            dr_path = os.path.join ( dest, f"{name}_{extra}.{raw}")
+            print (f"trying {Path(jpg).name} to {d_path} ")
 
     print (f"{extra} :: {name} ")
 
