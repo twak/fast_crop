@@ -46,17 +46,18 @@ class ROI:
 
         self.photo_tags[ pygame.K_0 ] = ( tags.deleted, "0: Deleted")  # soft-delete: whole image not processed to dataset
 
-        self.rect_tags[pygame.K_g] = ( tags.glass_facade, "g: Glass Facade Window" ) # glass panel windows
-        self.rect_tags[pygame.K_h] = ( tags.church      , "h: Church Window" )# complex church feature
-        self.rect_tags[pygame.K_s] = ( tags.shop        , "s: Shop Window")  # street level/wide angle of window/shop frontage
-        self.rect_tags[pygame.K_z] = ( tags.abnormal    , "z: Abnormal Window")  # street level/wide angle shot
-        self.rect_tags[pygame.K_d] = ( tags.door        , "d: Door")  # a door!
-        self.rect_tags[pygame.K_f] = ( tags.facade      , "f: Facade")  # a large amount of a building
-        self.rect_tags[pygame.K_w] = ( tags.window      , "w: Window (regular!)")  # we are creating windows
-        self.rect_tags[pygame.K_m] = ( tags.material    , "m: Material")  # we are marking materials
+        self.rect_tags[pygame.K_g] = ( tags.glass_facade, "g: Glass Facade Window" )
+        self.rect_tags[pygame.K_h] = ( tags.church      , "h: Church Window" )
+        self.rect_tags[pygame.K_s] = ( tags.shop        , "s: Shop Window")
+        self.rect_tags[pygame.K_z] = ( tags.abnormal    , "z: Abnormal Window")
+        self.rect_tags[pygame.K_d] = ( tags.door        , "d: Door")
+        self.rect_tags[pygame.K_f] = ( tags.facade      , "f: Facade")
+        self.rect_tags[pygame.K_w] = ( tags.window      , "w: Window (regular!)")
+        self.rect_tags[pygame.K_m] = ( tags.material    , "m: Material")
+        self.rect_tags[pygame.K_p] = ( tags.private     , "p: Private")
 
         self.default_tags   = [tags.window]
-        self.exclusive_tags = [tags.window, tags.material, tags.door, tags.facade] # picking one removes others
+        self.exclusive_tags = [tags.window, tags.material, tags.door, tags.facade, tags.private] # picking one removes others
 
     def displayImage(self):
 
@@ -99,7 +100,7 @@ class ROI:
             pygame.draw.line(self.screen, (255, 0, 0), (0, 0), (self.screen.get_width(), self.screen.get_height()), width = 10)
             pygame.draw.line(self.screen, (255, 0, 0), (self.screen.get_width(), 0), (0, self.screen.get_height()), width = 10)
 
-        # tags at top left
+        # tag-list at top left
         if self.show_help:
             all_tags = self.photo_tags.items() | self.rect_tags.items()
             pygame.draw.rect(self.screen, (0,0,0), pygame.Rect(self.screen.get_width() -120, 0,120, len(all_tags) * 16 ))
