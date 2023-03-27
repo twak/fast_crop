@@ -203,9 +203,9 @@ for batch in os.listdir(orig):
 
                 if os.path.exists(labels_json_path): # render labels if they exist
                     process_labels.render_labels_web(dataset_root, labels_json_path, batch_thumbs, flush_html=False, use_cache=False)
-                    thumbnail( os.path.join(labels_dir, photo), os.path.join(batch_thumbs, photo), metadata, use_cache=False )
+                    thumbnail( os.path.join(photos_dir, photo), os.path.join(batch_thumbs, photo), metadata, use_cache=False )
                 else:
-                    thumbnail(os.path.join(photos_dir, photo), os.path.join(batch_thumbs, photo), metadata, use_cache=use_cache)
+                    thumbnail( os.path.join(photos_dir, photo), os.path.join(batch_thumbs, photo), metadata, use_cache=use_cache)
 
                 tags = set(metadata["tags"]) # whole image tags
                 # tags.add(batch) - no! we shall all batches because we now use radio
