@@ -6,4 +6,3 @@ for filename in */*; do
 done
 chmod a-w *
 chmod a-w .
-
