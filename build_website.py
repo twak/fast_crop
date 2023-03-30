@@ -123,9 +123,9 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                     batch_name = c.slice(0,-2);
 		            document.title = batch_name;
                     const contentDiv = document.getElementById("batch"); 
-                    contentDiv.innerHTML = await fetchHtmlAsText(batch_name+'/html_rects.html');                    
-                }
-                """)
+                """ )
+                             
+            html_file.write ( f"    contentDiv.innerHTML = await fetchHtmlAsText(batch_name+'/{file_name}.html')\n; }} ")
 
             # html_file.write(f"                contentDiv.innerHTML = await fetchHtmlAsText(batch_name+'/{file_name}.html')\n" # select the first batch after load
             #                 f"}}\n"
@@ -138,7 +138,7 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
         index_html.write("</body></html>\n")
     rects_html.write("</body></html>\n")
 
-for batch in os.listdir(orig):
+for batch in ['tom_saffron_20220418'] : # os.listdir(orig):
 
     if not os.path.isdir(os.path.join(orig, batch)): # random text files...john?
         continue
@@ -198,7 +198,7 @@ for batch in os.listdir(orig):
                 # use image-with labels as thumbnail where available
 
                 labels_json_path = os.path.join(labels_dir, pre + ".json")
-                if not os.path.exists(labels_json_path): # we should never have two types of label for a single image...(?)
+                if not os.path.exists(labels_json_path): # we should never have two types of label for a single image...(?!)
                     labels_json_path = os.path.join(labels_dir_2, pre + ".json")
 
                 if os.path.exists(labels_json_path): # render labels if they exist
