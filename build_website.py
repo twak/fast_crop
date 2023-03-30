@@ -138,7 +138,7 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
         index_html.write("</body></html>\n")
     rects_html.write("</body></html>\n")
 
-for batch in ['tom_saffron_20220418'] : # os.listdir(orig):
+for batch in os.listdir(orig):
 
     if not os.path.isdir(os.path.join(orig, batch)): # random text files...john?
         continue
