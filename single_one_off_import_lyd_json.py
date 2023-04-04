@@ -126,10 +126,11 @@ if __name__ == "__main__":
     #           "LYD__KAUST_batch_6_fixed_24_08", "LYD__KAUST_batch_7_fixed_24_08", "LYD__KAUST_batch_8", "LYD__KAUST_all_batches_old", "LYD__KAUST_all_batches", "LYD__KAUST_batch_9" ]:
     #     json_src.extend(glob.glob(rf'C:\Users\twak\Documents\architecture_net\dataset\old_metadata_window_labels\from_labellers\{s}\**.json'))
 
-    json_src.extend(glob.glob(r'C:\Users\twak\Documents\architecture_net\windows_part3\lyd_15_3_to_val\**.json'))
+    json_src.extend(glob.glob(r'C:\Users\twak\Documents\architecture_net\windows_part3\lyd_23_3_to_val\**.json'))
     # json_src.extend(glob.glob(r'C:\Users\twak\Documents\architecture_net\dataset\old_metadata_window_labels\from_labellers\LYD__KAUST_batch_9\**.json'))
     src_lookup = build_src_lookup([r"C:\Users\twak\Documents\architecture_net\windows_part3\log_part_3.txt",
-                                   r"C:\Users\twak\Documents\architecture_net\windows_part3\log_part_4.txt"])
+                                   r"C:\Users\twak\Documents\architecture_net\windows_part3\log_part_4.txt",
+                                   r"C:\Users\twak\Documents\architecture_net\windows_part3\log_part_5.txt"])
     # src_lookup = build_src_lookup([r".\old_metadata_window_labels\from_labellers\input_locations_first_1500.txt",
     #                                r".\old_metadata_window_labels\from_labellers\input_locations_second_1500.txt"] )
 

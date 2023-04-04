@@ -128,10 +128,11 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                 async function set_batch(c) { 
                     batch_name = c.slice(0,-2);
 		            document.title = batch_name;
-                    const contentDiv = document.getElementById("batch"); 
-                    contentDiv.innerHTML = await fetchHtmlAsText(batch_name+'/html_rects.html');                    
+                    const contentDiv = document.getElementById("batch");                     
                 }
                 """)
+
+            html_file.write ( f"    contentDiv.innerHTML = await fetchHtmlAsText(batch_name+'/{file_name}.html')\n; }} ")
 
             html_file.write (f"</script><p>All content including photos &copy; 2022-{ datetime.date.today().strftime('%Y') } Peter Wonka </p></body></html>" )
 
