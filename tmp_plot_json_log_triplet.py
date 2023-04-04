@@ -54,7 +54,7 @@ print()
 
 
 # val/miou by column...
-print ( f"  ,{ ', '.join([str(x) for x in ks]) }"  )
+print ( f"  ,{ ', '.join([str(x) for x in ks]) }, iters"  )
 for i in range(1000):
 
     something = False
@@ -64,7 +64,10 @@ for i in range(1000):
 
         vals = df["mIoU"]
 
-        if len(vals) <= i or str(vals[i]) == 'nan':
+        if len(vals) <= i:
+            exit(0)
+
+        if str(vals[i]) == 'nan':
             continue
 
         something = True
