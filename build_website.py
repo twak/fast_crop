@@ -7,12 +7,13 @@ from PIL import Image, ImageOps
 import tags
 import process_labels
 import datetime
+import PIL.ImageDraw as ImageDraw
 
 dataset_root = Path.cwd()
 orig     = os.path.join(dataset_root, "photos")
 meta_dir = os.path.join(dataset_root, "metadata_single_elements")
 web_dir  = os.path.join(dataset_root, "metadata_website")
-use_cache = True
+use_cache = False
 
 process_labels.USE_PRETTY_COLORS = True
 process_labels.COLOR_MODE = process_labels.PRETTY
@@ -31,7 +32,7 @@ all_tags.append("mesh")
 #     all_tags.append(batch)
 
 for metadata_type in os.listdir(dataset_root):  # entry in an md folder gets you a tag
-    if os.path.isdir(os.path.join(dataset_root, metadata_type)):
+    if metadata_type[0] != '.' and os.path.isdir(os.path.join(dataset_root, metadata_type)): # ignore git
         all_tags.append(metadata_type)
 
 
@@ -50,12 +51,18 @@ def thumbnail(orig_path, thumb_path, metadata, rect=None, use_cache = False):
     wh = min(width, height)
     im = ImageOps.pad(im, (wh, wh), color="gray")
     im = im.resize((res, res), resample=PIL.Image.Resampling.BOX)
+
+    if 'deleted' in metadata["tags"]: # big red cross please
+        draw = ImageDraw.Draw(im, 'RGBA')
+        draw.line((0, 0) + im.size, fill=(255, 0, 0, 180), width=5)
+        draw.line((0, im.size[1], im.size[0], 0), fill=(255, 0, 0, 180), width=5)
+
     im.save(thumb_path, format="JPEG", quality=quality)
 
 with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
     with open(os.path.join(web_dir,"index.html"), 'w') as index_html:
 
-        for html_file, title, file_name in zip ([rects_html, index_html], ["<h3>crops (<a href='index.html'>photos</a>, <a href='map.html'>map</a>) </h3>", "<h3>photos (<a href='crops.html'>crops</a>, <a href='map.html'>map</a>)</h3>"], ["html_rects", "html_index"]):
+        for html_file, title, file_name in zip ([rects_html, index_html], ["<h3>crops (<a href='index.html'>photos</a>, <a href='map/index.html'>map</a>) </h3>", "<h3>photos (<a href='crops.html'>crops</a>, <a href='map/index.html'>map</a>)</h3>"], ["html_rects", "html_index"]):
             html_file.write("<html><body>\n")
 
             html_file.write(title)
@@ -78,13 +85,12 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                 html_file.write(f'<input class="{tag_name}_c" type="checkbox" value="{tag_name}_c" name="{tag_name}_foo">{tag_name} \n')
             html_file.write(f'<br><hr>')
             for tag_name in os.listdir(dataset_root): # available metadata also tags each file
-                if os.path.isdir (os.path.join (dataset_root, tag_name)):
+                if tag_name[0] != '.' and os.path.isdir (os.path.join (dataset_root, tag_name)):
                     html_file.write(f'<input class="{tag_name}_c" type="checkbox" value="{tag_name}_c" name="{tag_name}_foo" {"checked" if tag_name == "photos" else ""}>{tag_name}\n')
 
             html_file.write(f'<br><hr><div id="batch"></div>')
 
-
-            # js to select a dataset for the professors
+            # js to select a dataset by url the professors
             html_file.write ("""
                 <script>
                 function getHashValue(key) {
@@ -127,12 +133,6 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                 }
                 """)
 
-            # html_file.write(f"                contentDiv.innerHTML = await fetchHtmlAsText(batch_name+'/{file_name}.html')\n" # select the first batch after load
-            #                 f"}}\n"
-            #                 f"                document.addEventListener('DOMContentLoaded', function() {{"
-            #                 f"set_batch('{first_batch}_c')"
-            #                 f"}}, false);\n")
-
             html_file.write (f"</script><p>All content including photos &copy; 2022-{ datetime.date.today().strftime('%Y') } Peter Wonka </p></body></html>" )
 
         index_html.write("</body></html>\n")
@@ -160,8 +160,8 @@ for batch in os.listdir(orig):
         rects_append = open(append_rect_file , "r").read()
     else:
         single_element_dir = Path(orig).parent.joinpath("metadata_single_elements/%s" % os.path.basename(batch))
-        labels_dir = Path(orig).parent.joinpath("metadata_window_labels/%s" % os.path.basename(batch))
-        labels_dir_2 = Path(orig).parent.joinpath("metadata_window_labels_2/%s" % os.path.basename(batch))
+        labels_dir         = Path(orig).parent.joinpath("metadata_window_labels/%s"   % os.path.basename(batch))
+        labels_dir_2       = Path(orig).parent.joinpath("metadata_window_labels_2/%s" % os.path.basename(batch))
 
         photos_dir = os.path.join(orig, batch)
 
@@ -202,7 +202,8 @@ for batch in os.listdir(orig):
 
                 if os.path.exists(labels_json_path): # render json to image if required
                     process_labels.render_labels_web(dataset_root, labels_json_path, batch_thumbs, flush_html=False, use_cache=False)
-                    thumbnail( os.path.join(labels_dir, photo), os.path.join(batch_thumbs, photo), metadata, use_cache=False )
+                    # thumbnail new image-with-labels
+                    thumbnail( os.path.join(batch_thumbs, f"{pre}.with_labels.jpg"), os.path.join(batch_thumbs, photo), metadata, use_cache=False )
                 else:
                     thumbnail(os.path.join(photos_dir, photo), os.path.join(batch_thumbs, photo), metadata, use_cache=use_cache)
 

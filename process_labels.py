@@ -167,20 +167,16 @@ def render_labels_web (dataset_root, label_json_file, out_dir, flush_html = Fals
         if isinstance( crop_data["labels"], dict ): # labels part 1, render each category separately
             for cat, polies in crop_data["labels"].items():
                 for poly in polies:
-
                     poly = [tuple(x) for x in poly]
-
                     poly = [ (crop_bounds[0] + a, crop_bounds[1] + b) for (a,b) in poly ]
-
                     draw_label_photo.polygon ( poly, colors[cat] )
                     draw_label_trans.polygon ( poly, (*colors[cat], 180), outline = (0,0,0), width=2 )
-        else:
+        else: # labels part 2, render overlapping labels in depth order
             for catl in crop_data["labels"]:
-
                 cat=catl[0]
-
                 for poly in catl[1]:
                     poly = [tuple(x) for x in poly]
+                    poly = [ (crop_bounds[0] + a, crop_bounds[1] + b) for (a,b) in poly ]
                     draw_label_photo.polygon( poly, colors[cat])
                     draw_label_trans.polygon( poly, (* ( colors[cat]), 180), outline = (0,0,0), width=2 )
 
