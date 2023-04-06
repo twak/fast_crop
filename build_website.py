@@ -62,8 +62,8 @@ def thumbnail(orig_path, thumb_path, metadata, rect=None, use_cache = False):
 with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
     with open(os.path.join(web_dir,"index.html"), 'w') as index_html:
 
-        for html_file, title, file_name in zip ([rects_html, index_html], ["<h3>crops (<a href='index.html'>photos</a>, <a href='map/index.html'>map</a>) </h3>", "<h3>photos (<a href='crops.html'>crops</a>, <a href='map/index.html'>map</a>)</h3>"], ["html_rects", "html_index"]):
-            html_file.write("<html><body>\n")
+        for html_file, title, file_name in zip ([rects_html, index_html], ["<h3>crops (<a href='index.html'>photos</a>, <a href='map.html'>map</a>) </h3>", "<h3>photos (<a href='crops.html'>crops</a>, <a href='map.html'>map</a>)</h3>"], ["html_rects", "html_index"]):
+            html_file.write("<html><head><link rel='shortcut icon' href='favicon.png'></head><body>\n")
 
             html_file.write(title)
 
@@ -128,13 +128,12 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                 async function set_batch(c) { 
                     batch_name = c.slice(0,-2);
 		            document.title = batch_name;
-                    const contentDiv = document.getElementById("batch");                     
-                }
+                    const contentDiv = document.getElementById("batch");
                 """)
 
-            html_file.write ( f"    contentDiv.innerHTML = await fetchHtmlAsText(batch_name+'/{file_name}.html')\n; }} ")
+            html_file.write ( f"    contentDiv.innerHTML = await fetchHtmlAsText(batch_name+'/{file_name}.html');\n }} ")
 
-            html_file.write (f"</script><p>All content including photos &copy; 2022-{ datetime.date.today().strftime('%Y') } Peter Wonka </p></body></html>" )
+            html_file.write (f"</script><p>All content including photos &copy all rights reserved; 2022-{ datetime.date.today().strftime('%Y') } Peter Wonka </p></body></html>" )
 
         index_html.write("</body></html>\n")
     rects_html.write("</body></html>\n")
@@ -204,7 +203,10 @@ for batch in os.listdir(orig):
                 if os.path.exists(labels_json_path): # render json to image if required
                     process_labels.render_labels_web(dataset_root, labels_json_path, batch_thumbs, flush_html=False, use_cache=False)
                     # thumbnail new image-with-labels
-                    thumbnail( os.path.join(batch_thumbs, f"{pre}.with_labels.jpg"), os.path.join(batch_thumbs, photo), metadata, use_cache=False )
+                    wl = os.path.join(batch_thumbs, f"{pre}.with_labels.jpg")
+                    if not os.path.exists(wl): # if rendering fails/maybe empty label file
+                        wl = os.path.join(photos_dir, photo)
+                    thumbnail( wl, os.path.join(batch_thumbs, photo), metadata, use_cache=False )
                 else:
                     thumbnail(os.path.join(photos_dir, photo), os.path.join(batch_thumbs, photo), metadata, use_cache=use_cache)
 
@@ -248,7 +250,7 @@ for batch in os.listdir(orig):
                 photo_page_path = os.path.join(web_dir, batch, pre + ".html")
                 if not ( use_cache and os.path.exists(photo_page_path) ):
                     with open(photo_page_path, 'w') as photo_html:
-                        photo_html.write("<html><body>\n")
+                        photo_html.write("<html><link rel='shortcut icon' href='../favicon.png'><body>\n")
                         photo_html.write(f"<h3>{batch} {photo}</h3><p>whole-image-tags: {' '.join(metadata['tags'])}</p>")
                         photo_html.write(f"<a href='../../photos/{batch}/{photo}'><img src='../../photos/{batch}/{photo}' height='640'></a><br><br>\n")
 
@@ -287,7 +289,7 @@ for batch in os.listdir(orig):
                                     photo_html.write(f'<li><a href="../../{md}/{batch}/{md_path_strs[1]}">{md} {md_ext.lower()}</a></li>')
 
                         photo_html.write(f'</ul>')
-
+                        photo_html.write(f"<p>All content including photos &copy all rights reserved; 2022-{datetime.date.today().strftime('%Y')} Peter Wonka </p></body></html>")
                         photo_html.write("</body></html>\n")
 
                 index_append += (
