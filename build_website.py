@@ -13,7 +13,7 @@ dataset_root = Path.cwd()
 orig     = os.path.join(dataset_root, "photos")
 meta_dir = os.path.join(dataset_root, "metadata_single_elements")
 web_dir  = os.path.join(dataset_root, "metadata_website")
-use_cache = False
+use_cache = True
 
 process_labels.USE_PRETTY_COLORS = True
 process_labels.COLOR_MODE = process_labels.PRETTY
@@ -30,6 +30,8 @@ all_tags.append("mesh")
 
 # for batch in os.listdir(orig):
 #     all_tags.append(batch)
+
+copyright = f"<p>All content &copy Peter Wonka all rights reserved; 2022-{ datetime.date.today().strftime('%Y') }</p>"
 
 for metadata_type in os.listdir(dataset_root):  # entry in an md folder gets you a tag
     if metadata_type[0] != '.' and os.path.isdir(os.path.join(dataset_root, metadata_type)): # ignore git
@@ -131,9 +133,9 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
                     const contentDiv = document.getElementById("batch");
                 """)
 
-            html_file.write ( f"    contentDiv.innerHTML = await fetchHtmlAsText(batch_name+'/{file_name}.html');\n }} ")
+            html_file.write ( f"    contentDiv.innerHTML = await fetchHtmlAsText(batch_name+'/{file_name}.html');\n }}    \n")
 
-            html_file.write (f"</script><p>All content including photos &copy all rights reserved; 2022-{ datetime.date.today().strftime('%Y') } Peter Wonka </p></body></html>" )
+            html_file.write (f"</script>{copyright}</body></html>" )
 
         index_html.write("</body></html>\n")
     rects_html.write("</body></html>\n")
@@ -250,7 +252,7 @@ for batch in os.listdir(orig):
                 photo_page_path = os.path.join(web_dir, batch, pre + ".html")
                 if not ( use_cache and os.path.exists(photo_page_path) ):
                     with open(photo_page_path, 'w') as photo_html:
-                        photo_html.write("<html><link rel='shortcut icon' href='../favicon.png'><body>\n")
+                        photo_html.write("<html><head><link rel='shortcut icon' href='../favicon.png'></head><body>\n")
                         photo_html.write(f"<h3>{batch} {photo}</h3><p>whole-image-tags: {' '.join(metadata['tags'])}</p>")
                         photo_html.write(f"<a href='../../photos/{batch}/{photo}'><img src='../../photos/{batch}/{photo}' height='640'></a><br><br>\n")
 
@@ -289,8 +291,7 @@ for batch in os.listdir(orig):
                                     photo_html.write(f'<li><a href="../../{md}/{batch}/{md_path_strs[1]}">{md} {md_ext.lower()}</a></li>')
 
                         photo_html.write(f'</ul>')
-                        photo_html.write(f"<p>All content including photos &copy all rights reserved; 2022-{datetime.date.today().strftime('%Y')} Peter Wonka </p></body></html>")
-                        photo_html.write("</body></html>\n")
+                        photo_html.write(f"{copyright}</body></html>")
 
                 index_append += (
                     f'<div class="{" ".join(index_tags)}">'
