@@ -64,7 +64,7 @@ def thumbnail(orig_path, thumb_path, metadata, rect=None, use_cache = False):
 with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
     with open(os.path.join(web_dir,"index.html"), 'w') as index_html:
 
-        for html_file, title, file_name in zip ([rects_html, index_html], ["<h3>crops (<a href='index.html'>photos</a>, <a href='map/example'>map</a>) </h3>", "<h3>photos (<a href='crops.html'>crops</a>, <a href='map/example'>map</a>)</h3>"], ["html_rects", "html_index"]):
+        for html_file, title, file_name in zip ([rects_html, index_html], ["<h3>crops (<a href='index.html'>photos</a>, <a href='map/'>map</a>) </h3>", "<h3>photos (<a href='crops.html'>crops</a>, <a href='map/'>map</a>)</h3>"], ["html_rects", "html_index"]):
             html_file.write("<html><head><link rel='shortcut icon' href='favicon.png'></head><body>\n")
 
             html_file.write(title)
