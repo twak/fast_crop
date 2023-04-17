@@ -511,7 +511,7 @@ if __name__ == "__main__":
     else:
         dataset_root = r"/home/twak/archinet/data" #/datawaha/cggroup/kellyt/archinet_backup/complete_2401/data"
 
-    output_folder = r"/home/twak/labels_6k" #f"./metadata_single_elements/dataset_cook{time.time()}
+    output_folder = f"./dataset_cook_{time.time()}/"
 
     os.makedirs(output_folder, exist_ok=True)
 

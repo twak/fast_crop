@@ -20,7 +20,10 @@ def read(file):
     return df
 
 
-all_tests = '/home/twak/Downloads/by_sizes_test'
+#all_tests = '/home/twak/Downloads/beit3_0041_logs'
+all_tests = '/home/twak/Downloads/beit2_0042_by_sizes'
+#all_tests = '/home/twak/Downloads/0044_repeats'
+
 dfs = dict()
 
 iters = []
@@ -28,7 +31,8 @@ longest = None
 
 for a in os.listdir(all_tests):
     run_dir = os.path.join (all_tests, a)
-    size = int ( a[a.index("sizes_")+6 : a.index(".txt")] )
+    size = int(a[a.index("sizes_") + 6: a.index(".txt")])
+    #size = a[a.index("1024_")+5  : a.index(".txt")]
 
     if os.path.isdir(run_dir):
         jsons = [x for x in os.listdir( run_dir ) if x.endswith(".json")]
@@ -55,7 +59,7 @@ print()
 
 # val/miou by column...
 print ( f"  ,{ ', '.join([str(x) for x in ks]) }, iters"  )
-for i in range(1000):
+for i in range(10000):
 
     something = False
 
@@ -65,7 +69,9 @@ for i in range(1000):
         vals = df["mIoU"]
 
         if len(vals) <= i:
+            print (f"quitting on {key}")
             exit(0)
+            # continue
 
         if str(vals[i]) == 'nan':
             continue
