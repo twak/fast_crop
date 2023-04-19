@@ -28,7 +28,7 @@ if len(json_src) > 0:
 
     all_data = np.concatenate(tuple(np_data), 0)
     mean = np.mean(all_data, axis=(0, 1))
-    std = {np.std(all_data, axis=(0, 1))}
+    std = np.std(all_data, axis=(0, 1))
     print(f"mean,std: [{mean[0]}, [{mean[1]}, {mean[2]}]], std=[{std[0]}, [{std[1]}, {std[2]}]")
     # print(f"mean,std: [{np.mean(all_data, axis=(0, 1))}], [{np.std(all_data, axis=(0, 1))}]")
 else:
