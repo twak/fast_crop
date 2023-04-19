@@ -51,22 +51,22 @@ def apply_histo(current_cum, new_cum, image_file):
 		quintiles = current_cum[j][ image[:, :, j].reshape(-1)]
 		translated_image[:,:,j] = np.interp(quintiles, new_cum[j], np.arange(256) ).reshape((512, 512))
 
-	cv2.imwrite( os.path.join (sys.args[2], Path(image_file).with_suffix('.png')), cv2.cvtColor(translated_image, cv2.COLOR_RGB2BGR))
+	cv2.imwrite( os.path.join (sys.args[3], Path(image_file).with_suffix('.png')), cv2.cvtColor(translated_image, cv2.COLOR_RGB2BGR))
 
 	return translated_image
 
 
 syn_dir = sys.args[1] # "/home/twak/Downloads/winsyn_blossom/rgb"
 syn_histo, syn_cdf = build_dataset_histo(syn_dir)
-gt_histo, gt_cdf, = build_dataset_histo(sys.args[1])
-os.makedirs(sys.args[2], exist_ok=True)
+gt_histo, gt_cdf, = build_dataset_histo(sys.args[2])
+os.makedirs(sys.args[3], exist_ok=True)
 
 for image in os.listdir(syn_dir):
 	apply_histo(syn_cdf, gt_cdf, os.path.join (syn_dir, image))
 
 if False:
 
-	fixed_histo, fixed_cdf = build_dataset_histo(sys.args[2])
+	fixed_histo, fixed_cdf = build_dataset_histo(sys.args[3])
 
 	(fig, axs) = plt.subplots(nrows=3, ncols=3, figsize=(8, 8))
 
