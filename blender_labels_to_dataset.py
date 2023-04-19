@@ -39,7 +39,7 @@ def to_greyscale_labels(png_file, out_folder):
     Image.fromarray(np.uint8(output)).save( output_path )
 
 
-_pool = concurrent.futures.ThreadPoolExecutor(max_workers=4)
+_pool = concurrent.futures.ThreadPoolExecutor(max_workers=16)
 
 labels = []
 
