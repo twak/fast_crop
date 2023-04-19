@@ -17,7 +17,8 @@ multi = True
 def build_dataset_histo(dir):
 	histo = np.zeros((3, 256), dtype=float)
 	cdf = np.zeros((3, 256), dtype=float)
-	for image in os.listdir(dir):
+	for i, image in enumerate ( os.listdir(dir) ):
+		print(f"building histogram from {i}  {image}")
 		# convert the image from BGR to RGB channel ordering
 		image = cv2.cvtColor(cv2.imread(os.path.join(dir, image)), cv2.COLOR_BGR2RGB)
 		for j in range(3):
@@ -61,7 +62,8 @@ syn_histo, syn_cdf = build_dataset_histo(syn_dir)
 gt_histo, gt_cdf, = build_dataset_histo(sys.args[2])
 os.makedirs(sys.args[3], exist_ok=True)
 
-for image in os.listdir(syn_dir):
+for i, image in enumerate ( os.listdir(syn_dir) ):
+	print(f"processing {i}  {image}")
 	apply_histo(syn_cdf, gt_cdf, os.path.join (syn_dir, image))
 
 if False:
