@@ -52,7 +52,7 @@ def apply_histo(current_cum, new_cum, image_file):
 		quintiles = current_cum[j][ image[:, :, j].reshape(-1)]
 		translated_image[:,:,j] = np.interp(quintiles, new_cum[j], np.arange(256) ).reshape((512, 512))
 
-	cv2.imwrite( os.path.join (sys.argv[3], Path(image_file).with_suffix('.png')), cv2.cvtColor(translated_image, cv2.COLOR_RGB2BGR))
+	cv2.imwrite( os.path.join (sys.argv[3], Path(image_file).with_suffix('.png').name), cv2.cvtColor(translated_image, cv2.COLOR_RGB2BGR))
 
 	return translated_image
 

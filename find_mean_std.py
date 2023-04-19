@@ -28,5 +28,6 @@ if len(json_src) > 0:
 
     all_data = np.concatenate(tuple(np_data), 0)
     print(f"mean,std: [{np.mean(all_data, axis=(0, 1))}], [{np.std(all_data, axis=(0, 1))}]")
+    # print(f"mean,std: [{np.mean(all_data, axis=(0, 1))}], [{np.std(all_data, axis=(0, 1))}]")
 else:
     print("no images found :(")
