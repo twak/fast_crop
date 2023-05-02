@@ -42,8 +42,8 @@ def colours_for_mode (mode):
         colors["window frame"] = (255, 128, 128)
         colors["open-window"]  = (0, 0, 0)
         colors["wall frame"]   = (233, 175, 198)
-        colors["wall"]         = (231, 231, 231) # 231 on blossom :/
-        # colors["wall"]         = (204, 204, 204) # 231 on blossom :/
+        colors["wall"]         = (231, 231, 231) # 231 on blossom + sash :/
+        #colors["wall"]         = (204, 204, 204)
         colors["door"]         = (180, 151, 198)
         colors["shutter"]      = (255, 153,  85)
         colors["blind"]        = (255, 230, 128)
