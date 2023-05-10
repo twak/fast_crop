@@ -392,7 +392,7 @@ if __name__ == '__main__':
     # print('precision:', precision)
     # print('recall:', recall)
 
-        dataloader = get_custom_loader(args.path_real, batch_size=1 ) #args.batch_size )
+        dataloader = get_custom_loader(args.path_fake, batch_size=1 ) #args.batch_size )
         desc = 'found %d images in ' % len(dataloader.dataset) + args.path_real
         print(desc)
         for i, ti in enumerate (dataloader):
