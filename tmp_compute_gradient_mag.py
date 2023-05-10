@@ -39,7 +39,7 @@ def build_dataset_histo(dir):
 
 		for factor in range (0,octaves):
 
-			for filter_i, filter in enumerate ( [horizontal, vertical] ):
+			for filter_i, filter in enumerate ( [horizontal ] ):
 				translated_image = np.zeros(image.shape, dtype=np.ubyte)
 				for c in range (3):
 					cconv = np.abs( convolve2d(image[:,:,c], filter)[:,1:513] )
@@ -49,12 +49,12 @@ def build_dataset_histo(dir):
 
 				image = cv2.resize(image, (int(image.shape[0]/2), int(image.shape[1]/2)), interpolation=cv2.INTER_AREA)
 
-			cv2.imwrite(os.path.join("/home/twak/Downloads", f"{factor}-{filter_i}-{Path(image_file).with_suffix(f'.png').name}"), cv2.cvtColor(translated_image, cv2.COLOR_RGB2BGR))
+			# cv2.imwrite(os.path.join("/home/twak/Downloads", f"{factor}-{filter_i}-{Path(image_file).with_suffix(f'.png').name}"), cv2.cvtColor(translated_image, cv2.COLOR_RGB2BGR))
 
 		count+=1
 
-		if count > 0:
-			break
+		# if count > 0:
+		# 	break
 
 	for o in range(0, octaves):
 		histos[o] /= count
@@ -69,7 +69,7 @@ def plot_histo (axs, histo,  col=0):
 	# for j in range(3):
 	axs[col].plot(bins, histo / maxx)
 
-syn_dir = "/home/twak/Downloads/winsyn_blossom/rgb"
+syn_dir = "/home/twak/Downloads/winsyn_blossom/histo_matched"
 syn_histo = build_dataset_histo(syn_dir)
 gt_histo  = build_dataset_histo("/home/twak/Downloads/winlab_4_png/rgb") # sys.argv[2])
 
@@ -92,6 +92,7 @@ for o in range (octaves):
 	g = lambda a: np.power ( a, base   )
 	f = lambda a: np.power ( a, 1/base )
 	axs[o].set_yscale('function', functions=(f,g))
+
 	#axs[1].set_yscale('function', functions=(f,g))
 
 
