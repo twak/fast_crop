@@ -206,7 +206,7 @@ def recover(dataset):
 
 if __name__ == "__main__":
 
-    dataset=argv[1] # "/home/twak/data/dataset_out"
+    dataset=sys.argv[1] # "/home/twak/data/dataset_out"
     build_config(dataset)
     build_vectors(dataset)
     # recover(dataset)
