@@ -89,7 +89,7 @@ def build_config(dataset):
                 d_sofar += d_size
 
     global CONFIG_JSON
-    with open(os.path.join(dataset, "CONFIG_JSON"), "w") as fp:
+    with open(os.path.join(dataset, CONFIG_JSON), "w") as fp:
         json.dump(dict(disc=disc, cont=cont), fp, default=vars, indent=1)
 
     # for p in l[:1000]:
@@ -116,7 +116,7 @@ def load_params(config):
 def build_vectors(dataset):
 
     global CONFIG_JSON
-    cont, disc = load_params(os.path.join(dataset, "CONFIG_JSON"))
+    cont, disc = load_params(os.path.join(dataset, CONFIG_JSON))
 
     out_dir = os.path.join(dataset, "nattribs")
     os.makedirs(out_dir, exist_ok=True)
@@ -169,7 +169,7 @@ def build_vectors(dataset):
 def recover(dataset):
 
     global CONFIG_JSON
-    cont, disc = load_params(os.path.join(dataset, "CONFIG_JSON"))
+    cont, disc = load_params(os.path.join(dataset, CONFIG_JSON ))
 
     for f in glob( f"{dataset}/nattribs/*.npy"):
         print(f)
