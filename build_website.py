@@ -13,7 +13,7 @@ dataset_root = Path.cwd()
 orig     = os.path.join(dataset_root, "photos")
 meta_dir = os.path.join(dataset_root, "metadata_single_elements")
 web_dir  = os.path.join(dataset_root, "metadata_website")
-use_cache = False
+use_cache = True
 
 process_labels.USE_PRETTY_COLORS = True
 process_labels.COLOR_MODE = process_labels.PRETTY
@@ -203,14 +203,14 @@ for batch in os.listdir(orig):
                     labels_json_path = os.path.join(labels_dir_2, pre + ".json")
 
                 if os.path.exists(labels_json_path): # render json to image if required
-                    process_labels.render_labels_web(dataset_root, labels_json_path, batch_thumbs, flush_html=False, use_cache=True)
+                    process_labels.render_labels_web(dataset_root, labels_json_path, batch_thumbs, flush_html=False, use_cache=use_cache)
                     # thumbnail new image-with-labels
                     wl = os.path.join(batch_thumbs, f"{pre}.with_labels.jpg")
                     if not os.path.exists(wl): # if rendering fails/maybe empty label file
                         wl = os.path.join(photos_dir, photo)
-                    thumbnail( wl, os.path.join(batch_thumbs, photo), metadata, use_cache=False )
+                    thumbnail( wl, os.path.join(batch_thumbs, photo), metadata, use_cache=use_cache )
                 else:
-                    thumbnail(os.path.join(photos_dir, photo), os.path.join(batch_thumbs, photo), metadata, use_cache=True)
+                    thumbnail(os.path.join(photos_dir, photo), os.path.join(batch_thumbs, photo), metadata, use_cache=use_cache)
 
                 tags = set(metadata["tags"]) # whole image tags
                 # tags.add(batch) - no! we shall all batches because we now use radio
@@ -237,7 +237,7 @@ for batch in os.listdir(orig):
                             print ("skipping small rect")
                             continue
 
-                        thumbnail(os.path.join(photos_dir, photo),  os.path.join(batch_thumbs, crop_file), metadata, rect=r[0], use_cache=True)
+                        thumbnail(os.path.join(photos_dir, photo),  os.path.join(batch_thumbs, crop_file), metadata, rect=r[0], use_cache=use_cache)
 
                         rects_append += (
                             f'<div class="{" ".join(rect_tags)}">'
@@ -250,8 +250,8 @@ for batch in os.listdir(orig):
                         rect_count += 1
 
                 photo_page_path = os.path.join(web_dir, batch, pre + ".html")
-                # if not ( use_cache and os.path.exists(photo_page_path) ):
-                if not ( os.path.exists(photo_page_path) ):
+                if not ( use_cache and os.path.exists(photo_page_path) ):
+                # if not ( os.path.exists(photo_page_path) ):
                     with open(photo_page_path, 'w') as photo_html:
                         photo_html.write("<html><head><link rel='shortcut icon' href='../favicon.png'></head><body>\n")
                         photo_html.write(f"<h3>{batch} {photo}</h3><p>whole-image-tags: {' '.join(metadata['tags'])}</p>")
