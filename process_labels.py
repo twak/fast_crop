@@ -82,7 +82,7 @@ def colours_for_mode (mode):
         colors["misc object"]  = (174, 233, 174)
         colors["roof"]         = (166, 52, 61)
         colors["door-pane"] = (112, 164, 174)
-    elif mode == GREY: # blender/label dataset colors
+    elif mode == GREY: # blender/label dataset greyscale colors
         colors["none"]         = (0)
         colors["window pane"]  = (1)
         colors["window frame"] = (2)
