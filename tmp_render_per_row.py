@@ -35,7 +35,7 @@ for y in range(rows):
         break
     y *= resolution
     for x in range(cols):
-        print(x)
+        print(f"{y} + {x} : {filenames[y]} + {folders[x]}")
         img = Image.open(os.path.join(dataset, folders[x], filenames[y] ) )
         img = img.resize((resolution, resolution))
         x *= resolution
