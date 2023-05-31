@@ -33,7 +33,7 @@ new_image = Image.new('RGB', (cols*resolution, rows*resolution))
 i = 0
 for y in range(rows):
 
-    if i >= len(images):
+    if i >= len(filenames):
         break
     y *= resolution
     for x in range(cols):
