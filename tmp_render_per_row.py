@@ -40,7 +40,7 @@ for y in range(rows):
         img = Image.open(os.path.join(dataset, folders[x], filenames[y] ) )
         img = img.resize((resolution, resolution))
         xx = x * resolution
-        new_image.paste(img, (xx, yy, x+resolution, y+resolution))
+        new_image.paste(img, (xx, yy, xx+resolution, yy+resolution))
         print('paste:', xx, yy)
         i += 1
 
