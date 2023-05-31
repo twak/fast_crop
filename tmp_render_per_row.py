@@ -33,12 +33,12 @@ for y in range(rows):
 
     if i >= len(filenames):
         break
-    y *= resolution
     for x in range(cols):
         print(f"{y} + {x} : {filenames[y]} + {folders[x]}")
         img = Image.open(os.path.join(dataset, folders[x], filenames[y] ) )
         img = img.resize((resolution, resolution))
         x *= resolution
+        y *= resolution
         new_image.paste(img, (x, y, x+resolution, y+resolution))
         print('paste:', x, y)
         i += 1
