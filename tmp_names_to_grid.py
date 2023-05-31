@@ -1,7 +1,7 @@
 import sys
 import glob
 import time
-
+import os
 from PIL import Image
 
 # for test only
