@@ -20,7 +20,6 @@ filenames = [] # glob.glob(pattern)
 
 dataset = sys.argv[1]
 split_file = sys.argv[2] # "/home/twak/Downloads/split.txt"
-o = sys.argv[3]
 
 with open( os.path.join (dataset, split_file), "r") as f:
     for line in f:
@@ -29,7 +28,6 @@ with open( os.path.join (dataset, split_file), "r") as f:
 # create empty image to put thumbnails
 new_image = Image.new('RGB', (cols*resolution, rows*resolution))
 
-# put thumbnails
 i = 0
 for y in range(rows):
 
@@ -37,9 +35,10 @@ for y in range(rows):
         break
     y *= resolution
     for x in range(cols):
-        x *= resolution
+        print(x)
         img = Image.open(os.path.join(dataset, folders[x], filenames[y] ) )
         img = img.resize((resolution, resolution))
+        x *= resolution
         new_image.paste(img, (x, y, x+resolution, y+resolution))
         print('paste:', x, y)
         i += 1
