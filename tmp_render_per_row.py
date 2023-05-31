@@ -9,8 +9,9 @@ from PIL import Image
 
 # get arguments
 # pattern = sys.argv[1]
-rows = 10 # int(sys.argv[2])
-cols = 10 # int(sys.argv[3])
+rows = 100 # int(sys.argv[2])
+folders = ["rgb", "albedo", "exposed", "labels"]
+cols = len(folders) # int(sys.argv[3])
 
 resolution = 256
 
@@ -23,13 +24,7 @@ o = sys.argv[3]
 
 with open( os.path.join (dataset, split_file), "r") as f:
     for line in f:
-        filenames.append( os.path.join (dataset, o, f"{line[:-1]}.png") )
-
-# filenames = filenames[-rows*cols:] # highest realism
-filenames = filenames[:rows*cols] # lowest realism
-
-# load images and resize to (100, 100)
-images = [Image.open(name).resize((resolution, resolution)) for name in filenames]
+        filenames.append( os.path.join (f"{line[:-1]}.png") )
 
 # create empty image to put thumbnails
 new_image = Image.new('RGB', (cols*resolution, rows*resolution))
@@ -37,12 +32,14 @@ new_image = Image.new('RGB', (cols*resolution, rows*resolution))
 # put thumbnails
 i = 0
 for y in range(rows):
+
     if i >= len(images):
         break
     y *= resolution
     for x in range(cols):
         x *= resolution
-        img = images[i]
+        img = Image.open(os.path.join(dataset, folders[x], filenames[y] ) )
+        img = img.resize((resolution, resolution))
         new_image.paste(img, (x, y, x+resolution, y+resolution))
         print('paste:', x, y)
         i += 1
