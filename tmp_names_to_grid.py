@@ -23,7 +23,7 @@ o = sys.argv[3]
 
 with open( os.path.join (dataset, split_file), "r") as f:
     for line in f:
-        filenames.append( os.path.join (dataset, o, f"{line[:-1]}.png") )
+        filenames.append( os.path.join (dataset, o, f"{line[:-1]}.jpg") )
 
 # filenames = filenames[-rows*cols:] # highest realism
 filenames = filenames[:rows*cols] # lowest realism
