@@ -1,5 +1,7 @@
 import sys
 import glob
+import time
+
 from PIL import Image
 
 # for test only
@@ -15,9 +17,13 @@ resolution = 256
 # get filenames
 filenames = [] # glob.glob(pattern)
 
-with open("/home/twak/Downloads/split.txt", "r") as f:
+dataset = sys.argv[1]
+split_file = sys.argv[2] # "/home/twak/Downloads/split.txt"
+o = sys.argv[3]
+
+with open( os.path.join (dataset, split_file), "r") as f:
     for line in f:
-        filenames.append(f"/home/twak/Downloads/winlab_4_png/holdout/{line[:-1]}.png")
+        filenames.append( os.path.join (dataset, o, f"{line[:-1]}.png") )
 
 # filenames = filenames[-rows*cols:] # highest realism
 filenames = filenames[:rows*cols] # lowest realism
@@ -42,4 +48,4 @@ for y in range(rows):
         i += 1
 
 # save it
-new_image.save('realism_low.jpg')
+new_image.save(f'grid{time.time()}.jpg')
