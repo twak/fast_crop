@@ -25,7 +25,7 @@ class ROI:
         self.meta_dir = abs_path.parent.parent.joinpath("metadata_single_elements").joinpath(abs_path.name).joinpath(os.path.basename(dir) )
         os.makedirs(self.meta_dir, exist_ok=True)
 
-        for exn in ("**.jpg", "**.png" ):
+        for exn in ("**.JPG", "**.png" ):
             self.images.extend(glob.glob(dir+"/"+exn))
 
         if (len(self.images) == 0):
