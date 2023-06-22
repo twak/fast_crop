@@ -28,6 +28,8 @@ class ROI:
         for exn in ("**.JPG", "**.png" ):
             self.images.extend(glob.glob(dir+"/"+exn))
 
+        self.images.sort()
+
         if (len(self.images) == 0):
             print ("no images found in %s!" % dir)
             sys.exit(1)
