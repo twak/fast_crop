@@ -43,6 +43,8 @@ def plot_histo (axs, histo,  cdf, col=0):
 #https://github.com/scikit-image/scikit-image/blob/05427a08bce517aec855d4ca63ad0c98e5808955/skimage/exposure/histogram_matching.py#L6
 def apply_histo(current_cum, new_cum, image_file):
 
+	print(f"processing {image_file}")
+
 	# convert the image from BGR to RGB channel ordering
 	image = cv2.cvtColor(cv2.imread(image_file), cv2.COLOR_BGR2RGB)
 
@@ -62,9 +64,15 @@ syn_histo, syn_cdf = build_dataset_histo(syn_dir)
 gt_histo, gt_cdf, = build_dataset_histo(sys.argv[2])
 os.makedirs(sys.argv[3], exist_ok=True)
 
-for i, image in enumerate ( os.listdir(syn_dir) ):
-	print(f"processing {i}  {image}")
-	apply_histo(syn_cdf, gt_cdf, os.path.join (syn_dir, image))
+
+_pool = concurrent.futures.ThreadPoolExecutor()
+
+processes.append(_pool.submit(apply_histo, syn_cdf, gt_cdf, os.path.join (syn_dir, image)))
+
+# no thread
+# for i, image in enumerate ( os.listdir(syn_dir) ):
+# 	print(f"processing {i}  {image}")
+# 	apply_histo(syn_cdf, gt_cdf, os.path.join (syn_dir, image))
 
 if False:
 

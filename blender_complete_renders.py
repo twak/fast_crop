@@ -62,7 +62,7 @@ def find_roots(files):
     return list ( out.keys() )
 
 
-dirs = [ ["rgb","png"], ["labels","png"], ["labels_8bit", "png"], ["exposed", "png"], ["attribs", "txt"] ]
+dirs = [ ["rgb","png"], ["labels","png"], ["labels_8bit", "png"], ["exposed", "png"], ["attribs", "txt"], ["depth", "exr"] ]
 
 _pool = concurrent.futures.ThreadPoolExecutor()
 
