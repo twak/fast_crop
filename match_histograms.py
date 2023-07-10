@@ -8,6 +8,8 @@ from skimage import exposure
 import matplotlib.pyplot as plt
 import cv2
 
+import contextlib
+import concurrent.futures
 '''
 Update one dataset to match the histogram of another
 '''
@@ -67,7 +69,8 @@ os.makedirs(sys.argv[3], exist_ok=True)
 
 _pool = concurrent.futures.ThreadPoolExecutor()
 
-processes.append(_pool.submit(apply_histo, syn_cdf, gt_cdf, os.path.join (syn_dir, image)))
+for i, image in enumerate ( os.listdir(syn_dir) ):
+	_pool.submit(apply_histo, syn_cdf, gt_cdf, os.path.join (syn_dir, image))
 
 # no thread
 # for i, image in enumerate ( os.listdir(syn_dir) ):
