@@ -28,7 +28,7 @@ UGLY   = 1
 GREY   = 2
 PRETTY_FILMIC = 3
 
-COLOR_MODE = PRETTY
+COLOR_MODE = GREY
 LABEL_SEQ = ["none","window pane","window frame","open-window","wall frame","wall","door","shutter","blind","bars","balcony","misc object", "roof", "door-pane"]
 
 def colours_for_mode (mode):
@@ -89,12 +89,12 @@ def colours_for_mode (mode):
         colors["open-window"]  = (3)
         colors["wall frame"]   = (4)
         colors["wall"]         = (5)
-        colors["door"]         = (6)
-        colors["shutter"]      = (7)
-        colors["blind"]        = (8)
-        colors["bars"]         = (9)
-        colors["balcony"]      = (10)
-        colors["misc object"]  = (11)
+        colors["door"]         = (2) # << remap door to window-frame
+        colors["shutter"]      = (6)
+        colors["blind"]        = (7)
+        colors["bars"]         = (8)
+        colors["balcony"]      = (9)
+        colors["misc object"]  = (10)
         # colors["roof"]         = (12)
         # colors["door-pane"]    = (13)
 
@@ -265,20 +265,36 @@ def crop( img, res=-1, mode='none', resample=None, background_col="black"):
 
         return img
 
-def country_from_batch(batch_name):
+batch_to_country = None
 
-    if "tom_" in batch_name and "copenhagen" not in batch_name and "thuwal" not in batch_name:
-        return "uk"
-    elif "michaela_vienna" in batch_name:
-        return "austria"
-    elif "michaela_berlin" in batch_name:
-        return "germany"
-    elif "brian_la_20220905" in batch_name or "scarlette_chicago_20221022" in batch_name or "peter_washington_20221129" in batch_name or "kaitlyn_ny_20221205" in batch_name or "samantha_newyork_20230313" in batch_name or "nicklaus_miami_20230301" in batch_name or "kalinia_la_20230128" in batch_name:
-        return "usa"
-    elif "elsayed_" in batch_name:
-        return "egypt"
+def country_from_batch(dataset_root, batch_name):
+
+    global batch_to_country
+
+    if batch_to_country is None:
+        batch_to_country = {}
+        with open ( os.path.join(dataset_root, "metadata_location", "locations_data.json" ) ) as lf:
+            locs = json.load( lf )
+            for x in locs:
+                batch_to_country[x["batch"]] = x["country"].lower()
+
+    if batch_name in batch_to_country:
+        return batch_to_country[batch_name]
     else:
-        return "other"
+        return "misc"
+
+    # if "tom_" in batch_name and "copenhagen" not in batch_name and "thuwal" not in batch_name:
+    #     return "uk"
+    # elif "michaela_vienna" in batch_name:
+    #     return "austria"
+    # elif "michaela_berlin" in batch_name:
+    #     return "germany"
+    # elif "brian_la_20220905" in batch_name or "scarlette_chicago_20221022" in batch_name or "peter_washington_20221129" in batch_name or "kaitlyn_ny_20221205" in batch_name or "samantha_newyork_20230313" in batch_name or "nicklaus_miami_20230301" in batch_name or "kalinia_la_20230128" in batch_name:
+    #     return "usa"
+    # elif "elsayed_" in batch_name:
+    #     return "egypt"
+    # else:
+    #     return "other"
 
 def render_labels_per_crop( dataset_root, json_file, output_folder, folder_per_batch=False, res=512, mode='None', np_data=None):
     '''
@@ -297,7 +313,7 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, folder_per_b
 
     batch_name = Path(json_file).parent.name
 
-    country = country_from_batch(batch_name)
+    country = country_from_batch(dataset_root, batch_name)
 
     if  os.stat(json_file).st_size == 0: # while the labelling is in progress, some label files are empty placeholders.
         print ("skipping empty label file")
@@ -510,9 +526,9 @@ if __name__ == "__main__":
     if platform == "win32":
         dataset_root = r"C:\Users\twak\Documents\architecture_net\dataset"
     else:
-        dataset_root = r"/home/twak/archinet/data" #/datawaha/cggroup/kellyt/archinet_backup/complete_2401/data"
+        dataset_root = r"/home/twak/archinet/data"
 
-    output_folder = f"./dataset_cook_{time.time()}/"
+    output_folder = f"./dataset_cook_no_door_9k_{time.time()}/"
 
     os.makedirs(output_folder, exist_ok=True)
 

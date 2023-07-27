@@ -8,6 +8,11 @@ import shutil
 from collections import defaultdict
 import json
 
+
+"""
+ this goes from the json (post import_lyd_json.py) to the files in the correct folder to match the jpgs. 
+"""
+
 if __name__ == "__main__":
 
     if platform == "win32":
@@ -21,10 +26,13 @@ if __name__ == "__main__":
          r"C:\Users\twak\Documents\architecture_net\windows_part3\log_part_5.txt",
          r"C:\Users\twak\Documents\architecture_net\windows_part3\log_part_6.txt"])
 
-    images = []
-    images.extend(glob.glob(r'C:\Users\twak\Documents\architecture_net\windows_part3\crops\**.jpg'))
+
 
     if False:
+
+        images = []
+        images.extend(glob.glob(r'C:\Users\twak\Documents\architecture_net\windows_part3\crops\**.jpg'))
+
         # create placeholder files for everything we sent to the labellers so far
         for i in images:
             src_info = src_lookup[Path(i).name]
@@ -34,14 +42,35 @@ if __name__ == "__main__":
             with open(out, 'w') as _:
                 pass
 
+    count = 0
+    uniques = 0
     if True:
         # these are the files in our format, but need moving to correct batch folder
-        for i in glob.glob(r'C:\Users\twak\Documents\architecture_net\windows_part3\labels_all_labels_so_far\*.json'):
+        for i in glob.glob(r'C:\Users\twak\Documents\architecture_net\windows_part3\labels_all_unzipped\*.json'):
+            count += 1
             src_info = src_lookup[Path(i).with_suffix(".jpg").name]
             out = os.path.join( dataset_root, "metadata_window_labels_2", Path(src_info['src']).with_suffix(".json") )
-            print(src_info['src'])
+
             os.makedirs(Path(out).parent, exist_ok=True)
-            shutil.copyfile(i, out)
+
+            with open(i, "r") as iof:
+                neu = json.load(iof)
+
+            if os.path.exists(out):
+                print(f"app ending to {src_info['src']}")
+                with open (out, "r") as of:
+                    data = json.load(of)
+
+                neu = neu | data
+            else:
+                uniques += 1
+                print(f"copying {src_info['src']}")
+                shutil.copyfile(i, out)
+
+            with open (out, "w") as fo:
+                json.dump(neu, fo)
+
+    print (f"imported {count} annotations into {uniques} photo files")
 
     if False:
         # count labels for both sets:

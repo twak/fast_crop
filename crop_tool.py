@@ -35,8 +35,9 @@ class ROI:
             sys.exit(1)
 
         for i, f in enumerate (self.images):
-            if os.path.exists(self.json_file(f)):
+            if not os.path.exists(self.json_file(f)):
                 self.current_n = i # skip to last annotated
+                break
 
         print ("found %d images; starting at number %d" % (len (self.images), self.current_n ))
 
@@ -329,7 +330,7 @@ class ROI:
         self.current_rect = None
 
         self.tags = []
-        self.current_n += incr
+        self.current_n = (self.current_n + incr + len (self.images)) % len (self.images)
 
         self.input_loc = self.images[(self.current_n + len(self.images) ) % len(self.images)]
         print (f"loading {self.input_loc} ({self.current_n}/{len(self.images)})")

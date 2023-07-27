@@ -94,7 +94,7 @@ if __name__ == "__main__":
     else:
         dataset_root = r"/mnt/vision/data/archinet/data"
 
-    s = "_to_val_19_5"
+    s = "_final_cor"
 
     output_folder = r"C:\Users\twak\Documents\architecture_net\windows_part3\triplets"+s
 
