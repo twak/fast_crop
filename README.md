@@ -1,6 +1,6 @@
 # fast crop tool
 
-Tom's collections of scrips for dataset generation. 
+Tom's collections of scrips for dataset wrangling. 
 
 ## crop_tool
 

@@ -54,7 +54,7 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, res=512, mod
     with open(json_file, "r") as f:
         data = json.load(f)
 
-    photo = open_and_rotate( os.path.join(dataset_root, photo_file), data )
+    photo = process_labels.open_and_rotate( os.path.join(dataset_root, photo_file), data )
 
     label_mode = "L" # greyscale
 
