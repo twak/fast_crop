@@ -21,12 +21,16 @@ from sys import platform
 import hashlib
 from PIL.Image import Transpose
 
+
+VALID_CROPS = {'square_crop', 'square_expand', 'none'}
+
 colors = {}
 
 PRETTY = 0
 UGLY   = 1
 GREY   = 2
 PRETTY_FILMIC = 3
+GREY_NO_DOOR = 4
 
 COLOR_MODE = GREY
 LABEL_SEQ = ["none","window pane","window frame","open-window","wall frame","wall","door","shutter","blind","bars","balcony","misc object", "roof", "door-pane"]
@@ -52,6 +56,7 @@ def colours_for_mode (mode):
         colors["misc object"]  = (174, 233, 174)
         colors["roof"]         = (167, 167, 167)
         colors["door-pane"]    = (124, 200, 185)
+
     if mode == PRETTY_FILMIC: # pretty colors if i forgot to set blender's color management view transform
         colors["none"]         = (255, 255, 255)
         colors["window pane"]  = (143, 168, 194)
@@ -66,7 +71,8 @@ def colours_for_mode (mode):
         colors["balcony"]      = (222, 170, 135)
         colors["misc object"]  = (174, 233, 174)
         colors["roof"]         = (166, 52, 61)
-        colors["door-pane"] = (112, 164, 174)
+        colors["door-pane"]    = (112, 164, 174)
+
     elif mode == UGLY:
         colors["none"]         = (0, 0, 255)
         colors["window pane"]  = (0, 182, 206)
@@ -81,7 +87,8 @@ def colours_for_mode (mode):
         colors["balcony"]      = (222, 170, 135)
         colors["misc object"]  = (174, 233, 174)
         colors["roof"]         = (166, 52, 61)
-        colors["door-pane"] = (112, 164, 174)
+        colors["door-pane"]    = (112, 164, 174)
+
     elif mode == GREY: # blender/label dataset greyscale colors
         colors["none"]         = (0)
         colors["window pane"]  = (1)
@@ -89,22 +96,38 @@ def colours_for_mode (mode):
         colors["open-window"]  = (3)
         colors["wall frame"]   = (4)
         colors["wall"]         = (5)
-        colors["door"]         = (2) # << remap door to window-frame
-        colors["shutter"]      = (6)
-        colors["blind"]        = (7)
-        colors["bars"]         = (8)
-        colors["balcony"]      = (9)
-        colors["misc object"]  = (10)
-        # colors["roof"]         = (12)
-        # colors["door-pane"]    = (13)
+        colors["door"]         = (6) # << remap door to window-frame
+        colors["shutter"]      = (7)
+        colors["blind"]        = (8)
+        colors["bars"]         = (9)
+        colors["balcony"]      = (10)
+        colors["misc object"]  = (11)
+        colors["roof"]         = (12)
+        colors["door-pane"]    = (13)
+
+    elif mode == GREY_NO_DOOR:  # blender/label dataset greyscale colors
+        colors["none"]          = (0)
+        colors["window pane"]   = (1)
+        colors["window frame"]  = (2)
+        colors["open-window"]   = (3)
+        colors["wall frame"]    = (4)
+        colors["wall"]          = (5)
+        colors["door"]          = (2)  # << remap door to window-frame
+        colors["shutter"]       = (6)
+        colors["blind"]         = (7)
+        colors["bars"]          = (8)
+        colors["balcony"]       = (9)
+        colors["misc object"]   = (10)
+        colors["roof"]          = (0) # << render roof as none
+        colors["door-pane"]     = (1) # << render door-window-pane as window-pane
 
     return colors
 
 colors = colours_for_mode(COLOR_MODE)
 
 def label_color_mode():
-    global GREY, COLOR_MODE
-    if COLOR_MODE == GREY:
+    global GREY, COLOR_MODE, GREY_NO_DOOR
+    if COLOR_MODE == GREY or COLOR_MODE == GREY_NO_DOOR:
         return "L"
     else:
         return "RGBA"
@@ -283,274 +306,3 @@ def country_from_batch(dataset_root, batch_name):
     else:
         return "misc"
 
-    # if "tom_" in batch_name and "copenhagen" not in batch_name and "thuwal" not in batch_name:
-    #     return "uk"
-    # elif "michaela_vienna" in batch_name:
-    #     return "austria"
-    # elif "michaela_berlin" in batch_name:
-    #     return "germany"
-    # elif "brian_la_20220905" in batch_name or "scarlette_chicago_20221022" in batch_name or "peter_washington_20221129" in batch_name or "kaitlyn_ny_20221205" in batch_name or "samantha_newyork_20230313" in batch_name or "nicklaus_miami_20230301" in batch_name or "kalinia_la_20230128" in batch_name:
-    #     return "usa"
-    # elif "elsayed_" in batch_name:
-    #     return "egypt"
-    # else:
-    #     return "other"
-
-def render_labels_per_crop( dataset_root, json_file, output_folder, folder_per_batch=False, res=512, mode='None', np_data=None):
-    '''
-    Render out labelled dataset
-    '''
-
-    print (f"rendering crops from {json_file} @ {res}:{mode}")
-
-    global colors
-
-    photo_file = find_photo_for_json(dataset_root, json_file )
-
-    os.makedirs(os.path.join(output_folder, "rgb"   ), exist_ok=True)
-    os.makedirs(os.path.join(output_folder, "labels"), exist_ok=True)
-    os.makedirs(os.path.join(output_folder, "svg"), exist_ok=True)
-
-    batch_name = Path(json_file).parent.name
-
-    country = country_from_batch(dataset_root, batch_name)
-
-    if  os.stat(json_file).st_size == 0: # while the labelling is in progress, some label files are empty placeholders.
-        print ("skipping empty label file")
-        return
-
-    with open(json_file, "r") as f:
-        data = json.load(f)
-
-    photo = open_and_rotate( os.path.join(dataset_root, photo_file), data )
-
-    label_mode = label_color_mode()
-
-    # crop to each defined region
-    for crop_name, crop_data in data.items():
-
-        crop_bounds = crop_data["crop"]
-        crop_photo =photo.crop (crop_bounds)
-
-        label_img = Image.new(label_mode, (crop_photo.width, crop_photo.height))
-        draw_label_photo = ImageDraw.Draw(label_img, label_mode)
-        draw_label_photo.rectangle([(0, 0), (label_img.width, label_img.height)], fill=colors["none"] )
-
-        if isinstance( crop_data["labels"], dict ): # labels part 1, render each category separately
-            for cat, polies in crop_data["labels"].items():
-                for poly in polies:
-                    poly = [tuple(x) for x in poly]
-                    draw_label_photo.polygon( poly, colors[cat])
-        else: # labels part 2, render in order
-            for catl in crop_data["labels"]:
-                cat = catl[0]
-                for poly in catl[1]:
-                    poly = [tuple(x) for x in poly]
-                    draw_label_photo.polygon(poly, colors[cat])
-
-        # crop down
-        crop_photo = crop(crop_photo, res, mode, resample=Image.Resampling.LANCZOS, background_col="black")
-        label_img  = crop(label_img , res, mode, resample=Image.Resampling.NEAREST, background_col="white")
-
-        base_name = os.path.splitext(crop_name)[0]
-
-        # base_name = base_name.replace("_new", "") # patch names sent to labellers
-        # base_name = base_name.replace("IMG_0276", hashlib.md5(crop_photo.tobytes()).hexdigest() )
-
-        # if folder_per_batch: # split by country
-        #
-        #
-        #     if country is not None:
-        #         country_loc = os.path.join(output_folder, country)
-        #
-        #         os.makedirs(os.path.join(country_loc, "rgb"), exist_ok=True)
-        #         os.makedirs(os.path.join(country_loc, "labels"), exist_ok=True)
-        #
-        #         crop_photo.save(os.path.join(country_loc, "rgb", base_name + ".png"))
-        #         label_img.save (os.path.join(country_loc, "labels", base_name + ".png"))
-        #
-        #     # base_name = os.path.join ( batch_name, base_name )
-        #     # os.makedirs(os.path.join(output_folder, "rgb", batch_name), exist_ok=True)
-        #     # os.makedirs(os.path.join(output_folder, "labels", batch_name), exist_ok=True)
-
-        crop_photo.save(os.path.join(output_folder, "rgb"   , base_name + ".jpg"))
-        label_img .save(os.path.join(output_folder, "labels", base_name + ".png"))
-
-        with open ( os.path.join (output_folder, country+".txt"), "a" ) as log:
-            log.write(base_name+"\n")
-            log.flush()
-
-        with open ( os.path.join (output_folder, "all.txt"), "a" ) as log:
-            log.write(base_name+"\n")
-            log.flush()
-
-
-        if False: # svg
-
-            label_img = Image.new(label_mode, (crop_photo.width, crop_photo.height))
-            draw_label_photo = ImageDraw.Draw(label_img, label_mode)
-            draw_label_photo.rectangle([(0, 0), (label_img.width, label_img.height)], fill=colors["none"])
-            dwg = svgwrite.Drawing(os.path.join(output_folder, "svg", crop_name + ".svg"), profile='tiny')
-            dwg.add(dwg.line((0, 0), (10, 0), stroke=svgwrite.rgb(10, 10, 16, '%')))
-            dwg.add(dwg.text(crop_name, insert=(0, 0.2), fill='black'))
-
-            for cat, polies in crop_data["labels"].items():
-            # for catl in crop_data["labels"]:
-
-                # cat = catl[0]
-
-                for poly in polies:
-                    poly = [tuple(x) for x in poly]
-                    draw_label_photo.polygon(poly, colors[cat])
-                    dwg.add(dwg.polygon(poly, fill=f'rgb({colors[cat][0]},{colors[cat][1]},{colors[cat][2]})'))
-
-            dwg.save()
-
-        if np_data is not None:
-            np_data.append( np.asarray(crop_photo) )
-
-
-
-def render_crops(images, output_dir, clear_log = False, sub_dirs = True, crop_mode='square_crop', resolution=512, quality=98):
-    '''
-    renders all crops to a uniquely named file
-    '''
-
-    global VALID_CROPS
-
-    os.makedirs(output_dir, exist_ok=True)
-    name_map = {}
-
-    fm = 'w' if clear_log else 'a'
-    log = open( os.path.join ( output_dir, 'log.txt'), fm)
-
-    def save(im, out_name, subdir=None):
-
-        if len (im.getbands() ) > 3: # pngs..
-             im = im.convert("RGB")
-
-        if im.width == 0 or im.height == 0:
-            print("skipping zero sized rect in %s" % out_name)
-            return
-
-        md5hash = hashlib.md5(im.tobytes())
-        jpg_out_file = "%s.png" % md5hash.hexdigest()
-        log.write("\"%s\"\n" % jpg_out_file)
-
-        if sub_dirs:
-            out_path = os.path.join(output_dir, subdir, jpg_out_file)
-        else:
-            out_path = os.path.join(output_dir, jpg_out_file)
-
-        im.save(out_path, format="PNG", quality=quality)
-
-    if not crop_mode in VALID_CROPS:
-        print ("unknown crop mode %s. pick from: %s " % (crop_mode, " ".join(VALID_CROPS)))
-        return
-
-    min_dim = 512
-    count = 0
-
-    print (f"found {len(images)} jpgs")
-
-    for im_file in images:
-
-
-        print ('processing %s...' % im_file)
-
-        out_name, out_ext = os.path.splitext ( os.path.basename(im_file) )
-        out_ext = out_ext.lower()
-
-        batch_name = Path(im_file).parent.name
-
-        if sub_dirs:
-            # sub_dir = os.path.split ( os.path.split(im_file)[0] )[1]
-            dir = os.path.join(output_dir, batch_name)
-            os.makedirs( dir, exist_ok=True)
-
-        # if not "tom_" in batch_name and not "michaela_" in batch_name:
-        #     continue
-        #
-        # if "archive" in batch_name or "copenhagen" in batch_name or "thuwal" in batch_name:
-        #     continue
-
-        json_file = Path(im_file).parent.parent.parent.joinpath("metadata_single_elements").joinpath(batch_name).joinpath(f"{out_name}.json")
-
-        if os.path.exists(os.path.join (".",json_file ) ): # crop
-
-            prev = json.load(open(json_file, "r") )
-            im = open_and_rotate( im_file, prev )
-            rects = prev["rects"]
-
-            tags = []
-
-            if "tags" in prev:
-                tags = prev["tags"]
-
-            if 'deleted' in tags:
-                print("skipping deleted")
-                continue
-
-            for r in rects:
-
-                if not ( "window" in r[1] or "door" in r[1] or "glass_facade" in r[1] or "shop" in r[1] or "church" in r[1] or "abnormal" in r[1] ):
-                    continue
-
-                c = r[0]
-
-                if c[2] - c[0] < min_dim or c[3] - c[1] < min_dim:
-                    print("skipping small rect")
-                    continue
-
-                log.write("%s [%d, %d, %d, %d]\n" % (im_file, c[0], c[1], c[2], c[3]) )
-
-                crop_im = im.crop( ( c[0], c[1], c[2], c[3] ) )
-                crop_im = crop(crop_im, resolution, crop_mode)
-
-                save(crop_im, out_name, batch_name if sub_dirs else None)
-                count = count + 1
-
-                print(f"count {count}")
-
-        else:
-            print("no metadata_single_element crop file, skipping")
-
-    log.close()
-
-
-VALID_CROPS = {'square_crop', 'square_expand', 'none'}
-
-
-if __name__ == "__main__":
-
-    if platform == "win32":
-        dataset_root = r"C:\Users\twak\Documents\architecture_net\dataset"
-    else:
-        dataset_root = r"/home/twak/archinet/data"
-
-    output_folder = f"./dataset_cook_no_door_9k_{time.time()}/"
-
-    os.makedirs(output_folder, exist_ok=True)
-
-    if True: # render crops + labels
-
-        json_src = []
-        # json_src.extend(glob.glob(r'/home/twak/Downloads/LYD__KAUST_batch_2_24.06.2022/LYD<>KAUST_batch_2_24.06.2022/**.json'))
-        json_src.extend(glob.glob(os.path.join(dataset_root, "metadata_window_labels", "*", "*.json")))
-        json_src.extend(glob.glob(os.path.join(dataset_root, "metadata_window_labels_2", "*", "*.json")))
-
-        np_data = None  # []
-
-        for f in json_src:
-            # render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=True, res=640, mode='square_crop', np_data=np_data)
-            render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=False, res=512, mode='square_crop', np_data=np_data)
-
-        if np_data is not None:
-            all_data = np.concatenate(tuple(np_data), 0)
-            print(f"mean [{np.mean(all_data, axis=(0,1))}] std [{np.std(all_data, axis=(0,1))}]")
-    else: # render only crops
-    # generate dataset from all metadata_single_element
-        photo_src = []
-        photo_src.extend(glob.glob(r'./photos/*/*.JPG'))
-        photo_src.extend(glob.glob(r'./photos/*/*.jpg'))
-        render_crops(photo_src, output_folder, crop_mode="square_crop", resolution=512, quality=95, sub_dirs=True)

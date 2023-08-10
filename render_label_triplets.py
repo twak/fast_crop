@@ -8,7 +8,7 @@ from sys import platform
 
 def render_labels_per_crop( dataset_root, json_file, output_folder, res=512, mode='None'):
     '''
-    This is mostly for checking the labels from the labellers...
+    This is mostly for checking the labels from the labellers. Render a triplet panel of rgb, labels, transparent labels.
     '''
 
     print (f"rendering crops from {json_file} @ {res}:{mode}")

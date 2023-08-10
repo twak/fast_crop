@@ -19,8 +19,9 @@ cat all_shuf.txt | head -n 1024 > 1024.txt
 python ~/efficient/blender_process_attribs.py .
 
 # create image-grids for professors
+python ~/fast_crop/tmp_names_to_grid.py . "1024.txt" "labels" "png"
 python ~/fast_crop/tmp_names_to_grid.py . "1024.txt" "exposed" "png"
 python ~/fast_crop/tmp_names_to_grid.py . "1024.txt" "rgb" "png"
 
-# print std and mean for synthetic photos to terminal (you'll want these for training)
+# print std and mean for synthetic photos to terminal (you'll want to save these for training)
 python ~/fast_crop/find_mean_std.py "exposed" 1024
