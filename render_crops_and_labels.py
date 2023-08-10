@@ -7,6 +7,7 @@ import json
 import os
 import random
 import shutil
+import sys
 import time
 from collections import defaultdict
 from os import path
@@ -115,12 +116,13 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, res=512, mod
 
 if __name__ == "__main__":
 
-    if platform == "win32":
-        dataset_root = r"C:\Users\twak\Documents\architecture_net\dataset"
-    else:
-        dataset_root = r"/home/twak/archinet/data"
+    # if platform == "win32":
+    dataset_root = sys.argv[1]
+        # dataset_root = r"C:\Users\twak\Documents\architecture_net\dataset"
+    # else:
+    #     dataset_root = r"/home/twak/archinet/data"
 
-    output_folder = f"./dataset_cook_no_door_9k_{time.time()}/"
+    output_folder = f"./winsyn_cook_no_door_9k_{time.time()}/"
 
     os.makedirs(output_folder, exist_ok=True)
 
@@ -137,16 +139,16 @@ if __name__ == "__main__":
 
             processes.append(_pool.submit( render_labels_per_crop, dataset_root, f, output_folder, res=512, mode='square_crop') )
 
-            for r in concurrent.futures.as_completed(processes):
-                for country, base_name in r.result():
+        for r in concurrent.futures.as_completed(processes):
+            for country, base_name in r.result():
 
-                    with open(os.path.join(output_folder, country + ".txt"), "a") as log:
-                        log.write(base_name + "\n")
-                        log.flush()
+                with open(os.path.join(output_folder, country + ".txt"), "a") as log:
+                    log.write(base_name + "\n")
+                    log.flush()
 
-                    with open(os.path.join(output_folder, "all.txt"), "a") as log:
-                        log.write(base_name + "\n")
-                        log.flush()
+                with open(os.path.join(output_folder, "all.txt"), "a") as log:
+                    log.write(base_name + "\n")
+                    log.flush()
     else:
         for f in json_src:
             # render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=True, res=640, mode='square_crop', np_data=np_data)
