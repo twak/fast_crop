@@ -129,7 +129,7 @@ if __name__ == "__main__":
     json_src.extend(glob.glob(os.path.join(dataset_root, "metadata_window_labels_2", "*", "*.json")))
     json_src.extend(glob.glob(os.path.join(dataset_root, "metadata_window_labels", "*", "*.json")))
 
-    if False: # threaded
+    if True: # threaded
         _pool = concurrent.futures.ThreadPoolExecutor()
 
         for f in json_src:
