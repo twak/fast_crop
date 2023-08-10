@@ -131,6 +131,7 @@ if __name__ == "__main__":
 
     if True: # threaded
         _pool = concurrent.futures.ThreadPoolExecutor()
+        processes = []
 
         for f in json_src:
 
