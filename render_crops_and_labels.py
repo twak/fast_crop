@@ -42,7 +42,8 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, res=512, mod
 
     os.makedirs(os.path.join(output_folder, "rgb"   ), exist_ok=True)
     os.makedirs(os.path.join(output_folder, "labels"), exist_ok=True)
-    os.makedirs(os.path.join(output_folder, "svg"), exist_ok=True)
+    if render_svg:
+        os.makedirs(os.path.join(output_folder, "svg"), exist_ok=True)
 
     batch_name = Path(json_file).parent.name
 
@@ -89,6 +90,7 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, res=512, mod
 
         base_name = os.path.splitext(crop_name)[0]
 
+        print (f"saving {base_name}")
         crop_photo.save(os.path.join(output_folder, "rgb"   , base_name + ".jpg"), quality=90)
         label_img .save(os.path.join(output_folder, "labels", base_name + ".png"))
 
@@ -117,7 +119,7 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, res=512, mod
 if __name__ == "__main__":
 
     # if platform == "win32":
-    dataset_root = sys.argv[1]
+    dataset_root = "." #sys.argv[1]
         # dataset_root = r"C:\Users\twak\Documents\architecture_net\dataset"
     # else:
     #     dataset_root = r"/home/twak/archinet/data"
@@ -132,23 +134,22 @@ if __name__ == "__main__":
     json_src.extend(glob.glob(os.path.join(dataset_root, "metadata_window_labels", "*", "*.json")))
 
     if True: # threaded
-        _pool = concurrent.futures.ThreadPoolExecutor()
-        processes = []
+        with concurrent.futures.ThreadPoolExecutor(max_workers=32) as _pool:
 
-        for f in json_src:
+            futures = [_pool.submit( render_labels_per_crop, dataset_root, f, output_folder, res=512, mode='square_crop') for f in json_src]
 
-            processes.append(_pool.submit( render_labels_per_crop, dataset_root, f, output_folder, res=512, mode='square_crop') )
+            print ("all jobs submitted!")
 
-        for r in concurrent.futures.as_completed(processes):
-            for country, base_name in r.result():
+            for r in concurrent.futures.as_completed(futures):
+                for country, base_name in r.result():
 
-                with open(os.path.join(output_folder, country + ".txt"), "a") as log:
-                    log.write(base_name + "\n")
-                    log.flush()
+                    with open(os.path.join(output_folder, country + ".txt"), "a") as log:
+                        log.write(base_name + "\n")
+                        log.flush()
 
-                with open(os.path.join(output_folder, "all.txt"), "a") as log:
-                    log.write(base_name + "\n")
-                    log.flush()
+                    with open(os.path.join(output_folder, "all.txt"), "a") as log:
+                        log.write(base_name + "\n")
+                        log.flush()
     else:
         for f in json_src:
             # render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=True, res=640, mode='square_crop', np_data=np_data)
