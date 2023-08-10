@@ -138,7 +138,7 @@ if __name__ == "__main__":
             processes.append(_pool.submit( render_labels_per_crop, dataset_root, f, output_folder, res=512, mode='square_crop') )
 
             for r in concurrent.futures.as_completed(processes):
-                for country, base_name in r:
+                for country, base_name in r.result():
 
                     with open(os.path.join(output_folder, country + ".txt"), "a") as log:
                         log.write(base_name + "\n")
