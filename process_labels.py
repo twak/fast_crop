@@ -33,7 +33,15 @@ PRETTY_FILMIC = 3
 GREY_NO_DOOR = 4
 
 COLOR_MODE = GREY
-LABEL_SEQ = ["none","window pane","window frame","open-window","wall frame","wall","door","shutter","blind","bars","balcony","misc object", "roof", "door-pane"]
+
+LABEL_SEQ = ["none","window pane","window frame",
+             "open-window","wall frame","wall","door",
+             "shutter","blind","bars","balcony","misc object",
+             "roof", "door-pane"]
+
+LABEL_SEQ_NO_DOOR = ["none", "window pane", "window frame",
+                     "open-window", "wall frame", "wall",
+                     "shutter", "blind", "bars", "balcony", "misc object"]
 
 def colours_for_mode (mode):
 

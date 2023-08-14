@@ -12,15 +12,15 @@ from PIL import Image
 rows = 10 # int(sys.argv[2])
 cols = 10 # int(sys.argv[3])
 
-resolution = 256
+resolution = 512
 
 # get filenames
 filenames = [] # glob.glob(pattern)
 
 dataset    = sys.argv[1]
-split_file = sys.argv[2] # "/home/twak/Downloads/split.txt"
-o          = sys.argv[3]
-ext        = sys.argv[4]
+split_file = sys.argv[2] # all.txt
+o          = sys.argv[3] # folder - "labels"
+ext        = sys.argv[4] # extension - "png"
 
 with open( os.path.join (dataset, split_file), "r") as f:
     for line in f:
