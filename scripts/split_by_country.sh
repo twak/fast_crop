@@ -14,16 +14,14 @@ cat thailand.txt   >> other.txt
 cat misc.txt       >> other.txt
 
 shuf all.txt > all_shuf.txt
-head -n 6001 all_shuf.txt > all_train.txt
-tail -n 3001 all_shuf.txt > all_test.txt
 
-for value in uk austria usa egypt other
+for value in uk austria usa egypt other all
 do
   shuf $value.txt > ${value}_shuf.txt
-  head -n 1000 ${value}_shuf.txt > ${value}_tmp.txt
-  tail -n 200  ${value}_tmp.txt  > ${value}_val.txt
-  head -n 800  ${value}_tmp.txt  > ${value}_train.txt
-  tail -n 500  ${value}_shuf.txt > ${value}_test.txt
+  head -n 1200  ${value}_shuf.txt > ${value}_tmp.txt
+  tail -n 176   ${value}_tmp.txt  > ${value}_val.txt
+  head -n 1024  ${value}_tmp.txt  > ${value}_train.txt
+  tail -n 300   ${value}_shuf.txt > ${value}_test.txt
   rm ${value}_tmp.txt
 done
 
