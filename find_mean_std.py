@@ -12,9 +12,9 @@ json_src.extend(glob.glob(os.path.join(sys.argv[1], "*.jpg")))
 
 if len(sys.argv) > 3:
     print (f"using split file {sys.argv[3]}")
-    with open(os.path.join(dataset_root, sys.argv[3]), "r") as f:
+    with open(os.path.join(".", sys.argv[3]), "r") as f:
         for line in f:
-            label_src.append(os.path.join(dataset_root, "labels", f"{line[:-1]}.png"))
+            label_src.append(os.path.join(".", "labels", f"{line[:-1]}.png"))
 
 print(f"{len(json_src)} images found")
 random.shuffle(json_src)
