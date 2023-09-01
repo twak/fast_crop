@@ -1,8 +1,11 @@
 import os
 import numpy as np
 import matplotlib.cm as cm
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 import itertools
+from matplotlib import font_manager
+
+CLASSES = ["none", "window pane", "window frame", "open-window", "wall frame", "wall", "shutter", "blind", "bars", "balcony", "misc object"]
 
 def runs_of_ones(bits):
   for bit, group in itertools.groupby(bits):
@@ -11,11 +14,13 @@ def runs_of_ones(bits):
 # load all greyscale label maps in a directory and create a per-class density image
 def density_2d(dir):
 
-    counts = np.zeros((10,512,512))
-    hv = np.zeros((2,10,512))
-    hvl = np.zeros((2,10,513))
+    num = len(CLASSES)
 
-    num = 10
+    simple = np.zeros((num))
+    counts = np.zeros((num,512,512)) # 2D [class][pixels] accumulations
+    hv = np.zeros((2,num,512)) # 1D [horizontal and vertical][class][pixels] accumulations
+    hvl = np.zeros((2,num,52)) # 1D [horizontal and vertical][class][density] histogram of run lengths
+
 
     # create 10 512x512 numpy arrays
     for i in range(num):
@@ -28,29 +33,41 @@ def density_2d(dir):
             # convert image to numpy array
             img = np.array(img)
             # for each class, accumulate in counts
-            for i in range(10):
-                counts[i] += (img == i)
+            for i in range(num):
 
-                v = (img[256] == i)
-                h = (img[:,256] == i)
+                cr = (img == i)
+
+                simple[i] += cr.sum()
+                counts[i] += cr
+
+                v = cr.sum(axis=0)
+                h = cr.sum(axis=1)
 
                 hv[0][i] += v
                 hv[1][i] += h
 
-                for l in runs_of_ones(v):
-                    hvl[0][i][l] += 1
+                for hr in range(512):
+                    run = cr[hr]
+                    for l in runs_of_ones(run):
+                        hvl[0][i][int (l / 10)] += 1
 
-                for l in runs_of_ones(h):
-                    hvl[1][i][l] += 1
+                for hr in range(512):
+                    run = cr[:,hr]
+                    for l in runs_of_ones(run):
+                        hvl[1][i][int (l / 10)] += 1
 
-        # if j > 100:
+                # for l in runs_of_ones(h):
+                #     hvl[1][i][l] += 1
+
+        # if j >= 1 :
         #     break
 
-
+    simple_max = simple.max()
     for i in range(num):
         div =  max ( 1, np.max(hvl[0][i]), np.max(hvl[1][i]) )
         hvl[0][i] /= div
         hvl[1][i] /= div
+        simple[i] /= simple_max
 
     # create an image grid of counts
     grid = Image.new('RGB', (512*num, 512 * 5 ))
@@ -75,21 +92,33 @@ def density_2d(dir):
         grid.paste(Image.fromarray(np.uint8(255 * cm.magma(horizontal)) ), (512*i, 512))
         grid.paste(Image.fromarray(np.uint8(255 * cm.magma(vertical)) ), (512*i, 512*2))
 
-        # create figure from runs_of_ones results
-        for j in range(2):
-            bg = Image.new('RGB', (512, 512))
-            bgi = ImageDraw.Draw(bg)
+        # create a crappy bar graph from simple
+        bg = Image.new('RGB', (512, 512))
+        bgi = ImageDraw.Draw(bg)
+        color = np.uint8(255 * cm.magma([simple[i]]))[0]
+        bgi.rectangle([(0, 511), (511, 511 - int (simple[i] * 512))], fill= tuple(color), outline="white" )
+        grid.paste(bg, (512*i, 512*4))
+
+        # histrograms from runs_of_ones results
+        bg = Image.new('RGB', (512, 512))
+        bgi = ImageDraw.Draw(bg)
+
+        for j, color in zip ( range(2), ["#992d7f", "#fbfcbf"] ):
+
             coords = []
-            for x in range(512):
-                # if j == 0:
-                coords.append((x, 512 - (hvl[j][i][x])*512) )
-                # else:
-                #     coords.append(( (hvl[j][i][x])*512, 512-x) )
 
-            # draw coords with a transparent purple color
-            bgi.polygon(coords, fill="white", width=1)
+            for x in range(52):
+                coords.append((x*10, 512 - (hvl[j][i][x])*512) )
 
-            grid.paste(bg, (512*i, 512*3 + 512 * j))
+            bgi.line(coords, fill=color, width=4)
+
+        font = font_manager.FontProperties(family='sans-serif', weight='bold')
+        font = ImageFont.truetype(font_manager.findfont(font), 48)
+        line =  f"{CLASSES[i]}"
+        w, h = bgi.textsize(line, font=font)
+
+        bgi.text((500-w, 20), line, font=font, fill="white" )
+        grid.paste(bg, (512*i, 512*3))
 
     grid.save(os.path.join("/home/twak/Downloads", "density.png"))
 
