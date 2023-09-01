@@ -48,9 +48,9 @@ def density_2d(dir):
 
 
     for i in range(num):
-        for j in range(2):
-            # normalize to 0-1
-            hvl[j][i] /= max ( 1, np.max(hvl[j][i]) )
+        div =  max ( 1, np.max(hvl[0][i]), np.max(hvl[1][i]) )
+        hvl[0][i] /= div
+        hvl[1][i] /= div
 
     # create an image grid of counts
     grid = Image.new('RGB', (512*num, 512 * 5 ))
@@ -81,11 +81,12 @@ def density_2d(dir):
             bgi = ImageDraw.Draw(bg)
             coords = []
             for x in range(512):
-                if j == 0:
-                    coords.append((x, 512 - (hvl[j][i][x])*512) )
-                else:
-                    coords.append(( (hvl[j][i][x])*512, x) )
+                # if j == 0:
+                coords.append((x, 512 - (hvl[j][i][x])*512) )
+                # else:
+                #     coords.append(( (hvl[j][i][x])*512, 512-x) )
 
+            # draw coords with a transparent purple color
             bgi.polygon(coords, fill="white", width=1)
 
             grid.paste(bg, (512*i, 512*3 + 512 * j))

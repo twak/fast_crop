@@ -65,7 +65,7 @@ def create_image_grid(root_directory):
         "rgb_exposed",
         "rgb_albedo",
         "diffuse",
-        "diffuse_complex",
+        #"diffuse_complex",
         "normals",
         "edges",
         "col_per_obj",
@@ -78,10 +78,12 @@ def create_image_grid(root_directory):
     ]
 
     for style in styles:
-        for file in os.listdir(os.path.join(root_directory, style)):
-            base_name, extension = os.path.splitext(file)
-            if extension.lower() in ['.jpg', '.png', '.jpeg', '.exr', '.txt']:
-                images[style][base_name] = os.path.join(root_directory, style, file)
+        dir = os.path.join(root_directory, style)
+        if os.path.exists(dir):
+            for file in os.listdir(dir):
+                base_name, extension = os.path.splitext(file)
+                if extension.lower() in ['.jpg', '.png', '.jpeg', '.exr', '.txt']:
+                    images[style][base_name] = os.path.join(root_directory, style, file)
 
     base_image_width = 512  # Adjust this to your desired width
     base_image_height = 512  # Adjust this to your desired height
