@@ -7,7 +7,7 @@ from matplotlib import font_manager
 import time
 
 CLASSES = ["none", "window pane", "window frame", "open-window", "wall frame", "wall",
-           "door",
+           # "door",
            "shutter", "blind", "bars", "balcony", "misc object"]
 
 def runs_of_ones(bits):
