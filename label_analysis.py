@@ -74,8 +74,8 @@ def density_2d(dir):
                 # for l in runs_of_ones(h):
                 #     hv_rl[1][i][l] += 1
 
-        if j >= 10:
-            break
+        # if j >= 10:
+        #     break
 
 
     simple_max = simple.max()
@@ -154,9 +154,13 @@ def density_2d(dir):
             bgi.text((500-w, 20), line, font=font, fill="white" )
             grid.paste(bg, (512*i, 512*(3+pos)))
 
-    # print current time since epoch in ms
-    # print (")
-    # save grid to file
+    # save all arrays (aimple, hv...) to disk
+    np.savez(os.path.join(os.path.expanduser("~"), f"counts_{int (time.time() * 1000)}.npy"),
+            simple=simple,
+            counts=counts,
+            hv=hv,
+            hv_rl=hv_rl,
+            hv_o=hv_o )
 
     grid.save(os.path.join(os.path.expanduser("~"), f"grid_{int (time.time() * 1000)}.png"))
 
