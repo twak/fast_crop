@@ -136,7 +136,7 @@ if __name__ == "__main__":
     if True: # threaded
         with concurrent.futures.ThreadPoolExecutor(max_workers=32) as _pool:
 
-            futures = [_pool.submit( render_labels_per_crop, dataset_root, f, output_folder, res=512, mode='square_crop') for f in json_src]
+            futures = [_pool.submit( render_labels_per_crop, dataset_root, f, output_folder, res=1024, mode='square_crop') for f in json_src]
 
             print ("all jobs submitted!")
 
