@@ -4,8 +4,11 @@ import matplotlib.cm as cm
 from PIL import Image, ImageDraw, ImageFont
 import itertools
 from matplotlib import font_manager
+import time
 
-CLASSES = ["none", "window pane", "window frame", "open-window", "wall frame", "wall", "shutter", "blind", "bars", "balcony", "misc object"]
+CLASSES = ["none", "window pane", "window frame", "open-window", "wall frame", "wall",
+           "door",
+           "shutter", "blind", "bars", "balcony", "misc object"]
 
 def runs_of_ones(bits):
   for bit, group in itertools.groupby(bits):
@@ -19,7 +22,8 @@ def density_2d(dir):
     simple = np.zeros((num))
     counts = np.zeros((num,512,512)) # 2D [class][pixels] accumulations
     hv = np.zeros((2,num,512)) # 1D [horizontal and vertical][class][pixels] accumulations
-    hvl = np.zeros((2,num,52)) # 1D [horizontal and vertical][class][density] histogram of run lengths
+    hv_rl = np.zeros((2,num,52)) # 1D [horizontal and vertical][class][density] histogram of run lengths
+    hv_o = np.zeros((2, num, 52))  # 1D [horizontal and vertical][class][density] histogram of last-first occurrences
 
 
     # create 10 512x512 numpy arrays
@@ -47,30 +51,56 @@ def density_2d(dir):
                 hv[1][i] += h
 
                 for hr in range(512):
-                    run = cr[hr]
-                    for l in runs_of_ones(run):
-                        hvl[0][i][int (l / 10)] += 1
 
-                for hr in range(512):
-                    run = cr[:,hr]
-                    for l in runs_of_ones(run):
-                        hvl[1][i][int (l / 10)] += 1
+                    for run, xx in [ (cr[hr], 0), (cr[:,hr], 1) ]:
+
+                        # run = cr[hr]
+                        for l in runs_of_ones(run):
+                            hv_rl[xx][i][int (l / 10)] += 1
+
+                        fl = np.nonzero(run)
+                        if len(fl[0]) > 0:
+                            length = fl[0][-1] - fl[0][0]
+                        else:
+                            length = 0
+                        hv_o[xx][i][int (length / 10)] += 1
+
+                        # run = cr[:,hr]
+                        # for l in runs_of_ones(run):
+                        #     hv_rl[1][i][int (l / 10)] += 1
+
+
 
                 # for l in runs_of_ones(h):
-                #     hvl[1][i][l] += 1
+                #     hv_rl[1][i][l] += 1
 
-        # if j >= 1 :
-        #     break
+        if j >= 10:
+            break
+
 
     simple_max = simple.max()
     for i in range(num):
-        div =  max ( 1, np.max(hvl[0][i]), np.max(hvl[1][i]) )
-        hvl[0][i] /= div
-        hvl[1][i] /= div
+        for x in range (52):
+            hv_rl[0][i][x] *= x
+            hv_rl[1][i][x] *= x
+        div =  max ( 1, np.max(hv_rl[0][i]), np.max(hv_rl[1][i]) )
+        hv_rl[0][i] /= div
+        hv_rl[1][i] /= div
+
+
         simple[i] /= simple_max
 
+    for i in range(1,num):
+        for x in range (52):
+            hv_o[0][i][x] *= x
+            hv_o[1][i][x] *= x
+
+        div = max(1, np.max(hv_o[0][i]), np.max(hv_o[1][i]))
+        # hv_o[0][i] /= div
+        # hv_o[1][i] /= div
+
     # create an image grid of counts
-    grid = Image.new('RGB', (512*num, 512 * 5 ))
+    grid = Image.new('RGB', (512*num, 512 * 6 ))
     for i in range(num):
         # convert counts to magma colormap
 
@@ -79,7 +109,6 @@ def density_2d(dir):
         grid.paste(Image.fromarray(magma), (512*i, 0))
 
         # add hv to grid in magma colormap
-
         hv[0][i] /= max ( 1, np.max(hv[0][i]) )
         hv[1][i] /= max ( 1, np.max(hv[1][i]) )
 
@@ -97,32 +126,41 @@ def density_2d(dir):
         bgi = ImageDraw.Draw(bg)
         color = np.uint8(255 * cm.magma([simple[i]]))[0]
         bgi.rectangle([(0, 511), (511, 511 - int (simple[i] * 512))], fill= tuple(color), outline="white" )
-        grid.paste(bg, (512*i, 512*4))
+        grid.paste(bg, (512*i, 512*5))
 
-        # histrograms from runs_of_ones results
-        bg = Image.new('RGB', (512, 512))
-        bgi = ImageDraw.Draw(bg)
+        for pos, histo in ((0,hv_rl), (1, hv_o ) ):
 
-        for j, color in zip ( range(2), ["#992d7f", "#fbfcbf"] ):
+            # histrograms from runs_of_ones results
+            bg = Image.new('RGB', (512, 512))
+            bgi = ImageDraw.Draw(bg)
 
-            coords = []
+            for j, color in zip ( range(2), ["#992d7f", "#fbfcbf"] ): # beige is vertical (1), purple is horizontal (0)
 
-            for x in range(52):
-                coords.append((x*10, 512 - (hvl[j][i][x])*512) )
+                coords = []
 
-            bgi.line(coords, fill=color, width=4)
+                for x in range(52):
+                    coords.append((x*10, 512 - (histo[j][i][x])*512) )
 
-        font = font_manager.FontProperties(family='sans-serif', weight='bold')
-        font = ImageFont.truetype(font_manager.findfont(font), 48)
-        line =  f"{CLASSES[i]}"
-        w, h = bgi.textsize(line, font=font)
+                bgi.line(coords, fill=color, width=1)
 
-        bgi.text((500-w, 20), line, font=font, fill="white" )
-        grid.paste(bg, (512*i, 512*3))
+            bgi.line([(0, 0), (0, 512)], fill="#fbfcbf", width=10)
+            bgi.line([(0,512), (512, 512)], fill="#992d7f", width=10)
 
-    grid.save(os.path.join("/home/twak/Downloads", "density.png"))
+            font = font_manager.FontProperties(family='sans-serif', weight='bold')
+            font = ImageFont.truetype(font_manager.findfont(font), 48)
+            line =  f"{CLASSES[i]}"
+            w, h = bgi.textsize(line, font=font)
+
+            bgi.text((500-w, 20), line, font=font, fill="white" )
+            grid.paste(bg, (512*i, 512*(3+pos)))
+
+    # print current time since epoch in ms
+    # print (")
+    # save grid to file
+
+    grid.save(os.path.join(os.path.expanduser("~"), f"grid_{int (time.time() * 1000)}.png"))
 
     return counts
 
 if __name__ == "__main__":
-    density_2d("/home/twak/Downloads/winlab_5/labels")
+    density_2d(".")
