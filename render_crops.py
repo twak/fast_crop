@@ -51,13 +51,14 @@ def render_crops(images, output_dir, clear_log = False, sub_dirs = True, crop_mo
         else:
             out_path = os.path.join(output_dir, jpg_out_file)
 
-        im.save(out_path, format="PNG", quality=quality)
+        # im.save(out_path, format="PNG", quality=quality)
+        im.save(out_path, format="jpeg", quality=quality)
 
     if not crop_mode in process_labels.VALID_CROPS:
         print ("unknown crop mode %s. pick from: %s " % (crop_mode, " ".join(process_labels.VALID_CROPS)))
         return
 
-    min_dim = 512
+    min_dim = resolution
     count = 0
 
     print (f"found {len(images)} jpgs")
@@ -135,8 +136,8 @@ if __name__ == "__main__":
         photo_src.extend(glob.glob(r'./photos/*/*.JPG'))
         dataset_root = r"/home/twak/archinet/data"
 
-    output_folder = f"./dataset_cook_{time.time()}/"
+    output_folder = f"./dataset_cook_crops_1024px_{time.time()}/"
 
     os.makedirs(output_folder, exist_ok=True)
 
-    render_crops(photo_src, output_folder, crop_mode="square_crop", resolution=512, quality=95, sub_dirs=True)
+    render_crops(photo_src, output_folder, crop_mode="square_crop", resolution=1024, quality=90, sub_dirs=True)
