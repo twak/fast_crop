@@ -20,6 +20,8 @@ from sys import platform
 import hashlib
 import tags
 
+import process_labels
+
 ''' create the metadata_summary folder, with stats and crops '''
 
 def crop_save_img(basename, count, batch, dataset_root, img):

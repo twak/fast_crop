@@ -25,7 +25,7 @@ def density_2d(dir):
     hv = np.zeros((2,num,512)) # 1D [horizontal and vertical][class][pixels] accumulations
     hv_rl = np.zeros((2,num,52)) # 1D [horizontal and vertical][class][density] histogram of run lengths
     hv_o = np.zeros((2, num, 52))  # 1D [horizontal and vertical][class][density] histogram of last-first occurrences
-    hv_aspect = np.zeros((2, num, 52)) # 1D [horizontal and vertical][class][density] histogram of pseudo aspect ratios
+    # hv_aspect = np.zeros((2, num, 52)) # 1D [horizontal and vertical][class][density] histogram of pseudo aspect ratios
 
     # create 10 512x512 numpy arrays
     for i in range(num):
@@ -56,14 +56,14 @@ def density_2d(dir):
                 hv[1][i] += h
 
 
-                if crs > 0:
-                    a,b = cr[102:204,:].sum(), cr[308 : 410,:].sum()
-                    a_h = abs(a-b) / max(1,a+b)
-                    hv_aspect[0][i][int (a_h * 50 )] += 1
-
-                    a,b = cr[:,102:204].sum(), cr[:,308 : 410].sum()
-                    a_v = abs(a-b) / max(1,a+b)
-                    hv_aspect[1][i][int (a_v * 50 )] += 1
+                # if crs > 0:
+                #     a,b = cr[102:204,:].sum(), cr[308 : 410,:].sum()
+                #     a_h = abs(a-b) / max(1,a+b)
+                #     hv_aspect[0][i][int (a_h * 50 )] += 1
+                #
+                #     a,b = cr[:,102:204].sum(), cr[:,308 : 410].sum()
+                #     a_v = abs(a-b) / max(1,a+b)
+                #     hv_aspect[1][i][int (a_v * 50 )] += 1
 
                 for hr in range(512):
 
@@ -99,8 +99,8 @@ def density_2d(dir):
             counts=counts,
             hv=hv,
             hv_rl=hv_rl,
-            hv_o=hv_o,
-            hv_aspect=hv_aspect)
+            hv_o=hv_o
+             )
 
     return path
 
@@ -113,7 +113,7 @@ def create_grid(dir):
     hv = maps["hv"]
     hv_rl = maps["hv_rl"]
     hv_o = maps["hv_o"]
-    hv_aspect = maps["hv_aspect"]
+    # hv_aspect = maps["hv_aspect"]
 
     num = len(CLASSES)
 
@@ -129,9 +129,9 @@ def create_grid(dir):
         hv_rl[0][i] /= div
         hv_rl[1][i] /= div
 
-        div = max (1, np.max(hv_aspect[0][i]), np.max(hv_aspect[1][i]))
-        hv_aspect[0][i] /= div
-        hv_aspect[1][i] /= div
+        # div = max (1, np.max(hv_aspect[0][i]), np.max(hv_aspect[1][i]))
+        # hv_aspect[0][i] /= div
+        # hv_aspect[1][i] /= div
 
         simple[0,i] /= simple_max[0]
         simple[1,i] /= simple_max[1]
@@ -147,7 +147,7 @@ def create_grid(dir):
         hv_o[1][i] /= div
 
     # create an image grid of counts
-    grid = Image.new('RGB', (512*num, 512 * 8 ))
+    grid = Image.new('RGB', (512*num, 512 * 7 ))
     for i in range(num):
         # convert counts to magma colormap
 
@@ -176,7 +176,7 @@ def create_grid(dir):
         bgi.rectangle([(256, 511), (471, 511 - int (simple[1,i] * 512))], fill= tuple(np.uint8(255 * cm.magma([simple[1,i]]))[0]), outline="white" )
         grid.paste(bg, (512*i, 512*0))
 
-        for pos, histo in ((0,hv_rl), (1, hv_o ), (2, hv_aspect) ):
+        for pos, histo in ((0,hv_rl), (1, hv_o ) ):
 
             # histrograms from runs_of_ones results
             bg = Image.new('RGB', (512, 512))
@@ -184,12 +184,8 @@ def create_grid(dir):
 
             purple, cream = "#fbfcbf", "#bb4d9f"
 
-            # if pos is not 2:
             bgi.line([(0, 512 - 400), (0, 512)], fill=purple, width=10)
             bgi.line([(0, 512), (400, 512)], fill=cream, width=10)
-            # else:
-                # bgi.line([(10, 256), (502, 256)], fill=purple, width=6)
-                # bgi.line([(256, 10), (256, 502)], fill=cream, width=6)
 
             for j, color in zip ( range(2), [cream, purple] ): # beige is vertical (1), purple is horizontal (0)
 
