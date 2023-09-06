@@ -66,7 +66,7 @@ if __name__ == "__main__":
 
     labels.extend(glob.glob(os.path.join( sys.argv[1], "labels", "*.png")))
 
-    if False: # rgb to greyscale
+    if True: # rgb to greyscale
         out_dir = os.path.join(sys.argv[1], "labels_8bit")
         fn = to_greyscale_labels
     else: # greyscale to rgb

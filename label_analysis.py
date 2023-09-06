@@ -61,7 +61,7 @@ def density_2d(dir):
                     a_h = abs(a-b) / max(1,a+b)
                     hv_aspect[0][i][int (a_h * 50 )] += 1
 
-                    a,b = cr[:,102:104].sum(), cr[:,308 : 410].sum()
+                    a,b = cr[:,102:204].sum(), cr[:,308 : 410].sum()
                     a_v = abs(a-b) / max(1,a+b)
                     hv_aspect[1][i][int (a_v * 50 )] += 1
 
@@ -89,8 +89,8 @@ def density_2d(dir):
                 # for l in runs_of_ones(h):
                 #     hv_rl[1][i][l] += 1
 
-        if j >= 100:
-            break
+        # if j >= 100:
+        #     break
 
     # save all arrays (aimple, hv...) to disk
     path = os.path.join(os.path.expanduser("~"), "Downloads", f"counts_{int (time.time() * 1000)}.npz" )
