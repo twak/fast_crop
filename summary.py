@@ -66,7 +66,7 @@ def batch_summary(dataset_root, batch):
     stats["rect_crops_files"] = len ( wild( os.path.join( dataset_root, "metadata_single_elements", batch), "json" ) )
     stats["rect_crops_win"] = 0
     stats["rect_crops_other"] = 0
-    stats["label_files"] = len(wild(os.path.join(dataset_root, "metadata_window_labels", batch), "json"))
+    stats["label_files"] = len(wild(os.path.join(dataset_root, "metadata_window_labels", batch), "json")) + len(wild(os.path.join(dataset_root, "metadata_window_labels_2", batch), "json"))
     stats["labelled_windows"] = 0
     stats["soft_deleted"] = 0
 
@@ -108,15 +108,6 @@ def batch_summary(dataset_root, batch):
                 else:
                     stats["rect_crops_win"] += 1
 
-        #         crop = r[0]
-        #         crop_photo = img.crop( ( crop[0], crop[1], crop[2], crop[3] ) )
-        #         crop_save_img(basename, count, batch, dataset_root, crop_photo)
-        #
-        #         count += 1
-        #
-        # if count == 1:
-        #     crop_save_img(basename, 0, batch, dataset_root, img)
-
         stats["megapixels"] += img.width * img.height
 
         stats["jpgs"] +=1
@@ -126,6 +117,11 @@ def batch_summary(dataset_root, batch):
                 stats["raws"] += 1
 
         label_file = os.path.join(dataset_root, "metadata_window_labels", batch, basename+".json" )
+        if os.path.exists(label_file):
+            labelled_areas = json.load(open(label_file, "r"))
+            stats["labelled_windows"] += len (labelled_areas)
+
+        label_file = os.path.join(dataset_root, "metadata_window_labels_2", batch, basename+".json" )
         if os.path.exists(label_file):
             labelled_areas = json.load(open(label_file, "r"))
             stats["labelled_windows"] += len (labelled_areas)
