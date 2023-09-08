@@ -63,7 +63,6 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, reses=[512],
     # crop to each defined region
     for crop_name, crop_data in data.items():
 
-        print(f"rendering crops from {json_file} @ {res}:{mode}")
 
         crop_bounds = crop_data["crop"]
         crop_photo =photo.crop (crop_bounds)
@@ -85,22 +84,21 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, reses=[512],
                     poly = [tuple(x) for x in poly]
                     draw_label_photo.polygon(poly, colors[cat])
 
-
             for res in reses:
                 # crop down
-                crop_photo = process_labels.crop(crop_photo, res, mode, resample=Image.Resampling.LANCZOS, background_col="black")
-                label_img  = process_labels.crop(label_img , res, mode, resample=Image.Resampling.NEAREST, background_col="white")
+                crop_photo_r = process_labels.crop(crop_photo, res, mode, resample=Image.Resampling.LANCZOS, background_col="black")
+                label_img_r  = process_labels.crop(label_img , res, mode, resample=Image.Resampling.NEAREST, background_col="white")
 
+                print(f"rendering crops from {json_file} @ {res}:{mode}  = {base_name}")
 
-                print (f"saving {base_name}")
-                crop_photo.save(os.path.join(output_folder, f"{res}px", "rgb"   , base_name + ".jpg"), quality=90)
-                label_img .save(os.path.join(output_folder, f"{res}px", "labels", base_name + ".png"))
+                crop_photo_r.save(os.path.join(output_folder, f"{res}px", "rgb"   , base_name + ".jpg"), quality=90)
+                label_img_r .save(os.path.join(output_folder, f"{res}px", "labels", base_name + ".png"))
 
                 if render_svg:
 
-                    label_img = Image.new(label_mode, (crop_photo.width, crop_photo.height))
-                    draw_label_photo = ImageDraw.Draw(label_img, label_mode)
-                    draw_label_photo.rectangle([(0, 0), (label_img.width, label_img.height)], fill=colors["none"])
+                    label_img_r = Image.new(label_mode, (crop_photo_r.width, crop_photo_r.height))
+                    draw_label_photo = ImageDraw.Draw(label_img_r, label_mode)
+                    draw_label_photo.rectangle([(0, 0), (label_img_r.width, label_img_r.height)], fill=colors["none"])
                     dwg = svgwrite.Drawing(os.path.join(output_folder, "svg", crop_name + ".svg"), profile='tiny')
                     dwg.add(dwg.line((0, 0), (10, 0), stroke=svgwrite.rgb(10, 10, 16, '%')))
                     dwg.add(dwg.text(crop_name, insert=(0, 0.2), fill='black'))
@@ -126,7 +124,7 @@ if __name__ == "__main__":
     # else:
     #     dataset_root = r"/home/twak/archinet/data"
 
-    output_folder = f"./winsyn_cook_no_door_9k_{time.time()}/"
+    output_folder = f"./metadata_cook/winsyn_cook_no_door_9k_{time.time()}/"
 
     os.makedirs(output_folder, exist_ok=True)
 
@@ -155,4 +153,4 @@ if __name__ == "__main__":
     else:
         for f in json_src:
             # render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=True, res=640, mode='square_crop', np_data=np_data)
-            render_labels_per_crop(dataset_root, f, output_folder, res=512, mode='square_crop')
+            render_labels_per_crop(dataset_root, f, output_folder, res=[512], mode='square_crop')

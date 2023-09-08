@@ -43,7 +43,7 @@ def render_crops(images, output_dir, clear_log = False, sub_dirs = True, crop_mo
             return
 
         md5hash = hashlib.md5(im.tobytes())
-        jpg_out_file = "%s.png" % md5hash.hexdigest()
+        jpg_out_file = "%s.jpg" % md5hash.hexdigest()
         log.write("\"%s\"\n" % jpg_out_file)
 
         if sub_dirs:
