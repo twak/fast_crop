@@ -126,7 +126,7 @@ if __name__ == "__main__":
 
     json_src = []
     # json_src.extend(glob.glob(r'/home/twak/Downloads/LYD__KAUST_batch_2_24.06.2022/LYD<>KAUST_batch_2_24.06.2022/**.json'))
-    # json_src.extend(glob.glob(os.path.join(dataset_root, "metadata_window_labels_2", "*", "*.json")))
+    json_src.extend(glob.glob(os.path.join(dataset_root, "metadata_window_labels_2", "*", "*.json")))
     json_src.extend(glob.glob(os.path.join(dataset_root, "metadata_window_labels", "*", "*.json")))
 
     if True: # threaded
@@ -148,5 +148,4 @@ if __name__ == "__main__":
                         log.flush()
     else:
         for f in json_src:
-            # render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=True, res=640, mode='square_crop', np_data=np_data)
             render_labels_per_crop(dataset_root, f, output_folder, reses=[512], mode='square_crop')
