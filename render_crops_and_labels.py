@@ -63,7 +63,6 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, reses=[512],
     # crop to each defined region
     for crop_name, crop_data in data.items():
 
-
         crop_bounds = crop_data["crop"]
         crop_photo =photo.crop (crop_bounds)
 
@@ -84,31 +83,28 @@ def render_labels_per_crop( dataset_root, json_file, output_folder, reses=[512],
                     poly = [tuple(x) for x in poly]
                     draw_label_photo.polygon(poly, colors[cat])
 
-            for res in reses:
-                # crop down
-                crop_photo_r = process_labels.crop(crop_photo, res, mode, resample=Image.Resampling.LANCZOS, background_col="black")
-                label_img_r  = process_labels.crop(label_img , res, mode, resample=Image.Resampling.NEAREST, background_col="white")
+        for res in reses:
+            # crop down
+            crop_photo_r = process_labels.crop(crop_photo, res, mode, resample=Image.Resampling.LANCZOS, background_col="black")
+            label_img_r  = process_labels.crop(label_img , res, mode, resample=Image.Resampling.NEAREST, background_col="white")
 
-                print(f"rendering crops from {json_file} @ {res}:{mode}  = {base_name}")
+            print(f"rendering crops from {json_file} @ {res}:{mode}  = {base_name}")
 
-                crop_photo_r.save(os.path.join(output_folder, f"{res}px", "rgb"   , base_name + ".jpg"), quality=90)
-                label_img_r .save(os.path.join(output_folder, f"{res}px", "labels", base_name + ".png"))
+            crop_photo_r.save(os.path.join(output_folder, f"{res}px", "rgb"   , base_name + ".jpg"), quality=90)
+            label_img_r .save(os.path.join(output_folder, f"{res}px", "labels", base_name + ".png"))
 
-                if render_svg:
+        if render_svg:
 
-                    label_img_r = Image.new(label_mode, (crop_photo_r.width, crop_photo_r.height))
-                    draw_label_photo = ImageDraw.Draw(label_img_r, label_mode)
-                    draw_label_photo.rectangle([(0, 0), (label_img_r.width, label_img_r.height)], fill=colors["none"])
-                    dwg = svgwrite.Drawing(os.path.join(output_folder, "svg", crop_name + ".svg"), profile='tiny')
-                    dwg.add(dwg.line((0, 0), (10, 0), stroke=svgwrite.rgb(10, 10, 16, '%')))
-                    dwg.add(dwg.text(crop_name, insert=(0, 0.2), fill='black'))
-                    dwg.save()
+            dwg = svgwrite.Drawing(os.path.join(output_folder, "svg", crop_name + ".svg"), profile='tiny')
+            dwg.add(dwg.text(crop_name, insert=(0, 0.2), fill='black'))
 
-                    for cat, polies in crop_data["labels"].items():
-                        for poly in polies:
-                            poly = [tuple(x) for x in poly]
-                            draw_label_photo.polygon(poly, colors[cat])
-                            dwg.add(dwg.polygon(poly, fill=f'rgb({colors[cat][0]},{colors[cat][1]},{colors[cat][2]})'))
+            for cat, polies in crop_data["labels"].items():
+                for poly in polies:
+                    poly = [tuple(x) for x in poly]
+                    draw_label_photo.polygon(poly, colors[cat])
+                    dwg.add(dwg.polygon(poly, fill=f'rgb({colors[cat][0]},{colors[cat][1]},{colors[cat][2]})'))
+
+            dwg.save()
 
         out.append((country, base_name))
 
@@ -130,7 +126,7 @@ if __name__ == "__main__":
 
     json_src = []
     # json_src.extend(glob.glob(r'/home/twak/Downloads/LYD__KAUST_batch_2_24.06.2022/LYD<>KAUST_batch_2_24.06.2022/**.json'))
-    json_src.extend(glob.glob(os.path.join(dataset_root, "metadata_window_labels_2", "*", "*.json")))
+    # json_src.extend(glob.glob(os.path.join(dataset_root, "metadata_window_labels_2", "*", "*.json")))
     json_src.extend(glob.glob(os.path.join(dataset_root, "metadata_window_labels", "*", "*.json")))
 
     if True: # threaded
@@ -153,4 +149,4 @@ if __name__ == "__main__":
     else:
         for f in json_src:
             # render_labels_per_crop(dataset_root, f, output_folder, folder_per_batch=True, res=640, mode='square_crop', np_data=np_data)
-            render_labels_per_crop(dataset_root, f, output_folder, res=[512], mode='square_crop')
+            render_labels_per_crop(dataset_root, f, output_folder, reses=[512], mode='square_crop')
