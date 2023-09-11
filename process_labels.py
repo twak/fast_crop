@@ -43,7 +43,7 @@ LABEL_SEQ_NO_DOOR = ["none", "window pane", "window frame",
                      "open-window", "wall frame", "wall",
                      "shutter", "blind", "bars", "balcony", "misc object"]
 
-RAW_EXTS = ["CRW", "CR2", "CR3", "DNG", "RAW", "RW2", "ARW", "RW2", "NEF", "ERF", "RAF", "ORF", "PEF", "SRF", "SRF2"]
+RAW_EXTS = ["CRW", "CR2", "CR3", "DNG", "RAW", "RW2", "ARW", "NEF", "ERF", "RAF", "ORF", "PEF", "SRF", "SRF2"]
 
 def colours_for_mode (mode):
 
