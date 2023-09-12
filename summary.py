@@ -18,7 +18,7 @@ from PIL import ImageOps
 import numpy as np
 from sys import platform
 import hashlib
-import tags
+import crop_tool_tags
 
 import process_labels
 
