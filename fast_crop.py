@@ -11,7 +11,7 @@ import pygame, sys
 from PIL import Image, ImageOps
 from PIL.Image import Transpose
 from pathlib import Path
-import fast_crop_tags
+import fast_crop_tags as tags
 
 ROTS = ["rot90", "rot180", "rot270"]
 
@@ -25,7 +25,7 @@ class ROI:
         self.meta_dir = abs_path.parent.parent.joinpath("metadata_single_elements").joinpath(abs_path.name).joinpath(os.path.basename(dir) )
         os.makedirs(self.meta_dir, exist_ok=True)
 
-        for exn in ("**.JPG", "**.png" ):
+        for exn in ("**.JPG", "**.jpg" ):
             self.images.extend(glob.glob(dir+"/"+exn))
 
         self.images.sort()
