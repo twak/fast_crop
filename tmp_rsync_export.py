@@ -7,7 +7,7 @@ if __name__ == "__main__":
 
     with open("./tomove.txt", "w") as togo:
 
-        for batch in os.listdir("data/photos"):
+        for batch in ["yuan_dalian_20230323"]:#os.listdir("data/photos"):
             # if is dir
             if os.path.isdir(os.path.join("data/photos", batch)):
                 for file in os.listdir(f"data/photos/{batch}"):
