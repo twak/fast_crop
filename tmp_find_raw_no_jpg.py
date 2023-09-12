@@ -74,7 +74,5 @@ data/photos/sarabjot_newdehli_20230315/DSC06193.ARW
 data/photos/sarabjot_newdehli_20230315/DSC06241.ARW
 data/photos/sarabjot_newdehli_20230315/DSC06249.ARW
 data/photos/sarabjot_newdehli_20230315/DSC06235.ARW
-data/photos/kubra_istanbul_220827/003_0718.NEF
-data/photos/kubra_istanbul_220827/003_1421.NEF
 
 '''
