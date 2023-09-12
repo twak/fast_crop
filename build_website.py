@@ -4,7 +4,7 @@ import os
 import PIL
 from pathlib import Path
 from PIL import Image, ImageOps
-import tags
+import fast_crop_tags
 import process_labels
 import datetime
 import PIL.ImageDraw as ImageDraw

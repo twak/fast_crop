@@ -11,7 +11,7 @@ import pygame, sys
 from PIL import Image, ImageOps
 from PIL.Image import Transpose
 from pathlib import Path
-import tags
+import fast_crop_tags
 
 ROTS = ["rot90", "rot180", "rot270"]
 
