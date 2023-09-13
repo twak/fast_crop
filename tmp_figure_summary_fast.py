@@ -108,6 +108,8 @@ def batch_summary(dataset_root, batch):
                     stats["rect_crops_other"] += 1
                 else:
                     stats["rect_crops_win"] += 1
+        else:
+            continue
 
         # stats["megapixels"] += img.width * img.height
 
@@ -136,15 +138,20 @@ def batch_summary(dataset_root, batch):
     # with open(summary_file, "w") as of:
     #     json.dump(stats, of)
 
+    return stats
+
 
 
 if __name__ == "__main__":
 
     dataset_root = r"."
 
+    stats = {}
+
     for batch in os.listdir(os.path.join(dataset_root, "photos")):
-        print(" >>>>>>>>>>> "+ batch)
-        batch_summary (dataset_root, batch)
+        if os.path.isdir(os.path.join(dataset_root, "photos", batch)) and not "synthetic" in batch:
+            print(" >>>>>>>>>>> "+ batch)
+            stats [batch] = batch_summary (dataset_root, batch)
 
     keys = ["jpgs", "raws", "invalid_jpgs", "megapixels", "rect_crops_files", "rect_crops_win", "rect_crops_other", "label_files", "labelled_windows","soft_deleted", "labelled_raw"]
 
@@ -153,15 +160,12 @@ if __name__ == "__main__":
         print(f"{key}, ", end='')
     print()
 
-    for batch in ["michaela_vienna_20220427"]: #os.listdir(os.path.join(dataset_root, "metadata_summary")):
-        summary_file = os.path.join(dataset_root, "metadata_summary", batch, "summary.json")
-        if os.path.exists(summary_file):
-            with open(summary_file, "r") as of:
-                stats = json.load(of)
-                print(f"{batch}, ", end='')
-                for key in keys:
-                    print(f"{stats[key]}, ", end='')
-                print()
+    for batch in os.listdir(os.path.join(dataset_root, "metadata_summary")):
+        if os.path.isdir(os.path.join(dataset_root, "photos", batch)) and not "synthetic" in batch:
+            print(f"{batch}, ", end='')
+            for key in keys:
+                print(f"{stats[batch][key]}, ", end='')
+            print()
 
 
 

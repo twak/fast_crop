@@ -69,6 +69,7 @@ def batch_summary(dataset_root, batch):
     stats["label_files"] = len(wild(os.path.join(dataset_root, "metadata_window_labels", batch), "json")) + len(wild(os.path.join(dataset_root, "metadata_window_labels_2", batch), "json"))
     stats["labelled_windows"] = 0
     stats["soft_deleted"] = 0
+    stats["labelled_raw"] = 0
 
     for photo_file in photo_src:
 
@@ -107,6 +108,8 @@ def batch_summary(dataset_root, batch):
                     stats["rect_crops_other"] += 1
                 else:
                     stats["rect_crops_win"] += 1
+        else:
+            continue
 
         stats["megapixels"] += img.width * img.height
 
@@ -143,8 +146,9 @@ if __name__ == "__main__":
     dataset_root = r"."
 
     for batch in os.listdir(os.path.join(dataset_root, "photos")):
-        print(" >>>>>>>>>>> "+ batch)
-        batch_summary (dataset_root, batch)
+        if os.path.isdir(os.path.join(dataset_root, "photos", batch)) and not "synthetic" in batch:
+            print(" >>>>>>>>>>> "+ batch)
+            batch_summary (dataset_root, batch)
 
     keys = ["jpgs", "raws", "invalid_jpgs", "megapixels", "rect_crops_files", "rect_crops_win", "rect_crops_other", "label_files", "labelled_windows","soft_deleted", "labelled_raw"]
 
@@ -154,14 +158,15 @@ if __name__ == "__main__":
     print()
 
     for batch in os.listdir(os.path.join(dataset_root, "metadata_summary")):
-        summary_file = os.path.join(dataset_root, "metadata_summary", batch, "summary.json")
-        if os.path.exists(summary_file):
-            with open(summary_file, "r") as of:
-                stats = json.load(of)
-                print(f"{batch}, ", end='')
-                for key in keys:
-                    print(f"{stats[key]}, ", end='')
-                print()
+        if os.path.isdir(os.path.join(dataset_root, "photos", batch)) and not "synthetic" in batch:
+            summary_file = os.path.join(dataset_root, "metadata_summary", batch, "summary.json")
+            if os.path.exists(summary_file):
+                with open(summary_file, "r") as of:
+                    stats = json.load(of)
+                    print(f"{batch}, ", end='')
+                    for key in keys:
+                        print(f"{stats[key]}, ", end='')
+                    print()
 
 
 
