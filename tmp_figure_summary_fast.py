@@ -53,7 +53,7 @@ def batch_summary(dataset_root, batch):
     # if (os.path.exists(summary_file)):
     #     return # lazy!
 
-    os.makedirs(Path(summary_file).parent, exist_ok= True)
+    # os.makedirs(Path(summary_file).parent, exist_ok= True)
 
 
     photo_src = wild( os.path.join( dataset_root, "photos", batch), "jpg" )
@@ -134,8 +134,8 @@ def batch_summary(dataset_root, batch):
             if is_raw:
                 stats["labelled_raw"] += len(labelled_areas)
 
-    with open(summary_file, "w") as of:
-        json.dump(stats, of)
+    # with open(summary_file, "w") as of:
+    #     json.dump(stats, of)
 
 
 
