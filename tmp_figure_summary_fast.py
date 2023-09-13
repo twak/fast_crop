@@ -153,7 +153,7 @@ if __name__ == "__main__":
         print(f"{key}, ", end='')
     print()
 
-    for batch in os.listdir(os.path.join(dataset_root, "metadata_summary")):
+    for batch in ["michaela_vienna_20220427"]: #os.listdir(os.path.join(dataset_root, "metadata_summary")):
         summary_file = os.path.join(dataset_root, "metadata_summary", batch, "summary.json")
         if os.path.exists(summary_file):
             with open(summary_file, "r") as of:
