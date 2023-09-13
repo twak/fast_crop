@@ -113,19 +113,25 @@ def batch_summary(dataset_root, batch):
         stats["jpgs"] +=1
 
 
+        is_raw = False
         for extension in process_labels.RAW_EXTS:
             if Path(photo_file).with_suffix("."+extension).exists():
                 stats["raws"] += 1
+                is_raw = True
 
-        label_file = os.path.join(dataset_root, "metadata_window_labels", batch, basename+".json" )
         if os.path.exists(label_file):
             labelled_areas = json.load(open(label_file, "r"))
-            stats["labelled_windows"] += len (labelled_areas)
+            stats["labelled_windows"] += len(labelled_areas)
+            if is_raw:
+                stats["labelled_raw"] += len(labelled_areas)
 
         label_file = os.path.join(dataset_root, "metadata_window_labels_2", batch, basename+".json" )
+
         if os.path.exists(label_file):
             labelled_areas = json.load(open(label_file, "r"))
             stats["labelled_windows"] += len (labelled_areas)
+            if is_raw:
+                stats["labelled_raw"] += len(labelled_areas)
 
     with open(summary_file, "w") as of:
         json.dump(stats, of)
@@ -140,7 +146,7 @@ if __name__ == "__main__":
         print(" >>>>>>>>>>> "+ batch)
         batch_summary (dataset_root, batch)
 
-    keys = ["jpgs", "raws", "invalid_jpgs", "megapixels", "rect_crops_files", "rect_crops_win", "rect_crops_other", "label_files", "labelled_windows","soft_deleted_excluded"]
+    keys = ["jpgs", "raws", "invalid_jpgs", "megapixels", "rect_crops_files", "rect_crops_win", "rect_crops_other", "label_files", "labelled_windows","soft_deleted", "labelled_raw"]
 
     print(f"stats!, ", end='')
     for key in keys:
