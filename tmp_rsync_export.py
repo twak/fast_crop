@@ -21,7 +21,6 @@ if __name__ == "__main__":
                         if os.path.exists(os.path.join(".", json_file)):  # there is a crop file
 
                             prev = json.load(open(json_file, "r"))
-                            rects = prev["rects"]
 
                             tags = []
 
