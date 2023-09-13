@@ -120,7 +120,6 @@ def batch_summary(dataset_root, batch):
                 is_raw = True
 
         label_file = os.path.join(dataset_root, "metadata_window_labels", batch, basename+".json" )
-
         if os.path.exists(label_file):
             labelled_areas = json.load(open(label_file, "r"))
             stats["labelled_windows"] += len(labelled_areas)
