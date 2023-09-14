@@ -73,12 +73,6 @@ def render_crops(images, output_dir, clear_log = False, sub_dirs = True, crop_mo
 
         batch_name = Path(im_file).parent.name
 
-        if sub_dirs:
-            # sub_dir = os.path.split ( os.path.split(im_file)[0] )[1]
-            dir = os.path.join(output_dir, batch_name)
-            os.makedirs( dir, exist_ok=True)
-
-
         json_file = Path(im_file).parent.parent.parent.joinpath("metadata_single_elements").joinpath(batch_name).joinpath(f"{out_name}.json")
 
         if os.path.exists(os.path.join (".",json_file ) ): # there is a crop file
@@ -95,6 +89,11 @@ def render_crops(images, output_dir, clear_log = False, sub_dirs = True, crop_mo
             if 'deleted' in tags:
                 print("skipping deleted")
                 continue
+
+            if sub_dirs:
+                # sub_dir = os.path.split ( os.path.split(im_file)[0] )[1]
+                dir = os.path.join(output_dir, batch_name)
+                os.makedirs(dir, exist_ok=True)
 
             for r in rects:
 
