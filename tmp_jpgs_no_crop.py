@@ -38,7 +38,6 @@ def batch_summary(dataset_root, batch):
     for photo_file in photo_src:
 
         pp = Path(photo_file)
-        print (pp.name)
         basename = os.path.splitext(pp.name)[0]
         # count = 1
 
