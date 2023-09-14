@@ -43,7 +43,7 @@ def batch_summary(dataset_root, batch):
 
         rect_file = os.path.join(dataset_root, "metadata_single_elements", batch,  basename+".json" )
         if not os.path.exists(rect_file):
-            print (photo_src)
+            print (photo_file)
 
 if __name__ == "__main__":
 
