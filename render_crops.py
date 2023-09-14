@@ -131,14 +131,11 @@ if __name__ == "__main__":
 
     dataset_root = "."
 
-    # if platform == "win32":
-    #     dataset_root = r"C:\Users\twak\Documents\architecture_net\dataset"
-    # else:
-    #     photo_src.extend(glob.glob(r'./photos/*/*.JPG'))
-    #     dataset_root = r"/home/twak/archinet/data"
+    if platform != "win32":
+        photo_src.extend(glob.glob(r'./photos/*/*.JPG'))
 
-    output_folder = f"./metadata_cook/dataset_cook_crops_1024px_{time.time()}/"
+    output_folder = f"./metadata_cook/dataset_cook_crops_2048px_{time.time()}/"
 
     os.makedirs(output_folder, exist_ok=True)
 
-    render_crops(photo_src, output_folder, crop_mode="square_crop", resolution=1024, quality=90, sub_dirs=True)
+    render_crops(photo_src, output_folder, crop_mode="square_crop", resolution=2048, quality=90, sub_dirs=True)
