@@ -93,7 +93,7 @@ def density_2d(dir):
         #     break
 
     # save all arrays (aimple, hv...) to disk
-    path = os.path.join(os.path.expanduser("~"), "Downloads", f"counts_{int (time.time() * 1000)}.npz" )
+    path = os.path.join(os.path.expanduser("~"), f"counts_{int (time.time() * 1000)}.npz" )
     np.savez(path,
             simple=simple,
             counts=counts,
