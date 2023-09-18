@@ -60,7 +60,7 @@ def find_roots(files):
 # dirs = [ ["rgb","png"], ["labels","png"], ["labels_8bit", "png"], ["exposed", "png"], ["attribs", "txt"] ]
 
 dirs = \
-    [["1024ms","png"], ["256ms","png"], ["attribs","txt"], ["canonical","png"], ["transcol","png"], ["edges","png"], ["normals","png"],
+    [["1024ms","png"], ["256ms","png"], ["attribs","txt"], ["canonical","png"], ["edges","png"], ["normals","png"],
      ["rgb_albedo","png"], ["texture_rot","png"], ["128ms","png"], ["512ms","png"], ["canonical","png"], ["col_per_obj","png"],
      ["labels","png"], ["phong_diffuse","png"], ["rgb_depth","exr"], ["voronoi_chaos","png"], ["2048ms","png"], ["64ms","png"],
      ["canonical_albedo","png"], ["diffuse","png"], ["labels_8bit","png"], ["rgb","png"], ["rgb_exposed","png"] ]
