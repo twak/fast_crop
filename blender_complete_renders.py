@@ -32,7 +32,7 @@ def valid_syn_pairs(base, dataset_root):
             bad = True
 
     if not bad:
-        print(".", end="")
+        print(".", end="", flush=True)
         return 0 # good
     else:
         print(".")
