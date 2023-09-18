@@ -3,8 +3,8 @@ python ~/fast_crop/blender_labels_to_dataset.py .
 # remove any renders which failed
 python ~/fast_crop/blender_complete_renders.py . really
 # do histogram matching on rgb + exposed images
-python ~/fast_crop/match_histograms.py rgb /ibex/user/kellyt/winlab_1/rgb rgb_histomatched
-python ~/fast_crop/match_histograms.py exposed /ibex/user/kellyt/winlab_1/rgb exposed_histomatched
+python ~/fast_crop/match_histograms.py rgb /ibex/user/kellyt/winlab_5/rgb rgb_histomatched
+python ~/fast_crop/match_histograms.py rgb_exposed /ibex/user/kellyt/winlab_5/rgb rgb_exposed_histomatched
 
 # create split files
 cd rgb
@@ -22,6 +22,8 @@ cat all_shuf.txt | head -n 1024 > 1024.txt
 python ~/fast_crop/tmp_names_to_grid.py . "1024.txt" "labels" "png"
 python ~/fast_crop/tmp_names_to_grid.py . "1024.txt" "exposed" "png"
 python ~/fast_crop/tmp_names_to_grid.py . "1024.txt" "rgb" "png"
+
+python ~/fast_crop/figure_label_analysis.py
 
 # print std and mean for synthetic photos to terminal (you'll want to save these for training)
 python ~/fast_crop/find_mean_std.py "rgb" 1024

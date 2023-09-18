@@ -217,6 +217,6 @@ def create_grid(dir):
 
 if __name__ == "__main__":
 
-    path = density_2d(".")
+    path = density_2d("./labels_8bit")
     create_grid(path)
     # create_grid("/home/twak/Documents/windowz_balcony_stats/counts_1693924689181.npy.npz") #winlab5_counts_1693933123424.npy.npz")
