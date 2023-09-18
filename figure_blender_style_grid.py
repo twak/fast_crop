@@ -97,7 +97,7 @@ def create_image_grid(root_directory):
     base_image_height = 512  # Adjust this to your desired height
 
     total_width = len(styles) * base_image_width
-    total_height = max (num, len(images["rgb"])) * base_image_height
+    total_height = min (num, len(images["rgb"])) * base_image_height
 
     grid_image = Image.new('RGB', (total_width, total_height))
     draw = ImageDraw.Draw(grid_image)
