@@ -39,12 +39,16 @@ def render_attribs(parameters):
     bgi = ImageDraw.Draw(bg)
 
     win = "win_primary"
-    coords = []
-    params = open_params(parameters)
-    for corner in ["bl", "br", "tr", "tl"]:
-        coords.append(((params[win + f"/_{corner}_screen_x"] + 1) * 0.5 * bg.width, (-params[win + f"/_{corner}_screen_y"] + 1) * 0.5 * bg.height))
 
-    bgi.polygon(coords, outline="white", width=5, )
+    try:
+        coords = []
+        params = open_params(parameters)
+        for corner in ["bl", "br", "tr", "tl"]:
+            coords.append(((params[win + f"/_{corner}_screen_x"] + 1) * 0.5 * bg.width, (-params[win + f"/_{corner}_screen_y"] + 1) * 0.5 * bg.height))
+
+        bgi.polygon(coords, outline="white", width=5, )
+    except:
+        print ("skipping rendering a window outline")
 
     return bg
 
