@@ -78,11 +78,10 @@ roots = find_roots(roots)
 processes = []
 count = 0
 for root in roots:
-
     processes.append(_pool.submit ( valid_syn_pairs, root, sys.argv[1] ))
 
-    for r in concurrent.futures.as_completed(processes):
-        count += r.result()
+for r in concurrent.futures.as_completed(processes):
+    count += r.result()
 
 if len (sys.argv) > 2:
     print (f"have deleted {count}")
