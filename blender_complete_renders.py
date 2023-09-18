@@ -19,8 +19,6 @@ def valid_syn_pairs(base, dataset_root):
     # print(base)
     print(".", end="")
 
-    good = lambda f: os.path.exists(f) and os.path.getsize(f) > 0
-
     bad = False
     try:
         for d, e in dirs:
@@ -29,12 +27,13 @@ def valid_syn_pairs(base, dataset_root):
                 try:
                     img = Image.open(file)
                     img.verify()
-                except:
+                except e:
+                    print(e)
                     img = None
 
                 if img is None:
                     bad = True
-                    print(f"failed to verify {dataset_root}!")
+                    print(f"failed to verify {d}//{base}.{e}!")
             elif not os.path.exists(file) and os.path.getsize(file):
                 bad = True
 
