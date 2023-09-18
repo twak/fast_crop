@@ -33,8 +33,9 @@ def valid_syn_pairs(base, dataset_root):
 
                 if img is None:
                     bad = True
-                    print(f"failed to verify {d}//{base}.{e}!")
+                    print(f"failed to find and verify {d}//{base}.{e}!")
             elif not os.path.exists(file) and os.path.getsize(file):
+                print(f"failed to find {d}//{base}.{e}!")
                 bad = True
 
     except:
