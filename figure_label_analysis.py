@@ -210,7 +210,8 @@ def create_grid(dir):
 
     # grid.save("/home/twak/Documents/windowz_balcony_stats/syn_balcony.png" )
 
-    grid.save( os.path.join(Path(dir).parent, f"grid.png"))
+    grid.save ( os.path.join ( os.path.expanduser("~"), f"grid_{int (time.time() * 1000)}.png") )
+    # grid.save( os.path.join(Path(dir).parent, f"grid.png"))
     # grid.save( os.path.join(Path(dir).parent, f"grid_{int (time.time() * 1000)}.png"))
 
     return counts
