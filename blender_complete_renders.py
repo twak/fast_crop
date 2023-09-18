@@ -11,37 +11,28 @@ from PIL import Image
 def valid_syn_pairs(base, dataset_root):
 
     global dirs
-    files = []
-
-    for d, e in dirs:
-        files.append(os.path.join(dataset_root, d, f"{base}.{e}"))
-
-    # print(base)
-    print(".", end="")
 
     bad = False
-    try:
-        for d, e in dirs:
-            file = os.path.join(dataset_root, d, f"{base}.{e}")
-            if e in ["png", "jpg"]:
-                try:
-                    img = Image.open(file)
-                    img.verify()
-                except e:
-                    print(e)
-                    img = None
 
-                if img is None:
-                    bad = True
-                    print(f"failed to find and verify {d}//{base}.{e}!")
-            elif not os.path.exists(file) and os.path.getsize(file):
-                print(f"failed to find {d}//{base}.{e}!")
+    for d, e in dirs:
+        file = os.path.join(dataset_root, d, f"{base}.{e}")
+        if e in ["png", "jpg"]:
+            try:
+                img = Image.open(file)
+                img.verify()
+            except e:
+                print(e)
+                img = None
+
+            if img is None:
                 bad = True
-
-    except:
-        bad = True
+                print(f"failed to find and verify {d}//{base}.{e}!")
+        elif not os.path.exists(file) and os.path.getsize(file):
+            print(f"failed to find {d}//{base}.{e}!")
+            bad = True
 
     if not bad:
+        print(".", end="")
         return 0 # good
     else:
         print(".")
