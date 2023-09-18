@@ -83,6 +83,8 @@ def create_image_grid(root_directory):
         "canonical_transcol"
     ]
 
+    num = 16
+
     for style in styles:
         dir = os.path.join(root_directory, style)
         if os.path.exists(dir):
@@ -95,7 +97,7 @@ def create_image_grid(root_directory):
     base_image_height = 512  # Adjust this to your desired height
 
     total_width = len(styles) * base_image_width
-    total_height = max (10, len(images["rgb"])) * base_image_height
+    total_height = max (num, len(images["rgb"])) * base_image_height
 
     grid_image = Image.new('RGB', (total_width, total_height))
     draw = ImageDraw.Draw(grid_image)
@@ -106,7 +108,7 @@ def create_image_grid(root_directory):
 
         y_offset = 0
 
-        for file in os.listdir(os.path.join(root_directory, "rgb")):
+        for file in os.listdir(os.path.join(root_directory, "rgb"))[:min (num, len(images["rgb"]))]:
             base_name, _ = os.path.splitext(file)
 
             if style in images and base_name in images[style]:
