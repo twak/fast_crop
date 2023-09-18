@@ -63,10 +63,11 @@ def create_image_grid(root_directory):
         "1024ms",
         "2048ms",
         "rgb_exposed",
+        "rgb_histomatched",
+        "rgb_exposed_histomatched",
         "rgb_albedo",
         "diffuse",
         "phong_diffuse",
-        #"diffuse_complex",
         "normals",
         "edges",
         "col_per_obj",
@@ -133,5 +134,5 @@ def create_image_grid(root_directory):
 
 
 # Replace 'your_directory_path' with the actual path to your directory
-directory_path = '/home/twak/data/dataset_out_2'
+directory_path = '.'
 create_image_grid(directory_path)
