@@ -20,7 +20,7 @@ def valid_syn_pairs(base, dataset_root):
             try:
                 img = Image.open(file)
                 img.verify()
-            except e:
+            except Exception as e:
                 print(e)
                 img = None
 
