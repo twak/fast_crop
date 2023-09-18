@@ -16,7 +16,9 @@ def valid_syn_pairs(base, dataset_root):
     for d, e in dirs:
         files.append(os.path.join(dataset_root, d, f"{base}.{e}"))
 
-    print (base)
+    # print(base)
+    print(".", end="")
+
     good = lambda f: os.path.exists(f) and os.path.getsize(f) > 0
 
     bad = False
@@ -24,13 +26,16 @@ def valid_syn_pairs(base, dataset_root):
         for d, e in dirs:
             file = os.path.join(dataset_root, d, f"{base}.{e}")
             if e in ["png", "jpg"]:
-                img = Image.open(file)
-                img.verify()
+                try:
+                    img = Image.open(file)
+                    img.verify()
+                except:
+                    img = None
+
                 if img is None:
                     bad = True
                     print(f"failed to verify {dataset_root}!")
-
-            if not os.path.exists(file) and os.path.getsize(file):
+            elif not os.path.exists(file) and os.path.getsize(file):
                 bad = True
 
     except:
@@ -39,17 +44,15 @@ def valid_syn_pairs(base, dataset_root):
     if not bad:
         return 0 # good
     else:
-        for d, e in dirs:
-            file = os.path.join(dataset_root, d, f"{base}.{e}")
-            if not good(file):
-                print(f"missing {d} -> {base}.{e}")
-
-            if len (sys.argv) > 2:
-                print("removing " + str ( file ) )
-                with contextlib.suppress(FileNotFoundError):
+        print(".")
+        if len (sys.argv) > 2:
+            print("deleting: " + str ( file ) )
+            with contextlib.suppress(FileNotFoundError):
+                for d, e in dirs:
+                    file = os.path.join(dataset_root, d, f"{base}.{e}")
                     os.remove(file)
-            else:
-                print ( "if this wasn't a dry run, I'd be removing " + file )
+        else:
+            print ( f"if this wasn't a dry run, I'd be removing: {base}" )
 
         return 1 # bad
 
