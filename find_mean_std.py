@@ -58,7 +58,7 @@ def write_mean(dir, count=2048):
 
 if __name__ == "__main__":
 
-    os.path.makedirs("means", exist_ok=True)
+    os.makedirs("means", exist_ok=True)
 
     for dir, _ in  [["1024ms","png"], ["256ms","png"], ["attribs","txt"], ["edges","png"], ["normals","png"],
        ["rgb_albedo","png"], ["texture_rot","png"], ["128ms","png"], ["512ms","png"], ["col_per_obj","png"],
