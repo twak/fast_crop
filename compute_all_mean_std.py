@@ -70,6 +70,6 @@ if __name__ == "__main__":
     for dir, _ in  [["1024ms","png"], ["256ms","png"], ["attribs","txt"], ["edges","png"], ["normals","png"],
        ["rgb_albedo","png"], ["texture_rot","png"], ["128ms","png"], ["512ms","png"], ["col_per_obj","png"],
        ["labels","png"], ["phong_diffuse","png"], ["voronoi_chaos","png"], ["2048ms","png"], ["64ms","png"],
-       ["diffuse","png"], ["labels_8bit","png"], ["rgb","png"], ["rgb_histomatched","png"],
+       ["diffuse","png"], ["rgb","png"], ["rgb_histomatched","png"],
        ["rgb_exposed","png"], ["rgb_exposed_histomatched","png"] ]:
         write_mean(dir)
