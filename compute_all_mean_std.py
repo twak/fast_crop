@@ -10,7 +10,14 @@ from pathlib import Path
 
 def write_mean(dir, count=2048):
 
+
+
     print(f"  == {dir} == ")
+
+    out_file = os.path.join(Path(dir).parent, "means", dir + ".npz")
+    if os.path.exists(out_file):
+        print(f"skipping {dir}, already exists")
+        return
 
     imgs = []
     imgs.extend(glob.glob(os.path.join(dir, "*.png")))
@@ -46,7 +53,7 @@ def write_mean(dir, count=2048):
         print(f"mean=[{mean[0]}, {mean[1]}, {mean[2]}], std=[{std[0]}, {std[1]}, {std[2]}],")
 
         # save mean and std as npz
-        np.savez(os.path.join(Path(dir).parent, "means", dir + ".npz"), mean=mean, std=std)
+        np.savez(out_file, mean=mean, std=std)
 
         # with open(os.path.join(Path(dir).parent, "means", dir + ".txt"), "w") as f:
         #     f.write(f"mean=[{mean[0]}, {mean[1]}, {mean[2]}], std=[{std[0]}, {std[1]}, {std[2]}],")
@@ -62,7 +69,7 @@ if __name__ == "__main__":
 
     for dir, _ in  [["1024ms","png"], ["256ms","png"], ["attribs","txt"], ["edges","png"], ["normals","png"],
        ["rgb_albedo","png"], ["texture_rot","png"], ["128ms","png"], ["512ms","png"], ["col_per_obj","png"],
-       ["labels","png"], ["phong_diffuse","png"], ["rgb_depth","exr"], ["voronoi_chaos","png"], ["2048ms","png"], ["64ms","png"],
+       ["labels","png"], ["phong_diffuse","png"], ["voronoi_chaos","png"], ["2048ms","png"], ["64ms","png"],
        ["diffuse","png"], ["labels_8bit","png"], ["rgb","png"], ["rgb_histomatched","png"],
        ["rgb_exposed","png"], ["rgb_exposed_histomatched","png"] ]:
         write_mean(dir)
