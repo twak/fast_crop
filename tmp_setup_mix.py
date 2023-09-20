@@ -5,6 +5,8 @@ from PIL import Image
 
 outdir = "/ibex/user/kellyt/mix"
 
+os.makedirs(f"{outdir}/rgb", exist_ok=True)
+
 rlines, slines = [], []
 
 with open("/ibex/user/kellyt/winlab_5/2048.txt", "r") as f:
