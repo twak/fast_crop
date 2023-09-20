@@ -22,7 +22,7 @@ def grey_to_color(grey):
     return Image.fromarray(color_seg)
 
 
-def create_image_grid(num, split, *styles):
+def create_image_grid(num, root_directory, split, *styles):
 
     base_image_width = 512  # Adjust this to your desired width
     base_image_height = 512  # Adjust this to your desired height
@@ -60,4 +60,4 @@ def create_image_grid(num, split, *styles):
 
 # Replace 'your_directory_path' with the actual path to your directory
 directory_path = '.'
-create_image_grid(20, os.path.join(directory_path, "test.txt"), ("rgb", "jpg"), ("labels", "png"), ("labels_predicted_1", "png"), ("labels_l2l_1", "png") )
+create_image_grid(20, directory_path, os.path.join(directory_path, "test.txt"), ("rgb", "jpg"), ("labels", "png"), ("labels_predicted_1", "png"), ("labels_l2l_1", "png") )
