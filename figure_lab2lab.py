@@ -40,7 +40,7 @@ def create_image_grid(num, root_directory, split, *styles):
 
             for j, s in enumerate ( styles ):
                 dir = os.path.join(root_directory, s[0])
-                image_file = os.path.join(dir, x + "." + s[1])
+                image_file = os.path.join(dir, x[:-1] + "." + s[1])
                 image = Image.open(image_file)
 
                 if s[0] == "labels":
