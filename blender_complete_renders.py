@@ -56,14 +56,14 @@ def find_roots(files):
     return list ( out.keys() )
 
 
-dirs = [ ["rgb","png"], ["labels","png"], ["labels_8bit", "png"], ["attribs", "txt"]  ]
+# dirs = [ ["rgb","png"], ["labels","png"], ["labels_8bit", "png"], ["attribs", "txt"]  ]
 # dirs = [ ["rgb","png"], ["labels","png"], ["labels_8bit", "png"], ["exposed", "png"], ["attribs", "txt"] ]
 
-# dirs = \
-#     [["1024ms","png"], ["256ms","png"], ["attribs","txt"], ["edges","png"], ["normals","png"],
-#      ["rgb_albedo","png"], ["texture_rot","png"], ["128ms","png"], ["512ms","png"], ["col_per_obj","png"],
-#      ["labels","png"], ["phong_diffuse","png"], ["rgb_depth","exr"], ["voronoi_chaos","png"], ["2048ms","png"], ["64ms","png"],
-#      ["diffuse","png"], ["labels_8bit","png"], ["rgb","png"], ["rgb_exposed","png"] ]
+dirs = \
+    [["1024ms","png"], ["256ms","png"], ["attribs","txt"], ["edges","png"], ["normals","png"],
+     ["rgb_albedo","png"], ["texture_rot","png"], ["128ms","png"], ["512ms","png"], ["col_per_obj","png"],
+     ["labels","png"], ["phong_diffuse","png"], ["rgb_depth","exr"], ["voronoi_chaos","png"], ["2048ms","png"], ["64ms","png"],
+     ["diffuse","png"], ["labels_8bit","png"], ["rgb","png"], ["rgb_exposed","png"] ]
 
 # ["canonical", "png"], ["canonical_albedo","png"],["canonical","png"],
 
