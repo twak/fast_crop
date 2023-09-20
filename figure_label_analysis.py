@@ -7,9 +7,7 @@ from matplotlib import font_manager
 import time
 from pathlib import Path
 
-CLASSES = ["none", "window pane", "window frame", "open-window", "wall frame", "wall",
-           # "door",
-           "shutter", "blind", "bars", "balcony", "misc object"]
+CLASSES = ["none", "window pane", "window frame", "open-window", "wall frame", "wall", "shutter", "blind", "bars", "balcony", "misc object"]
 
 def runs_of_ones(bits):
   for bit, group in itertools.groupby(bits):
