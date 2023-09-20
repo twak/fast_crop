@@ -35,7 +35,7 @@ with open("/ibex/user/kellyt/windowz/winsyn_riyal/2048.txt", "r") as f:
     #     shutil.copyfile("/ibex/user/kellyt/windowz/winsyn_riyal/labels/" + line + ".png", f"{outdir}/labels/{line}.png")
 
 
-for i in range(5):
+for i in range(10):
 
     real = 2 ** i
 
