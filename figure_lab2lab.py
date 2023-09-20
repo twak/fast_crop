@@ -31,7 +31,7 @@ def create_image_grid(num, root_directory, split, *styles):
     total_height = num * base_image_height
 
     grid_image = Image.new('RGB', (total_width, total_height))
-    draw = ImageDraw.Draw(grid_image)
+    # draw = ImageDraw.Draw(grid_image)
 
     # read lines from split file
     with open(split, "r") as f:
@@ -46,7 +46,7 @@ def create_image_grid(num, root_directory, split, *styles):
                 if s[0] == "labels":
                     image = grey_to_color(image)
 
-                draw.paste(image, (j * base_image_width, i * base_image_height))
+                grid_image.paste(image, (j * base_image_width, i * base_image_height))
 
 
             if i > num:
