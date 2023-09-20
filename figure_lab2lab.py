@@ -9,6 +9,7 @@ from collections import defaultdict
 from matplotlib import font_manager
 from PIL import Image, ImageDraw, ImageFont
 import json
+import process_labels
 
 def grey_to_color(grey):
 
