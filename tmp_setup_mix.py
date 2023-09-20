@@ -23,11 +23,12 @@ with open("/ibex/user/kellyt/windowz/winsyn_riyal/2048.txt", "r") as f:
         print(line)
         line = line.strip()
         img = Image.open(f"/ibex/user/kellyt/windowz/winsyn_riyal/rgb/{line}.png")
+        img = img.convert("RGB")
 
-        background = Image.new('RGBA', img.size, (255, 255, 255))
+        # background = Image.new('RGBA', img.size, (255, 255, 255))
+        # alpha_composite = Image.alpha_composite(background, img)
 
-        alpha_composite = Image.alpha_composite(background, img)
-        alpha_composite.save(f"{outdir}/rgb/{line}.jpg", "JPEG", quality=90)
+        img.save(f"{outdir}/rgb/{line}.jpg", "JPEG", quality=90)
 
 
 for i in range(5):
