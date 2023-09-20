@@ -42,7 +42,7 @@ for i in range(5):
 
     print(f">>>> {real}")
 
-    with open(f"/ibex/user/kellyt/mix/mix_{real}.txt", "w") as f:
+    with open(f"{outdir}/mix_{real}.txt", "w") as f:
 
         random.shuffle(rlines)
         random.shuffle(slines)
