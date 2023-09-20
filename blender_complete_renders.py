@@ -38,8 +38,8 @@ def valid_syn_pairs(base, dataset_root):
         print(".")
         if len (sys.argv) > 2:
             print("deleting: " + str ( file ) )
-            with contextlib.suppress(FileNotFoundError):
-                for d, e in dirs:
+            for d, e in dirs:
+                with contextlib.suppress(FileNotFoundError):
                     file = os.path.join(dataset_root, d, f"{base}.{e}")
                     os.remove(file)
         else:
