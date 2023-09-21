@@ -38,7 +38,7 @@ with open("/ibex/user/kellyt/windowz/winsyn_riyal/2048.txt", "r") as f:
     #     shutil.copyfile("/ibex/user/kellyt/windowz/winsyn_riyal/labels_8bit/" + line + ".png", f"{outdir}/labels/{line}.png")
 
 
-for i in range(12):
+for i in range(0, 12):
     for z in range (5):
         real = 2 ** i
 
