@@ -203,27 +203,50 @@ if __name__ == "__main__":
         # dataset_root = r"/datawaha/cggroup/kellyt/archinet_backup/complete_2401/data"
 
     #output_folder = r"/datawaha/cggroup/kellyt/iccv_add_mat/photos"  # f"./metadata_single_elements/dataset_cook{time.time()}
-    output_folder = "/home/kellyt/iccv_fig" # r"C:\Users\twak\Downloads\iccv_fig_tmp"  # f"./metadata_single_elements/dataset_cook{time.time()}
+    output_folder = "/home/twak/Downloads/iccv/iccv_fig" # r"C:\Users\twak\Downloads\iccv_fig_tmp"  # f"./metadata_single_elements/dataset_cook{time.time()}
 
     os.makedirs(output_folder, exist_ok=True)
 
-    for name, batches in [("uk", [ "tom_ambleside_20230101", "tom_bramley_20220406", "tom_cams_20220418", "tom_dales_20220403",
-            "tom_leeds_docks_20220404", "tom_london_20220418", "tom_saffron_20220418", "tom_york_20220411" ] ),
+    for name, batches in [
+    #     ("uk", [ "tom_ambleside_20230101", "tom_bramley_20220406", "tom_cams_20220418", "tom_dales_20220403",
+    #         "tom_leeds_docks_20220404", "tom_london_20220418", "tom_saffron_20220418", "tom_york_20220411" ] ),
+    #
+    #                       ("usa", ["brian_la_20220905", "kaitlyn_ny_20221205", "kalinia_la_20230128", "nicklaus_miami_20230301",
+    #         "peter_washington_20221129", "scarlette_chicago_20221022"] ),
+    #
+    #                     ("aus", ["michaela_vienna_20220425",     "michaela_vienna_20220426",     "michaela_vienna_20220427",     "michaela_vienna_20220428",
+    # "michaela_vienna_20220429",    "michaela_vienna_20220502",     "michaela_vienna_20220503",     "michaela_vienna_20220603",
+    # "michaela_vienna_20220608",     "michaela_vienna_20220609",    "michaela_vienna_20220611",    "michaela_vienna_20220614",
+    # "michaela_vienna_20220615",    "michaela_vienna_20220617",    "michaela_vienna_20220618",    "michaela_vienna_20220628",
+    # "michaela_vienna_20220629",    "michaela_vienna_20220704",    "michaela_vienna_20220705",    "michaela_vienna_20220706",
+    # "michaela_vienna_20220707",    "michaela_vienna_20220712",    "michaela_vienna_20220713",    "michaela_vienna_20220714"]),
 
-                          ("usa", ["brian_la_20220905", "kaitlyn_ny_20221205", "kalinia_la_20230128", "nicklaus_miami_20230301",
-            "peter_washington_20221129", "scarlette_chicago_20221022"] ),
+                          # ("egypt", ["elsayed_cairo_20221216", "elsayed_port_said_20230125"]),
 
-                        ("aus", ["michaela_vienna_20220425",     "michaela_vienna_20220426",     "michaela_vienna_20220427",     "michaela_vienna_20220428",
-    "michaela_vienna_20220429",    "michaela_vienna_20220502",     "michaela_vienna_20220503",     "michaela_vienna_20220603",
-    "michaela_vienna_20220608",     "michaela_vienna_20220609",    "michaela_vienna_20220611",    "michaela_vienna_20220614",
-    "michaela_vienna_20220615",    "michaela_vienna_20220617",    "michaela_vienna_20220618",    "michaela_vienna_20220628",
-    "michaela_vienna_20220629",    "michaela_vienna_20220704",    "michaela_vienna_20220705",    "michaela_vienna_20220706",
-    "michaela_vienna_20220707",    "michaela_vienna_20220712",    "michaela_vienna_20220713",    "michaela_vienna_20220714"]),
-
-                          ("ger", ["michaela_berlin_20221000", "michaela_berlin_20221018", "michaela_berlin_20221019", "michaela_berlin_20221020",
-    "michaela_berlin_20221021", "michaela_berlin_20221024", "michaela_berlin_20221025", "michaela_berlin_20221026",
-    "michaela_berlin_20221027", "michaela_berlin_20221028"]),
-                          ]:
+        ("other", [
+            "aleksandr_cyprus_20221207",
+            "angela_prilep_20221022",
+            "artur_dublin_20221121",
+            "artur_saopaulo_20230208",
+            "chris_bangkok_20220907",
+            "george_yerevan_20230323",
+            "ignacio_buenos_aires_20221124",
+            "jan_cebu_20230120",
+            "kubra_istanbul_20220827",
+            "kubra_istanbul_220827",
+            "lukas_antalya_20230321",
+            "maria_mardelplata_20221103",
+            "mokhtari_algiers_20230326",
+            "mussa_dar_es_salaam_20221212",
+            "nestor_cartagena_20230217",
+            "sarabjot_newdehli_20230315",
+            "serhii_bydgoszcz_20230421",
+            "serhii_poznan_20221001",
+            "susana_morocco_20230405",
+            "tadiyos_dhaka_20221124",
+            "vasileios_athens_20221122",
+            "yuan_dalian_20230323 " ] )
+        ]:
         photo_src = []
         for batch in batches:
             photo_src.extend(glob.glob( os.path.join(dataset_root, "photos", batch, "*.JPG" )) )
