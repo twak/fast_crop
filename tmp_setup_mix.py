@@ -37,21 +37,42 @@ with open("/ibex/user/kellyt/windowz/winsyn_riyal/2048.txt", "r") as f:
     #     img.save(f"{outdir}/rgb/{line}.jpg", "JPEG", quality=90)
     #     shutil.copyfile("/ibex/user/kellyt/windowz/winsyn_riyal/labels_8bit/" + line + ".png", f"{outdir}/labels/{line}.png")
 
-
+# fixed real, some synthetic
 for i in range(0, 12):
-    for z in range (5):
-        real = 2 ** i
 
-        print(f">>>> {real} {i}")
+    for z in range (5) if i <= 16 else [1]:
+        syn = 2 ** i
 
-        with open(f"{outdir}/mix_z{real}_{z}.txt", "w") as f:
+        print(f">>>> {syn} {i}")
+
+        with open(f"{outdir}/real_{syn}_{z}.txt", "w") as f:
 
             random.shuffle(rlines)
             random.shuffle(slines)
 
-            lines = [*slines]
-            lines.extend(rlines[:real])
+            lines = [*rlines]
+            lines.extend(slines[:syn])
 
             for line in lines:
                 line = line.strip()
                 f.write(f"{line}\n")
+
+# fixed synthetic, some real
+# for i in range(0, 12):
+#     for z in range (5):
+#         real = 2 ** i
+#
+#         print(f">>>> {real} {i}")
+#
+#         with open(f"{outdir}/mix_z{real}_{z}.txt", "w") as f:
+#
+#             random.shuffle(rlines)
+#             random.shuffle(slines)
+#
+#             lines = [*slines]
+#             lines.extend(rlines[:real])
+#
+#             for line in lines:
+#                 line = line.strip()
+#                 f.write(f"{line}\n")
+

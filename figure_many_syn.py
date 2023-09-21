@@ -36,13 +36,16 @@ def many_syn(rgbs, dataset_root, output_folder, folder_per_batch=False, res=512,
 
     colors = process_labels.colours_for_mode(process_labels.PRETTY)
 
-    for rgb_file in rgbs:
+    for rgb_file in rgbs [:20*6]:
 
         print (f"rendering crops from {rgb_file} @ {res}:{mode}")
 
         name = Path(rgb_file).with_suffix("").name
 
         label_file = Path(rgb_file).parent.parent.joinpath("labels").joinpath(Path(rgb_file).name )
+
+        if not os.path.exists(label_file):
+            continue
 
         print(f" {xpos} -- {ypos} ")
 
@@ -79,7 +82,6 @@ def many_syn(rgbs, dataset_root, output_folder, folder_per_batch=False, res=512,
 
         if ypos > 3000:
             svg_out.save()
-            return
 
     svg_out.save()
 
@@ -89,8 +91,8 @@ if __name__ == "__main__":
         dataset_root = r"C:\Users\twak\Downloads\snow_200"
         output_folder = r"C:\Users\twak\Downloads\ad_syn"
     else:
-        dataset_root = r"/home/kellyt/is/windowz/winsyn_snow"
-        output_folder = r"/home/kellyt/ad_synlab"
+        dataset_root = r"/home/twak/Downloads/winsyn_riyal_c"
+        output_folder = r"/home/twak/Downloads/iclr/syn_labs"
 
     os.makedirs(output_folder, exist_ok=True)
 
