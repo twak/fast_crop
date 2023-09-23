@@ -24,7 +24,8 @@ with open("/ibex/user/kellyt/winlab_5/4096.txt", "r") as f:
     #     shutil.copyfile("/ibex/user/kellyt/winlab_5/labels/" + line + ".png", f"{outdir}/labels/{line}.png")
 
 
-with open("/ibex/user/kellyt/windowz/winsyn_riyal/16384.txt", "r") as f:
+# with open("/ibex/user/kellyt/windowz/winsyn_riyal/16384.txt", "r") as f:
+with open("/ibex/user/kellyt/windowz/winsyn_riyal/2048.txt", "r") as f:
     slines = f.readlines()
     # for line in slines:
     #     print(line)
@@ -73,7 +74,7 @@ for i in [12]: # range(0, 12):
 
         print(f">>>> {real} {i}")
 
-        with open(f"{outdir}/mix_z{real}_{z}.txt", "w") as f:
+        with open(f"{outdir}/mix_{real}_{z}.txt", "w") as f:
 
             random.shuffle(rlines)
             random.shuffle(slines)
