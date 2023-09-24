@@ -64,14 +64,18 @@ if __name__ == "__main__":
 
     labels = []
 
-    labels.extend(glob.glob(os.path.join( sys.argv[1], "labels", "*.png")))
+    src_folder = sys.argv[2] # eg labels
+    dest_folder = sys.argv[3] # eg labels_8bit
+
+    labels.extend(glob.glob(os.path.join( sys.argv[1], src_folder, "*.png")))
 
     if True: # rgb to greyscale
-        out_dir = os.path.join(sys.argv[1], "labels_8bit")
+        out_dir = os.path.join(sys.argv[1], dest_folder)
         fn = to_greyscale_labels
-    else: # greyscale to rgb
-        fn = to_color_labels
-        out_dir = os.path.join(sys.argv[1], "labels_pretty")
+
+    # else: # greyscale to rgb fi me
+    #     fn = to_color_labels
+    #     out_dir = os.path.join(sys.argv[1], "labels_pretty")
 
     os.makedirs(out_dir, exist_ok=True)
 
