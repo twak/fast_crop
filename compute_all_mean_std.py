@@ -72,41 +72,48 @@ if __name__ == "__main__":
     _pool = concurrent.futures.ThreadPoolExecutor()
 
     os.makedirs("means", exist_ok=True)
-    for dir in [
-        "0cen" ,
-        "128spp" ,
-        "12cen" ,
-        "16spp" ,
-        "1spp" ,
-        "256spp" ,
-        "2cen" ,
-        "2spp" ,
-        "32spp" ,
-        "4cen" ,
-        "4spp" ,
-        "512spp" ,
-        "64spp" ,
-        "8cen" ,
-        "8spp" ,
-        "dayonly" ,
-        "dayonly_exposed" ,
-        "fixedsun" ,
-        "fixedsun_exposed" ,
-        "monomat" ,
-        "nightonly" ,
-        "nightonly_exposed" ,
-        "nobounce" ,
-        "nobounce_exposed" ,
-        "nosun" ,
-        "nosun_exposed" ,
-        "notransmission" ,
-        "rgb" ,
-        "rgb_albedo" ,
-        "rgb_depth" ,
-        "rgb_exposed"]:
-        _pool.submit(write_mean, dir)
+    for i in range ( 1, 10 ):
+    # for dir in [
+    #     "lvl1"
+    # ]:
+        _pool.submit(write_mean, f"lvl{i}")
 
 print ("all submitted!")
+
+# _d:
+# "0cen" ,
+#         "128spp" ,
+#         "12cen" ,
+#         "16spp" ,
+#         "1spp" ,
+#         "256spp" ,
+#         "2cen" ,
+#         "2spp" ,
+#         "32spp" ,
+#         "4cen" ,
+#         "4spp" ,
+#         "512spp" ,
+#         "64spp" ,
+#         "8cen" ,
+#         "8spp" ,
+#         "dayonly" ,
+#         "dayonly_exposed" ,
+#         "fixedsun" ,
+#         "fixedsun_exposed" ,
+#         "monomat" ,
+#         "nightonly" ,
+#         "nightonly_exposed" ,
+#         "nobounce" ,
+#         "nobounce_exposed" ,
+#         "nosun" ,
+#         "nosun_exposed" ,
+#         "notransmission" ,
+#
+#
+#         "rgb" ,
+#         "rgb_albedo" ,
+#         "rgb_depth" ,
+#         "rgb_exposed"
 
     # _c
     # for dir, _ in  [["1024ms","png"], ["256ms","png"], ["attribs","txt"], ["edges","png"], ["normals","png"],
