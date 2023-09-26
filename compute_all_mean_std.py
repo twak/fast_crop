@@ -72,11 +72,12 @@ if __name__ == "__main__":
     _pool = concurrent.futures.ThreadPoolExecutor()
 
     os.makedirs("means", exist_ok=True)
-    for i in range ( 1, 10 ):
+    # for i in range ( 1, 10 ):
+    for dir in ["24cen", "48cen"]:
     # for dir in [
     #     "lvl1"
     # ]:
-        _pool.submit(write_mean, f"lvl{i}")
+        _pool.submit(write_mean, dir)
 
 print ("all submitted!")
 
