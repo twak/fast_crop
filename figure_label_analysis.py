@@ -6,6 +6,7 @@ import itertools
 from matplotlib import font_manager
 import time
 from pathlib import Path
+import concurrent.futures
 
 CLASSES = ["none", "window pane", "window frame", "open-window", "wall frame", "wall", "shutter", "blind", "bars", "balcony", "misc object"]
 
