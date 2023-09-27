@@ -59,11 +59,27 @@ def find_roots(files):
 # dirs = [ ["rgb","png"], ["labels","png"], ["labels_8bit", "png"], ["attribs", "txt"]  ]
 # dirs = [ ["rgb","png"], ["labels","png"], ["labels_8bit", "png"], ["exposed", "png"], ["attribs", "txt"] ]
 
-dirs = \
-    [["1024ms","png"], ["256ms","png"], ["attribs","txt"], ["edges","png"], ["normals","png"],
-     ["rgb_albedo","png"], ["texture_rot","png"], ["128ms","png"], ["512ms","png"], ["col_per_obj","png"],
-     ["labels","png"], ["phong_diffuse","png"], ["rgb_depth","exr"], ["voronoi_chaos","png"], ["2048ms","png"], ["64ms","png"],
-     ["diffuse","png"], ["labels_8bit","png"], ["rgb","png"], ["rgb_exposed","png"] ]
+dirs = [["mono_profile","png"],
+["mono_profile_labels","png"],
+["no_rectangles","png"],
+["no_rectangles_labels","png"],
+["nosplitz","png"],
+["nosplitz_labels","png"],
+["only_rectangles","png"],
+["only_rectangles_labels","png"],
+["only_squares","png"],
+["only_squares_labels","png"],
+["single_window","png"],
+["single_windows_labels","png"],
+["wide_windows","png"],
+["wide_windows_labels","png"]]
+
+
+# dirs = \
+#     [["1024ms","png"], ["256ms","png"], ["attribs","txt"], ["edges","png"], ["normals","png"],
+#      ["rgb_albedo","png"], ["texture_rot","png"], ["128ms","png"], ["512ms","png"], ["col_per_obj","png"],
+#      ["labels","png"], ["phong_diffuse","png"], ["rgb_depth","exr"], ["voronoi_chaos","png"], ["2048ms","png"], ["64ms","png"],
+#      ["diffuse","png"], ["labels_8bit","png"], ["rgb","png"], ["rgb_exposed","png"] ]
 
 # ["canonical", "png"], ["canonical_albedo","png"],["canonical","png"],
 
