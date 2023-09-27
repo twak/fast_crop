@@ -94,7 +94,7 @@ def density_2d(dir):
         #     break
 
     # save all arrays (aimple, hv...) to disk
-    path = os.path.join(os.path.expanduser("~"), f"counts_{int (time.time() * 1000)}.npz" )
+    path = os.path.join(os.path.expanduser("~"), f"counts_{dir}_{int (time.time() * 1000)}.npz" )
     np.savez(path,
             simple=simple,
             counts=counts,
@@ -105,7 +105,7 @@ def density_2d(dir):
 
     return path
 
-def create_grid(dir):
+def create_grid(dir, name):
 
     maps = np.load(dir)
 
@@ -211,21 +211,30 @@ def create_grid(dir):
 
     # grid.save("/home/twak/Documents/windowz_balcony_stats/syn_balcony.png" )
 
-    grid.save ( Path(dir).parent.joinpath(f"integrals_{dir}.png") )
+    grid.save ( f"integrals_{name}.png" )
     # os.path.join ( os.path.expanduser("~"), f"grid_{int (time.time() * 1000)}.png") )
     # grid.save( os.path.join(Path(dir).parent, f"grid.png"))
     # grid.save( os.path.join(Path(dir).parent, f"grid_{int (time.time() * 1000)}.png"))
 
     return counts
 
+def both(dir):
+    npz = density_2d(dir)
+    create_grid(npz, dir)
+
+
 if __name__ == "__main__":
 
     _pool = concurrent.futures.ThreadPoolExecutor(max_workers=16)
-
+    futures = []
     # run for each command line argument
     for dir in sys.argv[1:]:
         print (f"processing {dir}")
-        _pool.submit(create_grid, dir)
+        futures.append ( _pool.submit(both, dir) )
+
+    concurrent.futures.wait(futures)
+
+    print("all submitted!")
 
 
     # path = density_2d("./labels_8bit")
