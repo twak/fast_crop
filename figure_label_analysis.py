@@ -8,6 +8,7 @@ import time
 from pathlib import Path
 import concurrent.futures
 import sys
+from pathlib import Path
 
 CLASSES = ["none", "window pane", "window frame", "open-window", "wall frame", "wall", "shutter", "blind", "bars", "balcony", "misc object"]
 
