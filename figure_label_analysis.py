@@ -228,6 +228,6 @@ if __name__ == "__main__":
         _pool.submit(create_grid, dir)
 
 
-    path = density_2d("./labels_8bit")
-    create_grid(path)
+    # path = density_2d("./labels_8bit")
+    # create_grid(path)
     # create_grid("/home/twak/Documents/windowz_balcony_stats/counts_1693924689181.npy.npz") #winlab5_counts_1693933123424.npy.npz")
