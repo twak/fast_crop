@@ -225,7 +225,7 @@ if __name__ == "__main__":
     # run for each command line argument
     for dir in sys.argv[1:]:
         print (f"processing {dir}")
-        _pool.submit(create_grid, path)
+        _pool.submit(create_grid, dir)
 
 
     path = density_2d("./labels_8bit")
