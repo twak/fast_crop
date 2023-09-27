@@ -29,12 +29,12 @@ def render_labels_per_crop( json_files, dataset_root, output_folder, folder_per_
 
     random.shuffle(json_files)
     os.makedirs(output_folder, exist_ok=True)
-    svg_out = svgwrite.Drawing(os.path.join(output_folder, "labels.svg"), profile='tiny')
+    svg_out = svgwrite.Drawing(os.path.join(output_folder, "labels2.svg"), profile='tiny')
 
     xpos = -1
     ypos = 0
 
-    colors = process_labels.colours_for_mode(process_labels.PRETTY)
+    colors = process_labels.colours_for_mode(process_labels.PRETTY_NO_DOOR)
 
     for json_file in json_files:
 
@@ -50,13 +50,10 @@ def render_labels_per_crop( json_files, dataset_root, output_folder, folder_per_
         with open(json_file, "r") as f:
             data = json.load(f)
 
-
-
         # crop to each defined region
         for crop_name, crop_data in data.items():
 
             print(f" {xpos} -- {ypos} ")
-
 
             crop_bounds = crop_data["crop"]
             photo_l = process_labels.open_and_rotate(os.path.join(dataset_root, photo_file), data)
@@ -75,11 +72,22 @@ def render_labels_per_crop( json_files, dataset_root, output_folder, folder_per_
 
             svg_out.add(svg_out.image(href=s_im_name, insert=(xpos, ypos), size=(photo.width * scale, photo.height * scale)))
 
-            for cat, polies in crop_data["labels"].items():
+            if isinstance(crop_data["labels"], dict):  # labels part 1, render each category separately
+                for cat, polies in crop_data["labels"].items():
+                    for poly in polies:
+                        poly = [tuple((x[0] * ls + l_xpos, x[1] * ls + ypos)) for x in poly]
+                        svg_out.add(svg_out.polygon(poly, fill=f'rgb({colors[cat][0]},{colors[cat][1]},{colors[cat][2]})'))
 
-                for poly in polies:
-                    poly = [tuple((x[0] * ls + l_xpos, x[1] * ls + ypos)) for x in poly]
-                    svg_out.add(svg_out.polygon(poly, fill=f'rgb({colors[cat][0]},{colors[cat][1]},{colors[cat][2]})'))
+            else:  # labels part 2, render overlapping labels in depth order
+                for catl in crop_data["labels"]:
+                    cat = catl[0]
+                    for poly in catl[1]:
+                        # poly = [tuple(x) for x in poly]
+                        poly = [tuple((x[0] * ls + l_xpos, x[1] * ls + ypos)) for x in poly]
+                        svg_out.add(svg_out.polygon(poly, fill=f'rgb({colors[cat][0]},{colors[cat][1]},{colors[cat][2]})'))
+                        # poly = [(crop_bounds[0] + a, crop_bounds[1] + b) for (a, b) in poly]
+                        # draw_label_photo.polygon(poly, colors[cat])
+                        # draw_label_trans.polygon(poly, (*(colors[cat]), 180), outline=(0, 0, 0), width=2)
 
             svg_out.add(svg_out.rect(
                 (l_xpos, ypos),
@@ -105,13 +113,15 @@ if __name__ == "__main__":
         dataset_root = r"E:\dataset"
         output_folder = r"C:\Users\twak\Downloads\ad_labels"
     else:
-        dataset_root = r"/datawaha/cggroup/kellyt/archinet_backup/complete_2401/data"
-        output_folder = r"/datawaha/cggroup/kellyt/iccv_add_mat/labels"
+        dataset_root = r"/media/twak/Saudi Data Raid/archinet_backup/data"
+        output_folder = r"/home/twak/Downloads"
 
     os.makedirs(output_folder, exist_ok=True)
 
     json_src = []
+
     json_src.extend(glob.glob(os.path.join(dataset_root, "metadata_window_labels", "*", "*.json")))
+    json_src.extend(glob.glob(os.path.join(dataset_root, "metadata_window_labels_2", "*", "*.json")))
 
     np_data = None  # []
 

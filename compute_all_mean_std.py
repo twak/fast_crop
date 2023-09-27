@@ -14,8 +14,6 @@ import concurrent.futures
 
 def write_mean(dir, count=2048):
 
-
-
     print(f"  == {dir} == ")
 
     out_file = os.path.join(Path(dir).parent, "means", dir + ".npz")
@@ -73,7 +71,7 @@ if __name__ == "__main__":
 
     os.makedirs("means", exist_ok=True)
     # for i in range ( 1, 10 ):
-    for dir in ["24cen", "48cen"]:
+    for dir in ["0cen", "3cen", "6cen", "24cen"]:
     # for dir in [
     #     "lvl1"
     # ]:

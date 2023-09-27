@@ -31,6 +31,7 @@ UGLY   = 1
 GREY   = 2
 PRETTY_FILMIC = 3
 GREY_NO_DOOR = 4
+PRETTY_NO_DOOR = 8
 
 COLOR_MODE = GREY
 
@@ -47,7 +48,7 @@ RAW_EXTS = ["CRW", "CR2", "CR3", "DNG", "RAW", "RW2", "ARW", "NEF", "ERF", "RAF"
 
 def colours_for_mode (mode):
 
-    global PRETTY, UGLY, GREY
+    global PRETTY, UGLY, GREY, PRETTY_NO_DOOR
     colors = {}
 
     if mode == PRETTY: # pretty colors
@@ -66,6 +67,23 @@ def colours_for_mode (mode):
         colors["misc object"]  = (174, 233, 174)
         colors["roof"]         = (167, 167, 167)
         colors["door-pane"]    = (124, 200, 185)
+
+    if mode == PRETTY_NO_DOOR: # pretty colors
+        colors["none"]         = (255, 255, 255)
+        colors["window pane"]  = (135, 170, 222)
+        colors["window frame"] = (255, 128, 128)
+        colors["open-window"]  = (0, 0, 0)
+        colors["wall frame"]   = (233, 175, 198)
+        colors["wall"]         = (231, 231, 231)
+        colors["door"]         = (255, 128, 128)
+        colors["shutter"]      = (255, 153,  85)
+        colors["blind"]        = (255, 230, 128)
+        colors["bars"]         = (90,   90,  90)
+        colors["balcony"]      = (222, 170, 135)
+        colors["misc object"]  = (174, 233, 174)
+        colors["roof"]         = (255, 255, 255)
+        colors["door-pane"]    = (255, 128, 128)
+
 
     # if mode == PRETTY_FILMIC: # pretty colors if i forgot to set blender's color management view transform
     #     colors["none"]         = (255, 255, 255)
