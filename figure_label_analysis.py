@@ -208,13 +208,22 @@ def create_grid(dir):
 
     # grid.save("/home/twak/Documents/windowz_balcony_stats/syn_balcony.png" )
 
-    grid.save ( os.path.join ( os.path.expanduser("~"), f"grid_{int (time.time() * 1000)}.png") )
+    grid.save ( Path(dir).parent.joinpath(f"{dir}.png") )
+    # os.path.join ( os.path.expanduser("~"), f"grid_{int (time.time() * 1000)}.png") )
     # grid.save( os.path.join(Path(dir).parent, f"grid.png"))
     # grid.save( os.path.join(Path(dir).parent, f"grid_{int (time.time() * 1000)}.png"))
 
     return counts
 
 if __name__ == "__main__":
+
+    _pool = concurrent.futures.ThreadPoolExecutor(max_workers=16)
+
+    # run for each command line argument
+    for dir in sys.argv[1:]:
+        print (f"processing {dir}")
+        _pool.submit(create_grid, path)
+
 
     path = density_2d("./labels_8bit")
     create_grid(path)
