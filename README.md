@@ -18,10 +18,10 @@ Tom's collections of scrips for dataset wrangling the [WinSyn dataset](https://g
     * scripts used to create the figures for the paper.
 * [fast_crop.py](https://github.com/twak/fast_crop/blob/master/fast_crop.py)
     * the interactive tool used to create the metadata_single_elements folder. Allows windows (and other things) to be annotated. See below for details.
-    * the _tags.py_ describes the different types of rectangular crops that may be annotated. Only the window classes are reliably applied. The window subclasses  (glass_facade, church, shop, abnormal, windows) might not be so reliable. The other classes (façade, material, private) are quite irregular.
+    * the _tags.py_ describes the different types of rectangular crops that may be annotated. Only the window classes are reliably applied. The window subclasses  (`glass_facade`, `church`, `shop`, `abnormal`, `window`) are all types of windows, but the division might not be so reliable. The other classes (façade, material, private) are quite irregular.
     * the entire photo can also be annotated with 
-        * _deleted - _the photo has been deleted from the dataset due to poor quality, containing no windows, or only containing windows repeated elsewhere in the batch
-        * _rot90, rot180, rot270 _- the photo has been manually rotated before cropping (after any exif-encoded rotate has been applied).
+        * `deleted` - _the photo has been deleted from the dataset due to poor quality, containing no windows, or only containing windows repeated elsewhere in the batch
+        * `rot90`, `rot180`, `rot270`- the photo has been manually rotated before cropping (after any exif-encoded rotate has been applied).
 * build_locations.py
     * creates the metadata_location folder containing different sources. Currently in progress.
 * [summary.py](https://github.com/twak/fast_crop/blob/master/figure_summary.py), 
@@ -44,12 +44,13 @@ The interface is designed for throughput rather than comfort. The data is writte
 
 keys:
 
-* `F1` - show rectangle-class cheat sheet
-* `left` (or `space`), `right` - advance through the images in the folder. if you do not draw a rectangle, it will mark the whole photo as a window. To not include any rectangles, press `0` to ignore the photo entirely.
+* `left` (or `space`), `right` - advance through the images in the folder. if you do not draw a rectangle, it will mark the whole photo as a window. To not include any rectangles, press `0` to soft-delete the photo.
+* `r` rotate the image
 * mouse - draw rectangle. all new rectangles are currently given the `window` tag or the tags from the current rectangle.
+* `F1` - show rectangle-class cheat sheet
 * pink letters at top left: add/remove tags to the current rectangle or entire image
 * `up`, `down` - change the current rectangle
 * `backspace` - remove current rectangle
-* `c` - remove all rectangles from current photo.
+* `c` - clear all rectangles from current photo.
 * `0` - toggle soft delete/ignore (any marked rectangles will be ignored)
 * `z` - cycle cursor modes (crosshairs/zoom) 
