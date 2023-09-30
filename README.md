@@ -1,6 +1,34 @@
 # fast crop tool
 
-Tom's collections of scrips for dataset wrangling the [WinSyn dataset](https://github.com/twak/winsyn_metadata). 
+Tom's collections of scrips for dataset wrangling the [WinSyn dataset](https://github.com/twak/winsyn_metadata). Code is still a bit rough, with hard coded pathes etc... Some scripts need to be run from the `root` or `data directories`. Pull requests welcome.
+
+* [render_crops_and_labels.py](https://github.com/twak/fast_crop/blob/master/render_crops_and_labels.py) creates image + label datasets using the metadata_window_labels(_2) data.
+* [render_crops.py](https://github.com/twak/fast_crop/blob/master/render_crops.py) creates cropped rgb images from the metadata_single_elements data.
+* [build_website.py](https://github.com/twak/fast_crop/blob/master/build_website.py)
+    * creates a website showing photos and crops by batches, and the photo locations. This is output to the metadata_website folder, which can be hosted by a webserver (e.g., Apache).
+ (glass_facade, church, shop, abnormal, windows) might not be so reliable. The other classes (façade, material, private) are quite irregular.
+    * the entire photo can also be annotated with 
+        * _deleted - _the photo has been deleted from the dataset due to poor quality, containing no windows, or only containing windows repeated elsewhere in the batch
+        * _rot90, rot180, rot270 _- the photo has been manually rotated before cropping (after any exif-encoded rotate has been applied).
+* build_locations.py
+    * creates the metadata_location folder containing different sources.
+* [summary.py](https://github.com/twak/fast_crop/blob/master/figure_summary.py), 
+    * outputs various statistics for the whole dataset.
+* figure_many_xxx.py
+    * scripts used to create the figures for the paper.
+* [fast_crop.py](https://github.com/twak/fast_crop/blob/master/fast_crop.py)
+    * the interactive tool used to create the metadata_single_elements folder. Allows windows (and other things) to be annotated. See below for details.
+    * the _tags.py_ describes the different types of rectangular crops that may be annotated. Only the window classes are reliably applied. The window subclasses  (glass_facade, church, shop, abnormal, windows) might not be so reliable. The other classes (façade, material, private) are quite irregular.
+    * the entire photo can also be annotated with 
+        * _deleted - _the photo has been deleted from the dataset due to poor quality, containing no windows, or only containing windows repeated elsewhere in the batch
+        * _rot90, rot180, rot270 _- the photo has been manually rotated before cropping (after any exif-encoded rotate has been applied).
+* build_locations.py
+    * creates the metadata_location folder containing different sources. Currently in progress.
+* [summary.py](https://github.com/twak/fast_crop/blob/master/figure_summary.py), 
+    * outputs various statistics for the whole dataset.
+* figure_many_xxx.py
+    * scripts used to create the figures for the paper.
+
 
 ## [fast_crop](https://github.com/twak/fast_crop/blob/master/fast_crop.py)
 
