@@ -1,10 +1,10 @@
 # fast crop tool
 
-Tom's collections of scrips for dataset wrangling. 
+Tom's collections of scrips for dataset wrangling the [WinSyn dataset](https://github.com/twak/winsyn_metadata). 
 
-## crop_tool
+## [fast_crop](https://github.com/twak/fast_crop/blob/master/fast_crop.py)
 
-This is a custom tool to mark window rectangles in many photos quickly. You can also tag the rectangles with additional metadata. 
+This was the first tool in the repo and is what we used to mark window rectangles in many photos. You can also tag the rectangles with additional metadata. It was mainly engineered written to fast + hackable. 
 
 ```
 python crop_tool.py "C:\Downloads\dataset\twak_london_20220522"
