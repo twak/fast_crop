@@ -375,7 +375,7 @@ class ROI:
 
         pygame.font.init()
 
-        self.font = pygame.font.SysFont('unispacebold', 10)
+        self.font = pygame.font.SysFont('unispacebold', 24)
         if self.font is None:
             self.font = pygame.font.SysFont(pygame.font.get_default_font(), 10)
 
