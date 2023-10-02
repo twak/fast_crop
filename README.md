@@ -26,7 +26,7 @@ Tom's collections of scrips for dataset wrangling the [WinSyn dataset](https://g
     * creates the metadata_location folder containing different sources. Currently in progress.
 * [summary.py](https://github.com/twak/fast_crop/blob/master/figure_summary.py), 
     * outputs various statistics for the whole dataset.
-* figure_many_xxx.py
+* figure_xxx.py
     * scripts used to create the figures for the paper.
 
 
