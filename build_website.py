@@ -35,8 +35,8 @@ all_tags.append("no_meta")
 all_tags.append("mesh")
 
 
-batches = os.listdir(orig)
-# batches = ["tom_saffron_20220418"]
+# batches = os.listdir(orig)
+batches = ["tom_saffron_20220418"]
 
 # for batch in os.listdir(orig):
 #     all_tags.append(batch)
@@ -45,11 +45,18 @@ copyright = f"<p>All content &copy Peter Wonka all rights reserved; 2022-{ datet
 
 shutil.copyfile(os.path.join( Path(__file__).parent, "resources","favicon.png"), os.path.join(web_dir, "favicon.png"))
 
-map_dir = os.path.join(web_dir, "map")
-if os.path.exists(map_dir):
-    shutil.rmtree(map_dir)
+def copydir(source, dest, indent = 0):
+    """Copy a directory structure overwriting existing files"""
+    for root, dirs, files in os.walk(source):
+        if not os.path.isdir(root):
+            os.makedirs(root)
+        for each_file in files:
+            rel_path = root.replace(source, '').lstrip(os.sep)
+            dest_path = os.path.join(dest, rel_path, each_file)
+            shutil.copyfile(os.path.join(root, each_file), dest_path)
 
-shutil.copytree(os.path.join( Path(__file__).parent, "resources", "map" ), map_dir )
+map_dir = os.path.join(web_dir, "map")
+copydir(os.path.join( Path(__file__).parent, "resources", "map" ), map_dir )
 
 for metadata_type in os.listdir(dataset_root):  # entry in an md folder gets you a tag
     if metadata_type[0] != '.' and os.path.isdir(os.path.join(dataset_root, metadata_type)): # ignore git
