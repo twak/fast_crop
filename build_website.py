@@ -35,9 +35,9 @@ all_tags.append("no_meta")
 all_tags.append("mesh")
 
 
-# batches = os.listdir(orig)
-batches = ["tom_saffron_20220418"]
+batches = os.listdir(orig)
 
+# batches = ["tom_saffron_20220418"]
 # for batch in os.listdir(orig):
 #     all_tags.append(batch)
 
