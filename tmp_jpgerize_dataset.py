@@ -122,7 +122,7 @@ if __name__ == "__main__":
                     path = os.path.join(root, folder, f"{s}.{ext}")
 
                     if not os.path.exists(path):
-                        print(f"didn't find jpg {path}")
+                        print(f"didn't find jpg {path}: {root} {folder} {ext}")
 
                     # dest = os.path.join(out_dir, lbl_folder, folder)
                     # os.makedirs(dest, exist_ok=True)
