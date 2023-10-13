@@ -96,7 +96,7 @@ from PIL import Image
 
 if __name__ == "__main__":
 
-    out_dir = "riyal_jpg"
+    out_dir = "riyal_jpg_v0"
 
     with open (os.path.join("winsyn_riyal",  "16384.txt"), "r" ) as fp:
         splits16 = fp.read().split("\n")[:-1]
@@ -127,15 +127,16 @@ if __name__ == "__main__":
 
                     if not os.path.exists(path):
                         print(f"didn't find jpg {path}: {root} {folder} {ext}")
+                        continue
 
-                    # dest = os.path.join(out_dir, lbl_folder, folder)
-                    # os.makedirs(dest, exist_ok=True)
-                    #
-                    # if ext == "png":
-                    #     im = Image.open(path)
-                    #     im.save( os.path.join(dest, f"{s}.jpg", format="JPEG", quality=90) )
-                    # else: # txt and exr
-                    #     shutil.copy(path, os.path.join ( dest, f"{s}.{ext}" ) )
+                    dest = os.path.join(out_dir, lbl_folder, folder)
+                    os.makedirs(dest, exist_ok=True)
+
+                    if ext == "png":
+                        im = Image.open(path)
+                        im.save( os.path.join(dest, f"{s}.jpg", format="JPEG", quality=90) )
+                    else: # txt and exr
+                        shutil.copy(path, os.path.join ( dest, f"{s}.{ext}" ) )
 
                 for root, folder, ext, desc in lbls: # no compression on the labels
 
@@ -143,11 +144,11 @@ if __name__ == "__main__":
 
                     if not os.path.exists(path):
                         print(f"didn't find lbl {path}")
+                        continue
 
-                    # dest = os.path.join(out_dir, lbl_folder, folder)
-                    # os.makedirs(dest, exist_ok=True)
-                    # shutil.copy(path, os.path.join ( dest, f"{s}.{ext}" ) )
-
+                    dest = os.path.join(out_dir, lbl_folder, folder)
+                    os.makedirs(dest, exist_ok=True)
+                    shutil.copy(path, os.path.join ( dest, f"{s}.{ext}" ) )
 
             i += 1
             print(f"{count} files. {i} folders.")
