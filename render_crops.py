@@ -129,13 +129,15 @@ if __name__ == "__main__":
 
     photo_src.extend(glob.glob(r'./photos/*/*.jpg'))
 
+    resolution = 2048
+
     dataset_root = "."
 
     if platform != "win32":
         photo_src.extend(glob.glob(r'./photos/*/*.JPG'))
 
-    output_folder = f"./metadata_cook/dataset_cook_crops_2048px_{time.time()}/"
+    output_folder = f"./metadata_cook/dataset_cook_crops_{resolution}px_{time.time()}/"
 
     os.makedirs(output_folder, exist_ok=True)
 
-    render_crops(photo_src, output_folder, crop_mode="square_crop", resolution=2048, quality=90, sub_dirs=True)
+    render_crops(photo_src, output_folder, crop_mode="square_crop", resolution=resolution, quality=90, sub_dirs=True)

@@ -71,8 +71,8 @@ if __name__ == "__main__":
 
     os.makedirs("means", exist_ok=True)
     # for i in range ( 1, 10 ):
-    # for dir in ["0cen", "3cen", "6cen", "24cen"]:
-    for dir in ["mono_profile", "no_rectangles","nosplitz","only_rectangles","only_squares","single_window", "wide_windows" ]:
+    for dir in ["0cen", "3cen", "6cen", "12cen", "24cen", "48cen", "96cen"]:
+    # for dir in ["mono_profile", "no_rectangles","nosplitz","only_rectangles","only_squares","single_window", "wide_windows" ]:
     # for dir in [
     #     "lvl1"
     # ]:
