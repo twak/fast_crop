@@ -3,7 +3,7 @@ import shutil
 sixteen = [
     ([("winsyn_riyal", "labels_8bit", "png", "")],
     [("winsyn_riyal", "rgb", "png", "baseline color renders"),
-    ("winsyn_riyal", "attrib", "txt", "baseline attributes")] )
+    ("winsyn_riyal", "attribs", "txt", "baseline attributes")] )
 ]
 
 two = [
