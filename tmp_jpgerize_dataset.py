@@ -122,11 +122,11 @@ if __name__ == "__main__":
             for lbls, rgbs in z:
                 re.write(f"{i}_lbl : \n")
                 for root, folder, ext, desc in rgbs:
-                    re.write(f"  {folder} (n={len(splits)})\n")
+                    re.write(f"  {folder} (n={len(splits)}) {desc}\n")
                     if len (lbls) == 1:
                         re.write(f"    labels : {lbls[0][1]}\n")
                     else:
-                        re.write(f"    labels : {folder_labels}\n")
+                        re.write(f"    labels : {folder}_labels\n")
 
                 i += 1
 
@@ -171,13 +171,14 @@ if __name__ == "__main__":
 
                 for root, folder, ext, desc in lbls: # no compression on the labels
 
+
                     path = os.path.join(root, folder, f"{s}.{ext}")
 
                     if not os.path.exists(path):
                         print(f"didn't find lbl {path}")
                         continue
 
-                    dest = os.path.join(out_dir, lbl_folder, folder)
+                    dest = os.path.join(out_dir, lbl_folder, folder.replace("_8bit", "") )
                     os.makedirs(dest, exist_ok=True)
                     shutil.copy(path, os.path.join ( dest, f"{s}.{ext}" ) )
 
