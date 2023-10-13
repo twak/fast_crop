@@ -137,7 +137,7 @@ if __name__ == "__main__":
 
             lbl_folder = os.path.join(out_dir, f"{i}_lbl")
 
-            os.makedirs(os.path.join(out_dir, lbl_folder), exist_ok=True)
+            os.makedirs(lbl_folder, exist_ok=True)
             with open(os.path.join(lbl_folder, "all.txt"), "w") as fp:
                 for s in splits:
                     fp.write(f"{s}\n")
