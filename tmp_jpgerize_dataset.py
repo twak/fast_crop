@@ -134,6 +134,10 @@ if __name__ == "__main__":
 
                     if ext == "png":
                         im = Image.open(path)
+
+                        # convert to rgb
+                        im = im.convert("RGB")
+
                         im.save( os.path.join(dest, f"{s}.jpg"), format="JPEG", quality=90)
                     else: # txt and exr
                         shutil.copy(path, os.path.join ( dest, f"{s}.{ext}" ) )
