@@ -70,8 +70,9 @@ two = [
         ("winsyn_riyal_e", "lvl6", "png", ""),
         ("winsyn_riyal_e", "lvl7", "png", ""),
         ("winsyn_riyal_e", "lvl8", "png", ""),
-        ("winsyn_riyal_e", "lvl9", "png", "")] ),
+        ("winsyn_riyal_e", "lvl9", "png", "")] ) ]
 
+two_f = [
     ([
             ("winsyn_riyal_f", "no_rectangles_labels_8bit", "png", ""),
             ("winsyn_riyal_f", "only_squares_labels_8bit", "png", ""),
@@ -106,9 +107,12 @@ if __name__ == "__main__":
     with open(os.path.join("winsyn_riyal", "2048.txt"), "r") as fp: # read the splits for 'two'
         splits2 = fp.read().split("\n")[:-1]
 
+    with open(os.path.join("winsyn_riyal_f", "2048.txt"), "r") as fp: # read the splits for 'two'
+        splits2f = fp.read().split("\n")[:-1]
+
     i = 0
     count = 0
-    for splits, z in [(splits16, sixteen), (splits2, two)]:
+    for splits, z in [(splits16, sixteen), (splits2, two), (splits2f, two_f)]:
         for lbls, rgbs in z:
 
             for s in splits:
