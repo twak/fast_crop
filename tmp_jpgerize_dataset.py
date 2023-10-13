@@ -116,6 +116,7 @@ if __name__ == "__main__":
 
     i = 0
 
+    os.makedirs(out_dir, exist_ok=True)
     with open(os.path.join(out_dir, "readme.txt"), "w") as re:
         for splits, z in [(splits16, sixteen), (splits2, two), (splits2f, two_f)]:
             for lbls, rgbs in z:
