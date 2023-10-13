@@ -124,12 +124,11 @@ if __name__ == "__main__":
                 for root, folder, ext, desc in rgbs:
                     re.write(f"  {folder} (n={len(splits)}) {desc}\n")
                     if len (lbls) == 1:
-                        re.write(f"    labels : {lbls[0][1]}\n")
+                        re.write(f"    labels : {lbls[0][1].replace('_8bit', '')}\n")
                     else:
                         re.write(f"    labels : {folder}_labels\n")
 
                 i += 1
-
 
     i = 0
     count = 0
