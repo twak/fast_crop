@@ -99,45 +99,58 @@ if __name__ == "__main__":
 
     out_dir = "riyal_jpg"
 
-
-
     with open (os.path.join("winsyn_riyal",  "16384.txt"), "r" ) as fp:
-        splits = fp.read().split("\n")
+        splits16 = fp.read().split("\n")
 
     with open (os.path.join("winsyn_riyal",  "test.txt"), "r" ) as fp:
-        splits.append ( fp.read().split("\n") )
+        splits16.append ( fp.read().split("\n") )
 
+    with open(os.path.join("winsyn_riyal", "2048.txt"), "r") as fp: # read the splits for 'two'
+        splits2 = fp.read().split("\n")
 
     i = 0
-    for z in [sixteen, two]:
+    count = 0
+    for splits, z in [(splits16, sixteen), (splits2, two)]:
         for lbls, rgbs in z:
 
             for s in splits:
 
                 lbl_folder = os.path.join(out_dir, f"{i}_lbl")
+                count += 1
+
+                if not os.path.exists(path):
+                    print(f"didn't find jpg {path}")
 
                 for root, folder, ext, desc in rgbs:
 
                     path = os.path.join(root, folder, f"{s}.{ext}")
-                    dest = os.path.join(out_dir, lbl_folder, folder)
-                    os.makedirs(dest, exist_ok=True)
 
-                    if ext == "png":
-                        im = Image.open(path)
-                        im.save( os.path.join(dest, f"{s}.jpg", format="JPEG", quality=90) )
-                    else: # txt and exr
-                        shutil.copy(path, os.path.join ( dest, f"{s}.{ext}" ) )
+                    if not os.path.exists(path):
+                        print(f"didn't find jpg {path}")
+
+                    # dest = os.path.join(out_dir, lbl_folder, folder)
+                    # os.makedirs(dest, exist_ok=True)
+                    #
+                    # if ext == "png":
+                    #     im = Image.open(path)
+                    #     im.save( os.path.join(dest, f"{s}.jpg", format="JPEG", quality=90) )
+                    # else: # txt and exr
+                    #     shutil.copy(path, os.path.join ( dest, f"{s}.{ext}" ) )
 
                 for root, folder, ext, desc in lbls: # no compression on the labels
 
-                    dest = os.path.join(out_dir, lbl_folder, folder)
-                    os.makedirs(dest, exist_ok=True)
-                    shutil.copy(path, os.path.join ( dest, f"{s}.{ext}" ) )
+                    path = os.path.join(root, folder, f"{s}.{ext}")
+
+                    if not os.path.exists(path):
+                        print(f"didn't find jpg {path}")
+
+                    # dest = os.path.join(out_dir, lbl_folder, folder)
+                    # os.makedirs(dest, exist_ok=True)
+                    # shutil.copy(path, os.path.join ( dest, f"{s}.{ext}" ) )
+            print(f"{count} done sofa")
 
             i += 1
 
-        with open(os.path.join("winsyn_riyal", "2048.txt"), "r") as fp: # read the splits for 'two'
-            splits = fp.read().split("\n")
 
 
 
