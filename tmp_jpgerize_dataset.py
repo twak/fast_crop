@@ -1,5 +1,9 @@
 import shutil
 
+'''
+in which we translate from the post-submission mess into something the outside  world might understand.
+'''
+
 sixteen = [
     ([("winsyn_riyal", "labels_8bit", "png", "")],
     [("winsyn_riyal", "rgb", "png", "baseline color renders"),
@@ -111,15 +115,34 @@ if __name__ == "__main__":
         splits2f = fp.read().split("\n")[:-1]
 
     i = 0
+
+    with open(os.path.join(out_dir, "readme.txt"), "w") as re:
+        for splits, z in [(splits16, sixteen), (splits2, two), (splits2f, two_f)]:
+            for lbls, rgbs in z:
+                re.write(f"{i}_lbl : ")
+                for root, folder, ext, desc in rgbs:
+                    re.write(f"  {folder} length={len(splits)}\n")
+                    if len (lbls) == 1:
+                        re.write(f"    labels : {lbls[0][1]}\n")
+
+                i += 1
+
+
+    i = 0
     count = 0
+
     for splits, z in [(splits16, sixteen), (splits2, two), (splits2f, two_f)]:
         for lbls, rgbs in z:
 
+            lbl_folder = os.path.join(out_dir, f"{i}_lbl")
+
+            with open(os.path.join(lbl_folder, "all.txt"), "w") as fp:
+                for s in splits:
+                    fp.write(f"{s}\n")
+
             for s in splits:
 
-                lbl_folder = os.path.join(out_dir, f"{i}_lbl")
                 count += 1
-
 
                 for root, folder, ext, desc in rgbs:
 
@@ -156,11 +179,3 @@ if __name__ == "__main__":
 
             i += 1
             print(f"{count} files. {i} folders.")
-
-
-
-
-
-
-
-    # sn_split = os.path.join("winsyn_riyal", ""
