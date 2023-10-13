@@ -120,9 +120,9 @@ if __name__ == "__main__":
     with open(os.path.join(out_dir, "readme.txt"), "w") as re:
         for splits, z in [(splits16, sixteen), (splits2, two), (splits2f, two_f)]:
             for lbls, rgbs in z:
-                re.write(f"{i}_lbl : \n")
+                re.write(f"{i}_lbl (n={len(splits)}): \n")
                 for root, folder, ext, desc in rgbs:
-                    re.write(f"  {folder} (n={len(splits)}) {desc}\n")
+                    re.write(f"  {folder}: {desc}\n")
                     if len (lbls) == 1:
                         re.write(f"    labels : {lbls[0][1].replace('_8bit', '')}\n")
                     else:
