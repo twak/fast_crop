@@ -99,10 +99,10 @@ if __name__ == "__main__":
     out_dir = "riyal_jpg"
 
     with open (os.path.join("winsyn_riyal",  "16384.txt"), "r" ) as fp:
-        splits16 = fp.read().split("\n")
+        splits16 = fp.read().split("\n")[:-1]
 
     with open (os.path.join("winsyn_riyal",  "test.txt"), "r" ) as fp:
-        splits16.extend ( fp.read().split("\n") )
+        splits16.extend ( fp.read().split("\n")[:-1] )
 
     with open(os.path.join("winsyn_riyal", "2048.txt"), "r") as fp: # read the splits for 'two'
         splits2 = fp.read().split("\n")[:-1]
