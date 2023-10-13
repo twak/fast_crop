@@ -104,7 +104,7 @@ if __name__ == "__main__":
         splits16.append ( fp.read().split("\n") )
 
     with open(os.path.join("winsyn_riyal", "2048.txt"), "r") as fp: # read the splits for 'two'
-        splits2 = fp.read().split("\n")
+        splits2 = fp.read().split("\n")[:-1]
 
     i = 0
     count = 0
