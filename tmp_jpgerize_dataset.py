@@ -118,8 +118,6 @@ if __name__ == "__main__":
                 lbl_folder = os.path.join(out_dir, f"{i}_lbl")
                 count += 1
 
-                if not os.path.exists(path):
-                    print(f"didn't find jpg {path}")
 
                 for root, folder, ext, desc in rgbs:
 
