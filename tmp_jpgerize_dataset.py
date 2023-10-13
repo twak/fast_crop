@@ -76,7 +76,7 @@ two_f = [
     ([
             ("winsyn_riyal_f", "no_rectangles_labels_8bit", "png", ""),
             ("winsyn_riyal_f", "only_squares_labels_8bit", "png", ""),
-            ("winsyn_riyal_f", "no_splits_labels_8bit", "png", ""),
+            ("winsyn_riyal_f", "nosplitz_labels_8bit", "png", ""),
             ("winsyn_riyal_f", "only_rectangles_labels_8bit", "png", ""),
             ("winsyn_riyal_f", "single_window_labels_8bit", "png", ""),
             ("winsyn_riyal_f", "wide_windows_labels_8bit", "png", ""),
