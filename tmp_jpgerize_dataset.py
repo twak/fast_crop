@@ -83,7 +83,7 @@ two_f = [
             ("winsyn_riyal_f", "mono_profile_labels_8bit", "png", "")],
         [("winsyn_riyal_f", "no_rectangles", "png", ""),
         ("winsyn_riyal_f", "only_squares", "png", ""),
-        ("winsyn_riyal_f", "no_splits", "png", ""),
+        ("winsyn_riyal_f", "nosplitz", "png", ""),
         ("winsyn_riyal_f", "only_rectangles", "png", ""),
         ("winsyn_riyal_f", "single_window", "png", ""),
         ("winsyn_riyal_f", "wide_windows", "png", ""),
