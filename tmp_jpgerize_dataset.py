@@ -25,18 +25,16 @@ two = [
     ([("winsyn_riyal_d", "labels_8bit", "png", "")],
     [
         ("winsyn_riyal_d", "monomat", "png", "All procedural materials replaced with a single one for each object-class. No variation in the procedural material."),
-        ("winsyn_riyal_d", "night_only", "png", ""),
-        ("winsyn_riyal_d", "night_only_exposed", "png", ""),
-        ("winsyn_riyal_d", "no_sun", "png", ""),
-        ("winsyn_riyal_d", "no_sun_exposed", "png", ""),
-        ("winsyn_riyal_d", "no_sun", "png", ""),
-        ("winsyn_riyal_d", "no_sun_exposed", "png", ""),
-        ("winsyn_riyal_d", "no_bounce", "png", ""),
-        ("winsyn_riyal_d", "no_bounce_exposed", "png", ""),
-        ("winsyn_riyal_d", "fixed_sun", "png", ""),
-        ("winsyn_riyal_d", "fixed_sun_exposed", "png", ""),
-        ("winsyn_riyal_d", "day_only", "png", ""),
-        ("winsyn_riyal_d", "day_only_exposed", "png", "")]),
+        ("winsyn_riyal_d", "nightonly", "png", ""),
+        ("winsyn_riyal_d", "nightonly_exposed", "png", ""),
+        ("winsyn_riyal_d", "nosun", "png", ""),
+        ("winsyn_riyal_d", "nosun_exposed", "png", ""),
+        ("winsyn_riyal_d", "nobounce", "png", ""),
+        ("winsyn_riyal_d", "nobounce_exposed", "png", ""),
+        ("winsyn_riyal_d", "fixedsun", "png", ""),
+        ("winsyn_riyal_d", "fixedsun_exposed", "png", ""),
+        ("winsyn_riyal_d", "dayonly", "png", ""),
+        ("winsyn_riyal_d", "dayonly_exposed", "png", "")]),
 
     # circle radius tba
     ([
@@ -140,14 +138,15 @@ if __name__ == "__main__":
                     path = os.path.join(root, folder, f"{s}.{ext}")
 
                     if not os.path.exists(path):
-                        print(f"didn't find jpg {path}")
+                        print(f"didn't find lbl {path}")
 
                     # dest = os.path.join(out_dir, lbl_folder, folder)
                     # os.makedirs(dest, exist_ok=True)
                     # shutil.copy(path, os.path.join ( dest, f"{s}.{ext}" ) )
-            print(f"{count} done sofa")
+
 
             i += 1
+            print(f"{count} files. {i} folders.")
 
 
 
