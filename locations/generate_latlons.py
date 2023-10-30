@@ -8,7 +8,6 @@ from xml.etree import ElementTree as ET
 import pandas as pd
 
 KEYS = ['Source', 'Date', 'Time', 'Latitude', 'Longitude', 'Country', 'City']
-SOURCES = ['camera', 'track', 'coarse']
 
 def get_json_data(json_file):
     json_file = open(json_file)
@@ -23,21 +22,7 @@ def get_json_data(json_file):
 
     return lat, lon
 
-def get_json_source(json_file):
-    json_file = open(json_file)
-    json_data = json.load(json_file)
-           
-    for key, value in json_data.items():        
-        if key == KEYS[0]:
-            source = value
-            break        
-    return source
-    
-
 def get_html_data(folder_name, image_name):
-
-    image_name = image_name.replace(".json", "") # added by tom...?
-
     html_file = image_name + ".html"
     html_file = os.path.join("..", folder_name, html_file)
     #html_file = html_file.replace("\\","/")
@@ -70,12 +55,12 @@ def process_json_files(folder, js_data):
         .format(no_files, folder))
     folders = folder.split(os.sep)
     folder_name = folders[-1]
-    #print(folder_name)
+    print(folder_name)
     index = 0
     for json_file in json_files:        
         lat, lon = get_json_data(json_file)
         base_name = os.path.basename(json_file)        
-        
+        base_name = os.path.splitext(base_name)[0]
         #html_file = base_name + ".html" 
         #image_file = base_name + ".JPG"               
         #print(base_name, html_file, image_file, lat, lon)
@@ -87,6 +72,7 @@ def process_json_files(folder, js_data):
 
         print("Processed {0} out of {1} images.". 
                 format(index, no_files), end='\r')
+    return js_data
 
 def write_js_data(js_data, out_file):
     out_data =  open(out_file, 'w')
@@ -101,78 +87,52 @@ def write_js_data(js_data, out_file):
         out_data.write('%s' % data[2])
         out_data.write("\"],\n")
         
-        
     out_data.write("];")
     out_data.close()
 
     print("Written data to file, ", out_file)
 
-def get_stats(folder, no_cameras, no_tracks, no_coarses):
-    json_files = sorted(glob.glob(folder + "/**.json"))
-    for json_file in json_files: 
-        source = get_json_source(json_file)            
-        
-        if source == SOURCES[0]:
-            no_cameras = no_cameras  + 1            
-
-        if source == SOURCES[1]:
-            no_tracks = no_tracks  + 1            
-
-        if source == SOURCES[2]:
-            no_coarses = no_coarses  + 1            
-    
-    return no_cameras, no_tracks, no_coarses
     
 if __name__ == "__main__":    
 
-    # parser = argparse.ArgumentParser(
-    #             description="Generate Location Lat, Lons, links \
-    #                     from JSON files.")
-    # 
-    # # Parse Images data path
-    # parser.add_argument("--path", type=str,
-    #                     help="Locations path.")
-    # 
-    # # Parse Images data path
-    # parser.add_argument("--out_file", type=str,
-    #                     help="Output File.")
-    # 
-    # args = parser.parse_args()
-    # Parse command line value to in path
-    # path = args.path
+    parser = argparse.ArgumentParser(
+                description="Generate Location Lat, Lons, links \
+                        from JSON files.")
 
-    out_file = "/home/twak/archinet_backup/data/metadata_website/map/latlons_data.js" # args.out_file
+    # Parse Images data path
+    parser.add_argument("--path", type=str,
+                        help="JSONs locations path.")
+
+    # Parse Images data path
+    parser.add_argument("--out_file", type=str,
+                        help="Output in JS file.")
+    
+    args = parser.parse_args()
+    # Parse command line value to in path
+    path = args.path
+
+    out_file = args.out_file
 
     is_process = True
 
-    # if not os.path.exists(path):
-    #     print("Locations path, {0} does not exists.".format(path))
-    #     is_process = False
+    if not os.path.exists(path):
+        print("Locations path, {0} does not exists.".format(path))
+        is_process = False
 
     if is_process:
         print("Process Futher.")
 
         # Get directories from the given path
-        # folders = [f.path for f in os.scandir(path) if f.is_dir()]
-        # folders = "/home/twak/archinet_backup/data/metadata_location/tom_cams_20220418"]
-        folders = glob.glob("/home/twak/archinet_backup/data/metadata_location/tom*")
+        folders = [f.path for f in os.scandir(path) if f.is_dir()]
         folders = sorted(folders)
         js_data = []
         index = 0
-        no_cameras = 0
-        no_tracks = 0
-        no_coarses = 0
         for folder in folders:  
-            print("Generating lat, lon data for ", folder)          
-            process_json_files(folder, js_data)
-            no_cameras, no_tracks, no_coarses = \
-                    get_stats(folder, no_cameras, no_tracks, no_coarses)         
-            print("\nProcessed lat, lon data for ", folder)
+            print("Generating java script data for ", folder)          
+            js_data = process_json_files(folder, js_data)  
+            print("Processed java script data for ", folder)
+            
 
-        print("No. of Lat Lons = ", len(js_data))
-        print("No. of Source: camera :", no_cameras)
-        print("No. of Source: track :", no_tracks)
-        print("No. of Source: coarse :", no_coarses)
         write_js_data(js_data, out_file)
                             
         

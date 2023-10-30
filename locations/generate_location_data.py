@@ -1,22 +1,21 @@
 import os
 import argparse
-import math
 from math import isnan
 
-import json
+#import json
 import pandas as pd
 import numpy as np
 
-from geopy.geocoders import Nominatim
-from functools import lru_cache
-
+#from geopy.geocoders import Nominatim
+from geopy.geocoders import Photon
 
 COLUMN_NAMES = ['batch', 'country', 'city', 'lat', 'lon', 'time offset']
 
 
-@lru_cache(maxsize=None)
 def get_lat_lon(city):
-    geolocator = Nominatim(user_agent="geoapiExercises")    
+    #print(city)
+    #geolocator = Nominatim(user_agent="geoapiExercises")    
+    geolocator = Photon(user_agent="measurements")
     lat_lon = geolocator.geocode(city)    
     lat = lat_lon.latitude    
     lon = lat_lon.longitude
@@ -40,9 +39,12 @@ def read_csv_file(csv_file):
         path = row[col_names[0]]
         city = row[col_names[2]] 
         country = row[col_names[3]]        
-        time_offset = row[col_names[12]]         
-        if isnan(time_offset):
-            time_offset = 0
+        time_offset = row[col_names[12]]  
+        #print(city, country)
+        if city == "misc" and country == "misc":
+            continue
+        #if isnan(time_offset):
+        #    time_offset = 0
         #print(time_offset)                 
         row_data = [path, country, city, time_offset ]
         
@@ -54,7 +56,7 @@ def write_json_data(json_file, data):
 
     df = pd.DataFrame(data, columns=COLUMN_NAMES) 
     #df.to_json(json_file, orient='records', lines = True)
-    df.to_json(json_file, orient='records', indent=2)
+    df.to_json(json_file, orient='records')
 
     #with open(json_file, "w") as file:
         #json.dump(data, file)
@@ -114,7 +116,6 @@ if __name__ == "__main__":
             print("Input file csv file, {0} does not have extension .csv.".
                 format(csv_file))     
     else:
-        print (f"can't find {csv_file}")
         is_process = False
 
     if is_process:
@@ -144,7 +145,6 @@ if __name__ == "__main__":
         #print(json_data[0])
         data_dicts = []
         for index in range(no_rows):
-            print (f"processing row {index}")
             row_data = csv_data[index]            
             if isinstance(row_data[0], str):
                 data_dict = generate_dict_data(row_data)                

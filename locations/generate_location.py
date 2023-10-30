@@ -94,6 +94,10 @@ def dec_one_second(time_str):
 
     # Decrement time by one second
     time_dec =  time_time - timedelta(hours=0, minutes = 0, seconds = 1)   
+    time_dec = str(time_dec)
+    if (',' in time_dec):
+        time_dec_split = time_dec.split(',')
+        time_dec = time_dec_split[1].strip()
 
     time_dec = datetime.strptime(str(time_dec), "%H:%M:%S").time()
 
@@ -108,6 +112,11 @@ def inc_one_second(time_str):
 
     # Increment time by one second
     time_inc =  time_time + timedelta(hours=0, minutes = 0, seconds = 1)   
+    time_inc = str(time_inc)
+    if (',' in time_inc):
+        time_inc_split = time_inc.split(',')
+        time_inc = time_inc_split[1].strip()
+
     time_inc = datetime.strptime(str(time_inc), "%H:%M:%S").time()
     return (time_inc)
 
@@ -316,18 +325,35 @@ def conv_time_stamp(timestamp):
     return time_stamp
 
 def conv_timeoffset(offset):
-    hours = offset / 60
-    minutes = offset % 60
-    hours = math.floor(hours)
+    #hours = offset / 60
+    #minutes = offset % 60
+    #hours = math.floor(hours)
+
+    is_negative = False
+
+    if (offset < 0):
+        is_negative = True
+        offset = abs(offset)
+
+    hours, minutes = divmod(offset, 60)
+
+    if (is_negative):
+        hours = hours * -1
+
     if hours >= 0 and hours < 10:
         hours = "0" + str(hours)
+    elif hours < 0:
+        hours = "-0" + str(abs(hours))
     else:
         hours = str(hours)
+
     if minutes < 10:
         minutes = "0"+ str(minutes)
     else:
         minutes = str(minutes)
+
     time_offset = hours + ":"+ minutes + ":00"
+
     return time_offset 
 
 def get_prev_row_data(df, date_org, utc_time):
@@ -519,13 +545,14 @@ def get_gps_info(image_file):
         if tag == 'GPS GPSDate':    
             date_stamp = exifread.utils.ord_(tags['GPS GPSDate']).values
 
-    if time_stamp == None:
+    if time_stamp == None:        
         tag = 'EXIF DateTimeOriginal'
-        datetime_original = exifread.utils.ord_(tags[tag]).values
+        if (tag in tags.keys()):
+            datetime_original = exifread.utils.ord_(tags[tag]).values
 
-        # Split the Date and Time
-        date_time_split = datetime_original.split(" ")
-        time_stamp = date_time_split[1]
+            # Split the Date and Time
+            date_time_split = datetime_original.split(" ")
+            time_stamp = date_time_split[1]
 
 
     if time_stamp and date_stamp:
@@ -539,12 +566,17 @@ def get_gps_info(image_file):
 def get_gps_info_df(image_file, df, main_lat = 0.0, main_lon = 0.0, 
         main_time_offset = 0):
     gps_info = []
-
     no_traces = len(df)
-    
+
+    #print("Image File =", image_file)    
     #print("No. traces = ", no_traces)
+
+    tags = []
     with open(image_file, 'rb') as src:
-         tags = exifread.process_file(src, details=True)
+        try:
+            tags = exifread.process_file(src, details=True)
+        except:
+            print("Probalem while reading EXIF tag with file,",src)
 
     #for tag in tags.keys():
     #    print(tag, tags[tag])
@@ -572,22 +604,40 @@ def get_gps_info_df(image_file, df, main_lat = 0.0, main_lon = 0.0,
         source_type = 2
         return source_type, gps_info
 
-    '''
+    
     # Get the Offset Time Original data
     is_offset = False
-    for tag in tags.keys():
-        if tag == 'MakerNote Tag 0x0035':
-            time_offset = exifread.utils.ord_(tags[tag]).values            
-            time_offset = conv_timeoffset(time_offset[1]) 
-            #print("Maker Note Offset = ", time_offset)
-            is_offset = True           
-        elif tag == 'EXIF OffsetTimeOriginal':            
-            time_offset = exifread.utils.ord_(tags[tag]).values
-            # Add 00 to make consistent with second value.
-            time_offset = time_offset + ":00"
-            #print("EXIF Offset = ", time_offset)
-            is_offset = True
+    if main_time_offset != 0.0:
+        #print("Consider Manual Offset")
+        time_offset = conv_timeoffset(main_time_offset)
+        #print(time_offset)
+        is_offset = True
 
+    if not is_offset:
+        for tag in tags.keys():
+            if tag == 'MakerNote Tag 0x0035':
+                time_offset = exifread.utils.ord_(tags[tag]).values           
+                #print(time_offset)
+                time_offset = conv_timeoffset(time_offset[1]) 
+                #print("Maker Note Offset = ", time_offset)
+                is_offset = True
+                break
+
+            if tag == 'EXIF OffsetTimeOriginal':            
+                time_offset = exifread.utils.ord_(tags[tag]).values
+                # Add 00 to make consistent with second value.
+                time_offset = time_offset + ":00"
+                #print("EXIF Offset = ", time_offset)
+                is_offset = True
+                break
+
+    if not is_offset:
+        source = "coarse"
+        gps_info = create_gps_info(source, str(date_original),
+                    str(time_original), main_lat, main_lon)
+        source_type = 2
+        return source_type, gps_info
+    '''
     # There is no offset
     if not is_offset:
         time_offset = get_time_offset(main_lat, main_lon)        
@@ -596,7 +646,8 @@ def get_gps_info_df(image_file, df, main_lat = 0.0, main_lon = 0.0,
         #print(time_offset) 
 
     '''
-    time_offset = conv_timeoffset(main_time_offset)
+    #print(time_offset, is_offset)
+    #time_offset = conv_timeoffset(main_time_offset)
     #print(time_offset)    
     # Get the UTC by adding or substracting time original and offset            
     if (time_offset[0] == "-"):
@@ -694,7 +745,7 @@ def write_location(image_file, output_path, data):
 
     return 
 
-def generate_location(data, overwrite=False):
+def generate_location(data):
     src_path = data[0]
     dest_path = data[1]
     country = data[2]
@@ -703,25 +754,18 @@ def generate_location(data, overwrite=False):
     lon = float(data[5])
     time_offset = int(data[6])
     print(data)
-
-        
-    
+  
     dest_path = os.path.abspath(dest_path)
     print("Destination Path = ", dest_path)
-    if not overwrite and os.path.exists(dest_path):
-        print("Meta data exists for ", dest_path)
-    else:
-    
-        os.makedirs(dest_path, exist_ok=True)
-        print("Created Meta data location path, {0}.".format(dest_path))
+    if not os.path.exists(dest_path): 
+        os.makedirs(dest_path)
+        print("Created Meta data location path, ", dest_path)
 
+    if os.path.exists(dest_path):
         # Get the image files:
         image_files = []
-        ext = '.jpg'
-        image_files = sorted(glob.glob(src_path + "/" '*' + ext.upper()))
-        no_images = len(image_files)
-        if no_images == 0:
-            image_files = sorted(glob.glob(src_path + "/" '*' + ext))
+        for exn in ("**.jpg", "**.JPG"):
+            image_files.extend(sorted(glob.glob(src_path+"/"+exn)))
         
         no_images = len(image_files)
         print("No. of Image files = ", no_images)
@@ -743,6 +787,7 @@ def generate_location(data, overwrite=False):
             no_traces = len(df)
             print("No. of Traces = ", no_traces)
         '''
+        
         # Differet souce type counters.               
         source_camera = 0
         source_track = 0
@@ -789,50 +834,48 @@ def generate_location(data, overwrite=False):
     
 if __name__ == "__main__":    
 
-    # parser = argparse.ArgumentParser(
-    #             description="Generate Location Data from route files.")
-    #
-    # # Parse Images data path
-    # parser.add_argument("--root_path", type=str,default="",
-    #                     help="root path name.")
-    #
-    # # Parse Image data path
-    # parser.add_argument("--image", type=str, default = "",
-    #                     help="Image file path.")
-    #
-    # # Parse Config file path
-    # parser.add_argument("--json_file", type=str, default = "",
-    #                     help="Json file path.")
-    #
-    # # Parse city
-    # parser.add_argument("--city", type=str, nargs='+', default = "",
-    #                     help="City of the images.")
-    #
-    # # Overwirte data
-    # parser.add_argument("--is_overwrite", default = False,
-    #         type=lambda x: bool(strtobool(str(x).strip())))
+    parser = argparse.ArgumentParser(
+                description="Generate Location Data from route files.")
+
+    # Parse Images data path
+    parser.add_argument("--root_path", type=str,default="",
+                        help="root path name.")
+
+    # Parse Image data path
+    parser.add_argument("--image", type=str, default = "",
+                        help="Image file path.")
     
-    # args = parser.parse_args()
+    # Parse Config file path
+    parser.add_argument("--json_file", type=str, default = "",
+                        help="Json file path.")
+    
+    # Parse city
+    parser.add_argument("--city", type=str, nargs='+', default = "",
+                        help="City of the images.")
+
+    # Overwirte data
+    parser.add_argument("--is_overwrite", default = False, 
+            type=lambda x: bool(strtobool(str(x).strip()))) 
+    
+    args = parser.parse_args()
 
     # Parse command line value to root path
-    root_path = "/home/twak/archinet_backup/data" # args.root_path
+    root_path = args.root_path
 
     # Parse command line value to image file
-    # image_file = args.image
+    image_file = args.image    
 
     # Parse command line value to Json file
-    json_file = "/home/twak/archinet_backup/data/metadata_location/locations_tmp.json" # args.json_file
+    json_file = args.json_file
 
     # Parse command line value to City file
-    # city = args.city
-    # city = " ".join(city)
+    city = args.city
+    city = " ".join(city)
 
-    is_overwrite = True # args.is_overwrite
+    is_overwrite = args.is_overwrite
     print("Is Overwrite =", is_overwrite)
 
     is_process = True
-
-    image_file = ""
 
     if is_process:
         print("Process Futher.")
@@ -915,7 +958,7 @@ if __name__ == "__main__":
                     row_data = json_data[index]
                     print(row_data)
                     print("Generating location data for ", row_data[0])
-                    generate_location(row_data, overwrite=is_overwrite)
+                    generate_location(row_data)
                     print("\nGenerated location data for ", row_data[0])
                 
         
