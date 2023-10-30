@@ -1,0 +1,22 @@
+Hello Tom,I generated new latlons_data.js file for mapping.The following are the instructions:
+    1. Download the .csv file from Google.
+        1. I made three changes to the downloaded csv file since the city was not found in the geopy.geocoders import Photon API:
+        2. LA to Los Angeles in row no. 49,72
+        3. NY to New York in row no. 68, 69
+        4. Assorted to Casablanca in row no. 79
+    1. Generate locations_data.json  on Windows
+        1. (D:\KAUST\projects\datasets\windows\env) D:\KAUST\projects\datasets\windows>python src\generate_location_data.py --csv_file "test\archinet batch index - manual_12Oct2023.csv" --json_file test\locations_data.json
+        2. We need to execute this command on a Windows machine, on the Miami server there is a block to access geopy package.
+        3. Export the locations_data.json to /mnt/vision/data/archinet/data/metadata_location/
+    1. Generate GPS location data for each batch
+        1. On the Miami Server, generate the GPS location data for each batch, defined in locations_data.json.
+        2. It's a timing-consuming process (takes 8 to 10 hours from the current data), we can explore thread implementation.
+        3. (/home/prem/windows/env) prem@cec-femianjc-lambda:~/windows/src$ python generate_location.py --root_path /mnt/vision/data/archinet/data/ --json_file /mnt/vision/data/archinet/data/metadata_location/locations_data.json
+    1. Generate statistics, this is optional.
+        1. We get statistics of the GPS location data.
+        2. (/home/prem/windows/env) prem@cec-femianjc-lambda:~/windows/src$ python generate_latlon_stats.py --path /mnt/vision/data/archinet/data/metadata_location/ --out_file ../test/latlon_sources_stats_13Oct2023.csv
+    1. Generate java script file
+        1. (/home/prem/windows/env) prem@cec-femianjc-lambda:~/windows/src$ python generate_latlons.py --path /mnt/vision/data/archinet/data/metadata_location/ --out_file /mnt/vision/data/archinet/data/metadata_website/map/latlons_data.js
+
+Following are the Python script files:
+Sharing the stats file for your reference.Let me know if you need more information.
