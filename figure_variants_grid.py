@@ -156,6 +156,7 @@ def create_image_grid(root_directory):
 
 
     x_offset = 0
+    y_offset = 0
 
     for dataset, name, _ in styles:
 
