@@ -193,7 +193,7 @@ def create_image_grid(root_directory):
             x_offset += base_image_width
         y_offset += base_image_width
 
-
+    svg_out.save()
     output_path = os.path.join(root_directory, "image_grid.jpg")
     grid_image.save(output_path)
 
