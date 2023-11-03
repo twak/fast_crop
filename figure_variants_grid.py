@@ -171,7 +171,6 @@ def create_image_grid(root_directory):
 
         for split in splits[:num]:
 
-            image_file = os.path.join ( dataset, name,  )
             print (f"{name}: {split}.{ext}")
 
             # ext = os.path.splitext(image_file)[1]
@@ -186,7 +185,7 @@ def create_image_grid(root_directory):
                 base_image = render_attribs(image_filef)
 
             base_image = base_image.resize((base_image_width, base_image_height)).convert('RGB')
-            im_filename = f"{dataset}_{name}_{image_file}.jpg"
+            im_filename = f"{dataset}_{name}_{split}_{ext}.jpg"
             base_image.save(os.path.join(svg_out_dir, im_filename), format="JPEG")
 
             svg_out.add(svg_out.image(href=im_filename, insert=(x_offset, y_offset), size=(base_image_width, base_image_width)))
