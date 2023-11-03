@@ -71,7 +71,7 @@ def create_image_grid(root_directory):
     random.shuffle(sf)
 
     styles = [
-        (b, "rgb", "png", sa, 32.58),
+        (b, "rgb", "png", sa, 32.582),
         (b, "labels", "png", sa, 6.481),
         # (b, "attribs", "txt"),
         (b, "rgb_exposed", "png", sa, 32.409),
@@ -84,7 +84,7 @@ def create_image_grid(root_directory):
         (b, "edges", "png", sa, 24.609),
         (b, "col_per_obj", "png", sa, 21.551),
         (b, "texture_rot", "png", sa, 26.647),
-        (b, "voronoi_chaos", "png", sa, 19.3),
+        (b, "voronoi_chaos", "png", sa, 19.300),
         (b, "rgb_depth", "exr", sa, "na"),
 
         (d, "1spp", "png", sa, 7.231),
