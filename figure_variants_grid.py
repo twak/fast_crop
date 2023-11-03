@@ -56,7 +56,6 @@ def render_attribs(parameters):
 
 def create_image_grid(root_directory):
 
-
     b  = "winsyn_riyal"
     d  = "winsyn_riyal_d"
     d4 = "winsyn_riyal_d4"
@@ -65,74 +64,77 @@ def create_image_grid(root_directory):
 
     with open(os.path.join("winsyn_riyal", "2048.txt"), "r") as fp: # read the splits for 'two'
         sa = fp.read().split("\n")[:-1]
+    random.shuffle(sa)
 
     with open(os.path.join("winsyn_riyal_f", "2048.txt"), "r") as fp: # read the splits for 'two'
         sf = fp.read().split("\n")[:-1]
+    random.shuffle(sf)
 
     styles = [
-        (b, "rgb", "png", sa),
-        (b, "labels", "png", sa),
+        (b, "rgb", "png", sa, 32.58),
+        (b, "labels", "png", sa, 6.481),
         # (b, "attribs", "txt"),
-        (b, "rgb_exposed", "png", sa),
-        (b, "rgb_histomatched", "png", sa),
-        (b, "rgb_exposed_histomatched", "png", sa),
-        (b, "rgb_albedo", "png", sa),
-        (b, "diffuse", "png", sa),
-        (b, "phong_diffuse", "png", sa),
-        (b, "normals", "png", sa),
-        (b, "edges", "png", sa),
-        (b, "col_per_obj", "png", sa),
-        (b, "texture_rot", "png", sa),
-        (b, "voronoi_chaos", "png", sa),
-        (b, "rgb_depth", "exr", sa),
+        (b, "rgb_exposed", "png", sa, 32.409),
+        (b, "rgb_histomatched", "png", sa, 32.961 ),
+        (b, "rgb_exposed_histomatched", "png", sa, 32.684 ),
+        (b, "rgb_albedo", "png", sa, 16.948),
+        (b, "diffuse", "png", sa, 22.364),
+        (b, "phong_diffuse", "png", sa, 15.807 ),
+        (b, "normals", "png", sa, 17.324),
+        (b, "edges", "png", sa, 24.609),
+        (b, "col_per_obj", "png", sa, 21.551),
+        (b, "texture_rot", "png", sa, 26.647),
+        (b, "voronoi_chaos", "png", sa, 19.3),
+        (b, "rgb_depth", "exr", sa, "na"),
 
-        (d, "1spp", "png", sa),
-        (d, "2spp", "png", sa),
-        (d, "4spp", "png", sa),
-        (d, "8spp", "png", sa),
-        (d, "16spp", "png", sa),
-        (d, "32spp", "png", sa),
-        (d, "64spp", "png", sa),
-        (d, "128spp", "png", sa),
-        (d, "256spp", "png", sa),
-        (d, "512spp", "png", sa),
+        (d, "1spp", "png", sa, 7.231),
+        (d, "2spp", "png", sa, 8.259),
+        (d, "4spp", "png", sa, 10.499),
+        (d, "8spp", "png", sa, 15.886),
+        (d, "16spp", "png", sa, 20.81),
+        (d, "32spp", "png", sa, 24.752),
+        (d, "64spp", "png", sa, 26.224),
+        (d, "128spp", "png", sa, 27.905),
+        (d, "256spp", "png", sa, 28.939),
+        (d, "512spp", "png", sa, 29.311),
 
-        (d, "monomat", "png", sa),
-        (d, "nightonly", "png", sa),
-        (d, "nightonly_exposed", "png", sa),
-        (d, "nosun", "png", sa),
-        (d, "nosun_exposed", "png", sa),
-        (d, "nobounce", "png", sa),
-        (d, "nobounce_exposed", "png", sa),
-        (d, "fixedsun", "png", sa),
-        (d, "fixedsun_exposed", "png", sa),
-        (d, "dayonly", "png", sa),
-        (d, "dayonly_exposed", "png", sa),
+        (d, "monomat", "png", sa, 19.771),
+        (d, "nightonly", "png", sa, 27.240),
+        (d, "nightonly_exposed", "png", sa, 30.891),
+        (d, "nosun", "png", sa, 29.024),
+        (d, "nosun_exposed", "png", sa, 28.972),
+        (d, "nobounce", "png", sa, 30.083),
+        (d, "nobounce_exposed", "png", sa, 30.535),
+        (d, "fixedsun", "png", sa, 31.131),
+        (d, "fixedsun_exposed", "png", sa, 31.91),
+        (d, "dayonly", "png", sa, 32.240),
+        (d, "dayonly_exposed", "png", sa, 31.965),
 
-        (d4, "0cen", "png", sa),
-        (d4, "3cen", "png", sa),
-        (d4, "12cen", "png", sa),
-        (d4, "24cen", "png", sa),
-        (d4, "48cen", "png", sa),
-        (d4, "96cen", "png", sa),
+        (d4, "0cen", "png", sa, 30.328),
+        (d4, "3cen", "png", sa, 32.624),
+        (d4, "6cen", "png", sa, 32.763),
+        (d4, "12cen", "png", sa, 33.092),
+        (d4, "24cen", "png", sa, 32.545),
+        (d4, "48cen", "png", sa, 30.184),
+        (d4, "96cen", "png", sa, 29.77),
 
-        (e, "lvl1", "png", sa),
-        (e, "lvl2", "png", sa),
-        (e, "lvl3", "png", sa),
-        (e, "lvl4", "png", sa),
-        (e, "lvl5", "png", sa),
-        (e, "lvl6", "png", sa),
-        (e, "lvl7", "png", sa),
-        (e, "lvl8", "png", sa),
-        (e, "lvl9", "png", sa),
+        (e, "lvl1", "png", sa, 5.104),
+        (e, "lvl2", "png", sa, 12.221),
+        (e, "lvl3", "png", sa, 16.881),
+        (e, "lvl4", "png", sa, 23.728),
+        (e, "lvl5", "png", sa, 25.422),
+        (e, "lvl6", "png", sa, 28.476),
+        (e, "lvl7", "png", sa, 29.977),
+        (e, "lvl8", "png", sa, 32.396),
+        (e, "lvl9", "png", sa, 33.805),
 
-        (f, "no_rectangles", "png", sf),
-        (f, "only_squares", "png", sf),
-        (f, "nosplitz", "png", sf),
-        (f, "only_rectangles", "png", sf),
-        (f, "single_window", "png", sf),
-        (f, "wide_windows", "png", sf),
-        (f, "mono_profile", "png", sf),
+        (f, "no_rectangles", "png", sf, 30.345),
+        (f, "only_squares", "png", sf, 30.628 ),
+        (f, "nosplitz", "png", sf, 31.056),
+        (f, "only_rectangles", "png", sf, 31.243),
+        (f, "single_window", "png", sf, 31.744),
+        (f, "wide_windows", "png", sf, 32.043),
+        (f, "mono_profile", "png", sf, 32.196),
         
         
 
@@ -163,19 +165,19 @@ def create_image_grid(root_directory):
 
     y_offset = 0
 
-    for dataset, name, ext, splits in styles:
+    for dataset, name, ext, splits, miou in styles:
 
         x_offset = 0
-        svg_out.add(svg_out.text(f"{dataset}", insert=(x_offset, -1), fill='black', font_size="10px", font_family="monospace"))
+        svg_out.add(svg_out.text(f"{dataset}", insert=(x_offset, -1))))
         svg_out.add(svg_out.text(name + "\n23.0", insert=(x_offset - base_image_width, y_offset + base_image_height / 2)))
+        svg_out.add(svg_out.text(str(miou), insert=(x_offset * (num+1) + 10, y_offset + base_image_height / 2)))
 
         for split in splits[:num]:
 
             print (f"{name}: {split}.{ext}")
 
-            # ext = os.path.splitext(image_file)[1]
-
             image_filef = os.path.join(os.path.join(root_directory, dataset, name, f"{split}.{ext}" ) )
+
 
             if ext.lower() in ['jpg', 'png', 'jpeg']:
                 base_image = Image.open(image_filef)
@@ -187,6 +189,12 @@ def create_image_grid(root_directory):
             base_image = base_image.resize((base_image_width, base_image_height)).convert('RGB')
             im_filename = f"{dataset}_{name}_{split}_{ext}.jpg"
             base_image.save(os.path.join(svg_out_dir, im_filename), format="JPEG")
+
+            name = im_filename
+            name.replace("rgb", "baseline")
+
+            if "exposed" in name:
+                name = exposed(name.replace("_exposed", ""))
 
             svg_out.add(svg_out.image(href=im_filename, insert=(x_offset, y_offset), size=(base_image_width, base_image_width)))
 
