@@ -152,6 +152,7 @@ def create_image_grid(root_directory):
     draw = ImageDraw.Draw(grid_image)
 
     svg_out = svgwrite.Drawing(os.path.join(svg_out_dir, "labels2.svg"), profile='tiny')
+    os.makedirs(svg_out, exist_ok=True)
 
     x_offset = 0
 
