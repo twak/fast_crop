@@ -91,7 +91,7 @@ def create_image_grid(root_directory):
         (d, "256spp", "png"),
         (d, "512spp", "png"),
 
-        (d, "monomat", "png", "All procedural materials replaced with a single one for each object-class. No variation in the procedural material."),
+        (d, "monomat", "png"),
         (d, "nightonly", "png"),
         (d, "nightonly_exposed", "png"),
         (d, "nosun", "png"),
