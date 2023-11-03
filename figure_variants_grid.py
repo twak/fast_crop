@@ -141,7 +141,7 @@ def create_image_grid(root_directory):
     # random.shuffle(splits)
     # splits = splits[:num]
 
-    num = 2
+    num = 16
     base_image_height = base_image_width = 128
 
     total_height = len(styles) * base_image_height
