@@ -40,7 +40,7 @@ two = [
         ("winsyn_riyal_d", "dayonly", "png", ""),
         ("winsyn_riyal_d", "dayonly_exposed", "png", "")]),
 
-    # circle radius tba
+    # circle radius
     ([
             ("winsyn_riyal_d4", "0cenlab_8bit", "png", ""),
             ("winsyn_riyal_d4", "3cenlab_8bit", "png", ""),

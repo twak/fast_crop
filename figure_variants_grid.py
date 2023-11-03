@@ -29,7 +29,7 @@ def render_depth_image(exr_path):
 def open_params(f):
     with open(f, 'r') as fp:
         txt = fp.read().split("\n")
-        txt[-3] = txt[-3].replace(",", "")  # extra comma on final attribute
+        txt[-3] = txt[-3].replace(",")  # extra comma on final attribute
 
         return json.loads("".join(txt))
 
@@ -56,18 +56,17 @@ def render_attribs(parameters):
 def create_image_grid(root_directory, split_file):
 
     svg_out_dir = os.path.join(root_directory, f"svg_out_{time.time()}")
+
     b = "winsyn_riyal"
+    d = "winsyn_riyal_d"
+    d4 = "winsyn_riyal_d4"
+    e = "winsyn_riyal_e"
+    f = "winsyn_riyal_f"
 
     styles = [
         (b, "rgb", "png"),
         (b, "labels", "png"),
         (b, "attribs", "txt"),
-        (b, "64ms", "png"),
-        (b, "128ms", "png"),
-        (b, "256ms", "png"),
-        (b, "512ms", "png"),
-        (b, "1024ms", "png"),
-        (b, "2048ms", "png"),
         (b, "rgb_exposed", "png"),
         (b, "rgb_histomatched", "png"),
         (b, "rgb_exposed_histomatched", "png"),
@@ -80,17 +79,69 @@ def create_image_grid(root_directory, split_file):
         (b, "texture_rot", "png"),
         (b, "voronoi_chaos", "png"),
         (b, "rgb_depth", "exr"),
-        (b, "canonical", "png"),
-        (b, "canonical_albedo", "png"),
-        (b, "canonical_transcol" "png")
+
+        (d, "1spp", "png"),
+        (d, "2spp", "png"),
+        (d, "4spp", "png"),
+        (d, "8spp", "png"),
+        (d, "16spp", "png"),
+        (d, "32spp", "png"),
+        (d, "64spp", "png"),
+        (d, "128spp", "png"),
+        (d, "256spp", "png"),
+        (d, "512spp", "png"),
+
+        (d, "monomat", "png", "All procedural materials replaced with a single one for each object-class. No variation in the procedural material."),
+        (d, "nightonly", "png"),
+        (d, "nightonly_exposed", "png"),
+        (d, "nosun", "png"),
+        (d, "nosun_exposed", "png"),
+        (d, "nobounce", "png"),
+        (d, "nobounce_exposed", "png"),
+        (d, "fixedsun", "png"),
+        (d, "fixedsun_exposed", "png"),
+        (d, "dayonly", "png"),
+        (d, "dayonly_exposed", "png"),
+
+        (d4, "0cen", "png"),
+        (d4, "3cen", "png"),
+        (d4, "12cen", "png"),
+        (d4, "24cen", "png"),
+        (d4, "48cen", "png"),
+        (d4, "96cen", "png"),
+
+        (e, "lvl1", "png"),
+        (e, "lvl2", "png"),
+        (e, "lvl3", "png"),
+        (e, "lvl4", "png"),
+        (e, "lvl5", "png"),
+        (e, "lvl6", "png"),
+        (e, "lvl7", "png"),
+        (e, "lvl8", "png"),
+        (e, "lvl9", "png"),
+
+        (f, "no_rectangles", "png"),
+        (f, "only_squares", "png"),
+        (f, "nosplitz", "png"),
+        (f, "only_rectangles", "png"),
+        (f, "single_window", "png"),
+        (f, "wide_windows", "png"),
+        (f, "mono_profile", "png"),
+        
+        
+
+    # (b, "canonical", "png"),
+        # (b, "canonical_albedo", "png"),
+        # (b, "canonical_transcol" "png")
     ]
 
     with open(split_file, 'r') as f:
         splits = f.read().split("\n")
 
     random.shuffle(splits)
-    splits = splits[:num]
+    # splits = splits[:num]
 
+    num = 2
     base_image_height = base_image_width = 128
 
     total_height = len(styles) * base_image_height
@@ -98,7 +149,6 @@ def create_image_grid(root_directory, split_file):
 
     grid_image = Image.new('RGB', (total_width, total_height))
     draw = ImageDraw.Draw(grid_image)
-
 
     svg_out = svgwrite.Drawing(os.path.join(svg_out_dir, "labels2.svg"), profile='tiny')
 
@@ -108,9 +158,10 @@ def create_image_grid(root_directory, split_file):
 
         svg_out.add(svg_out.text(f"{dataset}", insert=(x_offset, -1), fill='black', font_size="10px", font_family="monospace"))
 
-        for split in splits:
+        for image_file in random.shuffle ( os.listdir(os.path.join ( dataset, name) ) )[:num]:
+        # for split in splits:
 
-            image_file = os.path.join ( dataset, name, f"{split}.{ext}" )
+            # image_file = os.path.join ( dataset, name, f"{split}.{ext}" )
 
             if ext.lower() in ['.jpg', '.png', '.jpeg']:
                 base_image = Image.open(image_file)
@@ -124,6 +175,7 @@ def create_image_grid(root_directory, split_file):
             base_image.save(os.path.join(svg_out_dir, im_filename), format="JPEG")
 
             svg_out.add(svg_out.image(href=im_filename, insert=(x_offset, y_offset), size=(width, height)))
+            svg_out.add(svg_out.text(name+"\n23.0", insert=(x_offset, y_offset + base_image_height / 2) ))
             grid_image.paste(base_image, (x_offset, y_offset))
 
             x_offset += base_image_width
