@@ -160,9 +160,10 @@ def create_image_grid(root_directory):
 
         svg_out.add(svg_out.text(f"{dataset}", insert=(x_offset, -1), fill='black', font_size="10px", font_family="monospace"))
 
-        print (f"found {len(os.listdir(os.path.join ( root_directory, dataset, name)))} images")
+        image_files = os.listdir(os.path.join(root_directory, dataset, name))
+        random.shuffle(image_files)
 
-        for image_file in random.shuffle ( os.listdir(os.path.join ( root_directory, dataset, name) ) )[:num]:
+        for image_file in image_files[:num]:
             print (f"{name}: {image_file}")
         # for split in splits:
 
