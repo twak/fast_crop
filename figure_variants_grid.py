@@ -171,12 +171,12 @@ def create_image_grid(root_directory):
 
         for split in splits[:num]:
 
-            image_file = os.path.join ( dataset, name, f"{split}.{ext}" )
-            print (f"{name}: {image_file}")
+            image_file = os.path.join ( dataset, name,  )
+            print (f"{name}: {split}.{ext}")
 
             # ext = os.path.splitext(image_file)[1]
 
-            image_filef = os.path.join(os.path.join(root_directory, dataset, name, image_file) )
+            image_filef = os.path.join(os.path.join(root_directory, dataset, name, f"{split}.{ext}" ) )
 
             if ext.lower() in ['.jpg', '.png', '.jpeg']:
                 base_image = Image.open(image_filef)
