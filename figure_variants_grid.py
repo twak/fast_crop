@@ -69,7 +69,9 @@ def patch_name(name2):
     if "histomatched" in name2:
         name2 = f"histo({name2.replace('_histomatched', '')})"
     if name2.endswith("cen"):
-        name2 = "camera, r = " + re.sub("[^0-9]", "", name2)
+        name2 = "camera, r=" + re.sub("[^0-9]", "", name2)+"m"
+
+    name2 = name2.replace("_", "\\_")
 
     return name2
 
