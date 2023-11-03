@@ -163,7 +163,7 @@ def create_image_grid(root_directory):
 
     y_offset = 0
 
-    for dataset, name, _, splits in styles:
+    for dataset, name, ext, splits in styles:
 
         x_offset = 0
         svg_out.add(svg_out.text(f"{dataset}", insert=(x_offset, -1), fill='black', font_size="10px", font_family="monospace"))
@@ -171,10 +171,10 @@ def create_image_grid(root_directory):
 
         for split in splits[:num]:
 
+            image_file = os.path.join ( dataset, name, f"{split}.{ext}" )
             print (f"{name}: {image_file}")
 
-            image_file = os.path.join ( dataset, name, f"{split}.{ext}" )
-            ext = os.path.splitext(image_file)[1]
+            # ext = os.path.splitext(image_file)[1]
 
             image_filef = os.path.join(os.path.join(root_directory, dataset, name, image_file) )
 
