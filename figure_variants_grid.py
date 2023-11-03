@@ -55,6 +55,24 @@ def render_attribs(parameters):
 
     return bg
 
+def patch_name(name2):
+
+    name2 = name2.replace("rgb", "baseline")
+    name2 = name2.replace("nosplitz", "no_splits")
+    name2 = name2.replace("nightonly", "night_only")
+    name2 = name2.replace("nosun", "no_sun")
+    name2 = name2.replace("nobounce", "no_bounce")
+    name2 = name2.replace("fixedsun", "fixed_sun")
+    name2 = name2.replace("dayonly", "day_only")
+    if "exposed" in name2:
+        name2 = f"exposed({name2.replace('_exposed', '')})"
+    if "histomatched" in name2:
+        name2 = f"histo({name2.replace('_histomatched', '')})"
+    if name2.endswith("cen"):
+        name2 = "camera, r = " + re.sub("[^0-9]", "", name2)
+
+    return name2
+
 def create_image_grid(root_directory):
 
     b  = "winsyn_riyal"
@@ -170,7 +188,8 @@ def create_image_grid(root_directory):
 
         x_offset = 0
         svg_out.add(svg_out.text(f"{dataset}", insert=(x_offset, -1)))
-        svg_out.add(svg_out.text(name + "\n23.0", insert=(x_offset - base_image_width, y_offset + base_image_height / 2)))
+
+        svg_out.add(svg_out.text(patch_name(name), insert=(x_offset - base_image_width, y_offset + base_image_height / 2)))
         svg_out.add(svg_out.text(str(miou), insert=(x_offset * (num+1) + 10, y_offset + base_image_height / 2)))
 
         for split in splits[:num]:
@@ -190,34 +209,7 @@ def create_image_grid(root_directory):
             im_filename = f"{dataset}_{name}_{split}_{ext}.jpg"
             base_image.save(os.path.join(svg_out_dir, im_filename), format="JPEG")
 
-            # (d, "monomat", "png", sa, 19.771),
-            # (d, "nightonly", "png", sa, 27.240),
-            # (d, "nightonly_exposed", "png", sa, 30.891),
-            # (d, "nosun", "png", sa, 29.024),
-            # (d, "nosun_exposed", "png", sa, 28.972),
-            # (d, "nobounce", "png", sa, 30.083),
-            # (d, "nobounce_exposed", "png", sa, 30.535),
-            # (d, "fixedsun", "png", sa, 31.131),
-            # (d, "fixedsun_exposed", "png", sa, 31.91),
-            # (d, "dayonly", "png", sa, 32.240),
-            # (d, "dayonly_exposed", "png", sa, 31.965),
-
-            name2 = im_filename
-            name2 = name2.replace ("rgb",      "baseline")
-            name2 = name2.replace ("nosplitz", "no_splits")
-            name2 = name2.replace ("nightonly","night_only")
-            name2 = name2.replace ("nosun",    "no_sun")
-            name2 = name2.replace ("nobounce", "no_bounce")
-            name2 = name2.replace ("fixedsun", "fixed_sun")
-            name2 = name2.replace ("dayonly",  "day_only")
-            if "exposed" in name2:
-                name2 = f"exposed({name2.replace('_exposed', '')})"
-            if "histomatched" in name2:
-                name2 = f"histo({name2.replace('_histomatched', '')})"
-            if name2.endswith("cen"):
-                name2 = "camera, r = " + re.sub("[^0-9]", "", name2 )
-
-            svg_out.add(svg_out.image(href=name2, insert=(x_offset, y_offset), size=(base_image_width, base_image_width)))
+            svg_out.add(svg_out.image(href=im_filename, insert=(x_offset, y_offset), size=(base_image_width, base_image_width)))
 
             grid_image.paste(base_image, (x_offset, y_offset))
 
@@ -227,6 +219,8 @@ def create_image_grid(root_directory):
     svg_out.save()
     output_path = os.path.join(root_directory, "image_grid.jpg")
     grid_image.save(output_path)
+
+
 
 
 # Replace 'your_directory_path' with the actual path to your directory
