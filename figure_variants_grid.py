@@ -178,11 +178,11 @@ def create_image_grid(root_directory):
 
             image_filef = os.path.join(os.path.join(root_directory, dataset, name, f"{split}.{ext}" ) )
 
-            if ext.lower() in ['.jpg', '.png', '.jpeg']:
+            if ext.lower() in ['jpg', 'png', 'jpeg']:
                 base_image = Image.open(image_filef)
-            elif ext.lower() in ['.exr']:
+            elif ext.lower() in ['exr']:
                 base_image = render_depth_image(image_filef)
-            elif ext.lower() in ['.txt']:
+            elif ext.lower() in ['txt']:
                 base_image = render_attribs(image_filef)
 
             base_image = base_image.resize((base_image_width, base_image_height)).convert('RGB')
