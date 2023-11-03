@@ -14,6 +14,7 @@ from PIL import Image, ImageDraw, ImageFont
 import svgwrite
 import json
 import time
+import re
 
 def render_depth_image(exr_path):
 
@@ -178,7 +179,6 @@ def create_image_grid(root_directory):
 
             image_filef = os.path.join(os.path.join(root_directory, dataset, name, f"{split}.{ext}" ) )
 
-
             if ext.lower() in ['jpg', 'png', 'jpeg']:
                 base_image = Image.open(image_filef)
             elif ext.lower() in ['exr']:
@@ -190,13 +190,21 @@ def create_image_grid(root_directory):
             im_filename = f"{dataset}_{name}_{split}_{ext}.jpg"
             base_image.save(os.path.join(svg_out_dir, im_filename), format="JPEG")
 
-            name = im_filename
-            name.replace("rgb", "baseline")
+            name2 = im_filename
+            name2.replace("rgb", "baseline")
 
-            if "exposed" in name:
-                name = exposed(name.replace("_exposed", ""))
+            name2 = name2.replace ("nosplitz", "no_splits")
 
-            svg_out.add(svg_out.image(href=im_filename, insert=(x_offset, y_offset), size=(base_image_width, base_image_width)))
+            if "exposed" in name2:
+                name2 = f"exposed({name2.replace('_exposed', '')})"
+
+            if "histomatched" in name2:
+                name2 = f"histo({name2.replace('_histomatched', '')})"
+
+            if name2.endswith("cen"):
+                name2 = "camera, r = " + re.sub("[^0-9]", "", name2 )
+
+            svg_out.add(svg_out.image(href=name2, insert=(x_offset, y_offset), size=(base_image_width, base_image_width)))
 
             grid_image.paste(base_image, (x_offset, y_offset))
 
