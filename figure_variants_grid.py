@@ -13,6 +13,7 @@ from matplotlib import font_manager
 from PIL import Image, ImageDraw, ImageFont
 import svgwrite
 import json
+import time
 
 def render_depth_image(exr_path):
 
