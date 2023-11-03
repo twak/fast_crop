@@ -181,7 +181,7 @@ def create_image_grid(root_directory):
             elif ext.lower() in ['.txt']:
                 base_image = render_attribs(image_filef)
 
-            base_image = base_image.resize((base_image_width, base_image_height))
+            base_image = base_image.resize((base_image_width, base_image_height)).convert('RGB')
             im_filename = f"{dataset}_{name}_{image_file}.jpg"
             base_image.save(os.path.join(svg_out_dir, im_filename), format="JPEG")
 
