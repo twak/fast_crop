@@ -155,7 +155,7 @@ def create_image_grid(root_directory):
 
     x_offset = 0
 
-    for dataset, name, ext in styles:
+    for dataset, name, _ in styles:
 
 
         svg_out.add(svg_out.text(f"{dataset}", insert=(x_offset, -1), fill='black', font_size="10px", font_family="monospace"))
@@ -168,7 +168,7 @@ def create_image_grid(root_directory):
         # for split in splits:
 
             # image_file = os.path.join ( dataset, name, f"{split}.{ext}" )
-            ext = os.path.splitext(base_image)[1]
+            ext = os.path.splitext(image_file)[1]
 
             if ext.lower() in ['.jpg', '.png', '.jpeg']:
                 base_image = Image.open(image_file)
