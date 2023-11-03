@@ -192,15 +192,11 @@ def create_image_grid(root_directory):
 
             name2 = im_filename
             name2.replace("rgb", "baseline")
-
             name2 = name2.replace ("nosplitz", "no_splits")
-
             if "exposed" in name2:
                 name2 = f"exposed({name2.replace('_exposed', '')})"
-
             if "histomatched" in name2:
                 name2 = f"histo({name2.replace('_histomatched', '')})"
-
             if name2.endswith("cen"):
                 name2 = "camera, r = " + re.sub("[^0-9]", "", name2 )
 
