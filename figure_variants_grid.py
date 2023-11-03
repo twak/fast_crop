@@ -170,7 +170,7 @@ def create_image_grid(root_directory):
             # image_file = os.path.join ( dataset, name, f"{split}.{ext}" )
             ext = os.path.splitext(image_file)[1]
 
-            image_file = os.listdir(os.path.join(root_directory, dataset, name, image_file) )
+            image_file = os.path.join(os.path.join(root_directory, dataset, name, image_file) )
 
             if ext.lower() in ['.jpg', '.png', '.jpeg']:
                 base_image = Image.open(image_file)
