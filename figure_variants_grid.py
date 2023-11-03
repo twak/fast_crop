@@ -53,7 +53,7 @@ def render_attribs(parameters):
 
     return bg
 
-def create_image_grid(root_directory, split_file):
+def create_image_grid(root_directory):
 
     svg_out_dir = os.path.join(root_directory, f"svg_out_{time.time()}")
 
@@ -135,10 +135,10 @@ def create_image_grid(root_directory, split_file):
         # (b, "canonical_transcol" "png")
     ]
 
-    with open(split_file, 'r') as f:
-        splits = f.read().split("\n")
+    # with open(split_file, 'r') as f:
+    #     splits = f.read().split("\n")
 
-    random.shuffle(splits)
+    # random.shuffle(splits)
     # splits = splits[:num]
 
     num = 2
@@ -156,9 +156,11 @@ def create_image_grid(root_directory, split_file):
 
     for dataset, name, ext in styles:
 
+
         svg_out.add(svg_out.text(f"{dataset}", insert=(x_offset, -1), fill='black', font_size="10px", font_family="monospace"))
 
         for image_file in random.shuffle ( os.listdir(os.path.join ( dataset, name) ) )[:num]:
+            print (f"{name}: {image_file}")
         # for split in splits:
 
             # image_file = os.path.join ( dataset, name, f"{split}.{ext}" )
