@@ -56,13 +56,12 @@ def render_attribs(parameters):
 
 def create_image_grid(root_directory):
 
-    svg_out_dir = os.path.join(root_directory, f"svg_out_{time.time()}")
 
-    b = "winsyn_riyal"
-    d = "winsyn_riyal_d"
+    b  = "winsyn_riyal"
+    d  = "winsyn_riyal_d"
     d4 = "winsyn_riyal_d4"
-    e = "winsyn_riyal_e"
-    f = "winsyn_riyal_f"
+    e  = "winsyn_riyal_e"
+    f  = "winsyn_riyal_f"
 
     styles = [
         (b, "rgb", "png"),
@@ -149,10 +148,12 @@ def create_image_grid(root_directory):
     total_width  = num * base_image_width
 
     grid_image = Image.new('RGB', (total_width, total_height))
-    draw = ImageDraw.Draw(grid_image)
 
+    svg_out_dir = os.path.join(root_directory, f"svg_out_{time.time()}")
+    os.makedirs(svg_out_dir, exist_ok=True)
+    # draw = ImageDraw.Draw(grid_image)
     svg_out = svgwrite.Drawing(os.path.join(svg_out_dir, "labels2.svg"), profile='tiny')
-    os.makedirs(svg_out, exist_ok=True)
+
 
     x_offset = 0
 
