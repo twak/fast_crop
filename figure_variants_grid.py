@@ -71,7 +71,7 @@ def create_image_grid(root_directory):
     random.shuffle(sf)
 
     styles = [
-        (b, "rgb", "png", sa, 32.582),
+        (b, "rgb", "png", sa, 32.587),
         (b, "labels", "png", sa, 6.481),
         # (b, "attribs", "txt"),
         (b, "rgb_exposed", "png", sa, 32.409),
