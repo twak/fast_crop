@@ -168,7 +168,7 @@ def create_image_grid(root_directory):
     for dataset, name, ext, splits, miou in styles:
 
         x_offset = 0
-        svg_out.add(svg_out.text(f"{dataset}", insert=(x_offset, -1))))
+        svg_out.add(svg_out.text(f"{dataset}", insert=(x_offset, -1)))
         svg_out.add(svg_out.text(name + "\n23.0", insert=(x_offset - base_image_width, y_offset + base_image_height / 2)))
         svg_out.add(svg_out.text(str(miou), insert=(x_offset * (num+1) + 10, y_offset + base_image_height / 2)))
 
