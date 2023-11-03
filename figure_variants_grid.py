@@ -186,7 +186,7 @@ def create_image_grid(root_directory):
             im_filename = f"{dataset}_{name}_{image_file}.jpg"
             base_image.save(os.path.join(svg_out_dir, im_filename), format="JPEG")
 
-            svg_out.add(svg_out.image(href=im_filename, insert=(x_offset, y_offset), size=(width, height)))
+            svg_out.add(svg_out.image(href=im_filename, insert=(x_offset, y_offset), size=(base_image_width, base_image_width)))
             svg_out.add(svg_out.text(name+"\n23.0", insert=(x_offset, y_offset + base_image_height / 2) ))
             grid_image.paste(base_image, (x_offset, y_offset))
 
