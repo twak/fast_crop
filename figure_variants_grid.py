@@ -163,7 +163,7 @@ def create_image_grid(root_directory):
 
     y_offset = 0
 
-    for dataset, name, splits in styles:
+    for dataset, name, _, splits in styles:
 
         x_offset = 0
         svg_out.add(svg_out.text(f"{dataset}", insert=(x_offset, -1), fill='black', font_size="10px", font_family="monospace"))
