@@ -190,9 +190,26 @@ def create_image_grid(root_directory):
             im_filename = f"{dataset}_{name}_{split}_{ext}.jpg"
             base_image.save(os.path.join(svg_out_dir, im_filename), format="JPEG")
 
+            # (d, "monomat", "png", sa, 19.771),
+            # (d, "nightonly", "png", sa, 27.240),
+            # (d, "nightonly_exposed", "png", sa, 30.891),
+            # (d, "nosun", "png", sa, 29.024),
+            # (d, "nosun_exposed", "png", sa, 28.972),
+            # (d, "nobounce", "png", sa, 30.083),
+            # (d, "nobounce_exposed", "png", sa, 30.535),
+            # (d, "fixedsun", "png", sa, 31.131),
+            # (d, "fixedsun_exposed", "png", sa, 31.91),
+            # (d, "dayonly", "png", sa, 32.240),
+            # (d, "dayonly_exposed", "png", sa, 31.965),
+
             name2 = im_filename
-            name2.replace("rgb", "baseline")
+            name2 = name2.replace ("rgb",      "baseline")
             name2 = name2.replace ("nosplitz", "no_splits")
+            name2 = name2.replace ("nightonly","night_only")
+            name2 = name2.replace ("nosun",    "no_sun")
+            name2 = name2.replace ("nobounce", "no_bounce")
+            name2 = name2.replace ("fixedsun", "fixed_sun")
+            name2 = name2.replace ("dayonly",  "day_only")
             if "exposed" in name2:
                 name2 = f"exposed({name2.replace('_exposed', '')})"
             if "histomatched" in name2:
