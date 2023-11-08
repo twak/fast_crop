@@ -71,12 +71,30 @@ if __name__ == "__main__":
 
     os.makedirs("means", exist_ok=True)
     # for i in range ( 1, 10 ):
-    for dir in ["rgb"]: # "0cen", "3cen", "6cen", "12cen", "24cen", "48cen", "96cen"]:
+
+    for dir in  ["0.33monomat",
+        "0.33multimat",
+        "0.66monomat",
+        "0.66multimat",
+        "0monomat",
+        "0multimat",
+        "1monomat",
+        "1multimat",
+        "2monomat",
+        "2multimat",
+        "4monomat",
+        "4multimat",
+        "all_brick",
+        "rgb"]:
+
+        _pool.submit(write_mean, dir)
+
+    # "0cen", "3cen", "6cen", "12cen", "24cen", "48cen", "96cen"]:
     # for dir in ["mono_profile", "no_rectangles","nosplitz","only_rectangles","only_squares","single_window", "wide_windows" ]:
     # for dir in [
     #     "lvl1"
     # ]:
-        _pool.submit(write_mean, dir)
+
 
 print ("all submitted!")
 
