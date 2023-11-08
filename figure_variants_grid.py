@@ -82,6 +82,7 @@ def create_image_grid(root_directory):
     d4 = "winsyn_riyal_d4"
     e  = "winsyn_riyal_e"
     f  = "winsyn_riyal_f"
+    g  = "winsyn_riyal_g"
 
     with open(os.path.join("winsyn_riyal", "2048.txt"), "r") as fp: # read the splits for 'two'
         sa = fp.read().split("\n")[:-1]
@@ -92,72 +93,89 @@ def create_image_grid(root_directory):
     random.shuffle(sf)
 
     styles = [
-        (b, "rgb", "png", sa, 32.587),
-        (b, "labels", "png", sa, 6.481),
-        # (b, "attribs", "txt"),
-        (b, "rgb_exposed", "png", sa, 32.409),
-        (b, "rgb_histomatched", "png", sa, 32.961 ),
-        (b, "rgb_exposed_histomatched", "png", sa, 32.684 ),
-        (b, "rgb_albedo", "png", sa, 16.948),
-        (b, "diffuse", "png", sa, 22.364),
-        (b, "phong_diffuse", "png", sa, 15.807 ),
-        (b, "normals", "png", sa, 17.324),
-        (b, "edges", "png", sa, 24.609),
-        (b, "col_per_obj", "png", sa, 21.551),
-        (b, "texture_rot", "png", sa, 26.647),
-        (b, "voronoi_chaos", "png", sa, 19.300),
-        (b, "rgb_depth", "exr", sa, "na"),
+        # (b, "rgb", "png", sa, 32.587),
+        # (b, "labels", "png", sa, 6.481),
+        # # (b, "attribs", "txt"),
+        # (b, "rgb_exposed", "png", sa, 32.409),
+        # (b, "rgb_histomatched", "png", sa, 32.961 ),
+        # (b, "rgb_exposed_histomatched", "png", sa, 32.684 ),
+        # (b, "rgb_albedo", "png", sa, 16.948),
+        # (b, "diffuse", "png", sa, 22.364),
+        # (b, "phong_diffuse", "png", sa, 15.807 ),
+        # (b, "normals", "png", sa, 17.324),
+        # (b, "edges", "png", sa, 24.609),
+        # (b, "col_per_obj", "png", sa, 21.551),
+        # (b, "texture_rot", "png", sa, 26.647),
+        # (b, "voronoi_chaos", "png", sa, 19.300),
+        # (b, "rgb_depth", "exr", sa, "na"),
+        #
+        # (d, "1spp", "png", sa, 7.231),
+        # (d, "2spp", "png", sa, 8.259),
+        # (d, "4spp", "png", sa, 10.499),
+        # (d, "8spp", "png", sa, 15.886),
+        # (d, "16spp", "png", sa, 20.81),
+        # (d, "32spp", "png", sa, 24.752),
+        # (d, "64spp", "png", sa, 26.224),
+        # (d, "128spp", "png", sa, 27.905),
+        # (d, "256spp", "png", sa, 28.939),
+        # (d, "512spp", "png", sa, 29.311),
+        #
+        # (d, "monomat", "png", sa, 19.771),
+        # (d, "nightonly", "png", sa, 27.240),
+        # (d, "nightonly_exposed", "png", sa, 30.891),
+        # (d, "nosun", "png", sa, 29.024),
+        # (d, "nosun_exposed", "png", sa, 28.972),
+        # (d, "nobounce", "png", sa, 30.083),
+        # (d, "nobounce_exposed", "png", sa, 30.535),
+        # (d, "fixedsun", "png", sa, 31.131),
+        # (d, "fixedsun_exposed", "png", sa, 31.91),
+        # (d, "dayonly", "png", sa, 32.240),
+        # (d, "dayonly_exposed", "png", sa, 31.965),
+        #
+        # (d4, "0cen", "png", sa, 30.328),
+        # (d4, "3cen", "png", sa, 32.624),
+        # (d4, "6cen", "png", sa, 32.763),
+        # (d4, "12cen", "png", sa, 33.092),
+        # (d4, "24cen", "png", sa, 32.545),
+        # (d4, "48cen", "png", sa, 30.184),
+        # (d4, "96cen", "png", sa, 29.77),
+        #
+        # (e, "lvl1", "png", sa, 5.104),
+        # (e, "lvl2", "png", sa, 12.221),
+        # (e, "lvl3", "png", sa, 16.881),
+        # (e, "lvl4", "png", sa, 23.728),
+        # (e, "lvl5", "png", sa, 25.422),
+        # (e, "lvl6", "png", sa, 28.476),
+        # (e, "lvl7", "png", sa, 29.977),
+        # (e, "lvl8", "png", sa, 32.396),
+        # (e, "lvl9", "png", sa, 33.805),
+        #
+        # (f, "no_rectangles", "png", sf, 30.345),
+        # (f, "only_squares", "png", sf, 30.628 ),
+        # (f, "nosplitz", "png", sf, 31.056),
+        # (f, "only_rectangles", "png", sf, 31.243),
+        # (f, "single_window", "png", sf, 31.744),
+        # (f, "wide_windows", "png", sf, 32.043),
+        # (f, "mono_profile", "png", sf, 32.196),
 
-        (d, "1spp", "png", sa, 7.231),
-        (d, "2spp", "png", sa, 8.259),
-        (d, "4spp", "png", sa, 10.499),
-        (d, "8spp", "png", sa, 15.886),
-        (d, "16spp", "png", sa, 20.81),
-        (d, "32spp", "png", sa, 24.752),
-        (d, "64spp", "png", sa, 26.224),
-        (d, "128spp", "png", sa, 27.905),
-        (d, "256spp", "png", sa, 28.939),
-        (d, "512spp", "png", sa, 29.311),
+        (g, "rgb", "png", sa, 0),
 
-        (d, "monomat", "png", sa, 19.771),
-        (d, "nightonly", "png", sa, 27.240),
-        (d, "nightonly_exposed", "png", sa, 30.891),
-        (d, "nosun", "png", sa, 29.024),
-        (d, "nosun_exposed", "png", sa, 28.972),
-        (d, "nobounce", "png", sa, 30.083),
-        (d, "nobounce_exposed", "png", sa, 30.535),
-        (d, "fixedsun", "png", sa, 31.131),
-        (d, "fixedsun_exposed", "png", sa, 31.91),
-        (d, "dayonly", "png", sa, 32.240),
-        (d, "dayonly_exposed", "png", sa, 31.965),
+        (g, "0monomat", "png", sa, 0),
+        (g, "0.33monomat", "png", sa, 0),
+        (g, "0.66monomat", "png", sa, 0),
+        (g, "1monomat", "png", sa, 0),
+        (g, "2monomat", "png", sa, 0),
+        (g, "4monomat", "png", sa, 0),
 
-        (d4, "0cen", "png", sa, 30.328),
-        (d4, "3cen", "png", sa, 32.624),
-        (d4, "6cen", "png", sa, 32.763),
-        (d4, "12cen", "png", sa, 33.092),
-        (d4, "24cen", "png", sa, 32.545),
-        (d4, "48cen", "png", sa, 30.184),
-        (d4, "96cen", "png", sa, 29.77),
+        (g, "0multimat", "png", sa, 0),
+        (g, "0.33multimat", "png", sa, 0),
+        (g, "0.66multimat", "png", sa, 0),
+        (g, "1multimat", "png", sa, 0),
+        (g, "2multimat", "png", sa, 0),
+        (g, "4multimat", "png", sa, 0),
 
-        (e, "lvl1", "png", sa, 5.104),
-        (e, "lvl2", "png", sa, 12.221),
-        (e, "lvl3", "png", sa, 16.881),
-        (e, "lvl4", "png", sa, 23.728),
-        (e, "lvl5", "png", sa, 25.422),
-        (e, "lvl6", "png", sa, 28.476),
-        (e, "lvl7", "png", sa, 29.977),
-        (e, "lvl8", "png", sa, 32.396),
-        (e, "lvl9", "png", sa, 33.805),
+        (g, "all_brick", "png", sa, 0),
 
-        (f, "no_rectangles", "png", sf, 30.345),
-        (f, "only_squares", "png", sf, 30.628 ),
-        (f, "nosplitz", "png", sf, 31.056),
-        (f, "only_rectangles", "png", sf, 31.243),
-        (f, "single_window", "png", sf, 31.744),
-        (f, "wide_windows", "png", sf, 32.043),
-        (f, "mono_profile", "png", sf, 32.196),
-        
-        
 
     # (b, "canonical", "png"),
         # (b, "canonical_albedo", "png"),
@@ -170,8 +188,8 @@ def create_image_grid(root_directory):
     # random.shuffle(splits)
     # splits = splits[:num]
 
-    num = 16
-    base_image_height = base_image_width = 128
+    num = 32
+    base_image_height = base_image_width = 512
 
     total_height = len(styles) * base_image_height
     total_width  = num * base_image_width
