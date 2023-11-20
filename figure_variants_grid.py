@@ -241,8 +241,5 @@ def create_image_grid(root_directory):
     grid_image.save(output_path)
 
 
-
-
-# Replace 'your_directory_path' with the actual path to your directory
 directory_path = '.'
 create_image_grid(directory_path)
