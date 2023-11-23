@@ -9,8 +9,8 @@ from PIL import Image
 
 # get arguments
 # pattern = sys.argv[1]
-rows = 10 # int(sys.argv[2])
-cols = 10 # int(sys.argv[3])
+rows = 8 # int(sys.argv[2])
+cols = 8 # int(sys.argv[3])
 
 resolution = 512
 
@@ -22,9 +22,18 @@ split_file = sys.argv[2] # all.txt
 o          = sys.argv[3] # folder - "labels"
 ext        = sys.argv[4] # extension - "png"
 
-with open( os.path.join (dataset, split_file), "r") as f:
-    for line in f:
-        filenames.append( os.path.join (dataset, o, f"{line[:-1]}.{ext}") )
+sf = os.path.join (dataset, split_file)
+
+if os.path.exists(sf):
+    print(f"using split file {split_file}")
+    with open( sf, "r") as f:
+        for line in f:
+            filenames.append( os.path.join (dataset, o, f"{line[:-1]}.{ext}") )
+else:
+    print ("split file not found: doing all.")
+    for x in os.listdir(os.path.join(dataset, o)):
+        if x.endswith(ext):
+            filenames.append( os.path.join(dataset, o, x))
 
 # filenames = filenames[-rows*cols:] # highest realism
 filenames = filenames[:rows*cols] # lowest realism
