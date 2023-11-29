@@ -56,19 +56,20 @@ def find_roots(files):
     return list ( out.keys() )
 
 
+dirs = [ ["rgb","png"], ["rgb_exposed","png"], ["labels","png"], ["rgb_depth", "exr"], ["attribs", "txt"]  ]
 # dirs = [ ["rgb","png"], ["labels","png"], ["labels_8bit", "png"], ["attribs", "txt"]  ]
 # dirs = [ ["rgb","png"], ["labels","png"], ["labels_8bit", "png"], ["exposed", "png"], ["attribs", "txt"] ]
 
-dirs = [["rgb", "png"],
-        ["labels_8bit", "png"],
-        ["1nwall", "png"],
-        ["2nwall", "png"],
-        ["4nwall", "png"],
-        ["8nwall", "png"],
-        ["16nwall", "png"],
-        ["32nwall", "png"],
-        ["64nwall", "png"],
-        ["128nwall", "png"]]
+# dirs = [["rgb", "png"],
+#         ["labels_8bit", "png"],
+#         ["1nwall", "png"],
+#         ["2nwall", "png"],
+#         ["4nwall", "png"],
+#         ["8nwall", "png"],
+#         ["16nwall", "png"],
+#         ["32nwall", "png"],
+#         ["64nwall", "png"],
+#         ["128nwall", "png"]]
 
 # dirs = [["mono_profile","png"],
 # ["mono_profile_labels","png"],
