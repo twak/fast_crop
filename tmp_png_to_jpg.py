@@ -44,7 +44,7 @@ def convert_all_png_to_jpg(input_folder, output_folder):
 
 
 if __name__ == "__main__":
-    input_folder = "rgb"
-    output_folder = "rgb_jpg"
+    input_folder = "rgb_exposed"
+    output_folder = "rgb_exposed_jpg"
 
     convert_all_png_to_jpg(input_folder, output_folder)
