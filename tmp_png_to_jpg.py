@@ -8,6 +8,8 @@ move renders from png to jpg
 """
 
 def convert_png_to_jpg(png_path, jpg_path):
+
+    print (f"converting {png_path} to {jpg_path}")
     # Open the PNG image
     img = Image.open(png_path)
 
