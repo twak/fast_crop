@@ -12,3 +12,6 @@ private='private' # areas of images to remove (identifying info - number plates,
 deleted='deleted' # whole image tags
 
 all_tags=[glass_facade, church, shop, abnormal, window, door, material, facade, private, deleted]
+
+# geometry difficulty
+easy, medium, hard, bad = "easy", "medium", "hard", "bad"
