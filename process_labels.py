@@ -32,6 +32,8 @@ GREY   = 2
 PRETTY_FILMIC = 3
 GREY_NO_DOOR = 4
 PRETTY_NO_DOOR = 8
+GREY_WL6 = 16
+GREY_WL7 = 32
 
 COLOR_MODE = GREY
 
@@ -148,6 +150,38 @@ def colours_for_mode (mode):
         colors["misc object"]   = (10)
         colors["roof"]          = (0) # << render roof as none
         colors["door-pane"]     = (1) # << render door-window-pane as window-pane
+
+    elif mode == GREY_WL6: # none, wall, pane, frame, + WALLFRAME (matches winlab_6)
+        colors["none"]         = (0)
+        colors["window pane"]  = (1)
+        colors["window frame"] = (2)
+        colors["open-window"]  = (0)
+        colors["wall frame"]   = (3)
+        colors["wall"]         = (4)
+        colors["door"]         = (0)
+        colors["shutter"]      = (0)
+        colors["blind"]        = (0)
+        colors["bars"]         = (0)
+        colors["balcony"]      = (0)
+        colors["misc object"]  = (0)
+        colors["roof"]         = (0)
+        colors["door-pane"]    = (0)
+
+    elif mode == GREY_WL7: # none, wall, pane, frame (matches winlab_7)
+        colors["none"]         = (0)
+        colors["window pane"]  = (1)
+        colors["window frame"] = (2)
+        colors["open-window"]  = (0)
+        colors["wall frame"]   = (3)
+        colors["wall"]         = (3)
+        colors["door"]         = (0)
+        colors["shutter"]      = (0)
+        colors["blind"]        = (0)
+        colors["bars"]         = (0)
+        colors["balcony"]      = (0)
+        colors["misc object"]  = (0)
+        colors["roof"]         = (0)
+        colors["door-pane"]    = (0)
 
     return colors
 

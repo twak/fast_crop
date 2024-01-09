@@ -34,6 +34,7 @@ class ROI:
 
         self.images.sort()
 
+        # made with tmp_create_crop_lookup
         with open("/home/twak/Downloads/winlab_5/crop2path.pkl", "rb") as fp:
             self.crop2path = pickle.load(fp)
 
@@ -122,10 +123,11 @@ class ROI:
             pth = self.input_loc
 
         root = Path(pth).with_suffix("").name
-        if root in self.crop2path:
-            c2p = Path(self.crop2path[root])
-        elif f"{root}.jpg" in self.crop2path:
-            c2p = Path(self.crop2path[f"{root}.jpg"])
+
+        for rr in [root, f"{root}.jpg", f"{root}.JPG"]:
+            if rr in self.crop2path:
+                c2p = Path(self.crop2path[rr])
+                break
 
         return os.path.join (self.meta_dir, c2p.parent, f"{c2p.name}.json" )
 
@@ -187,40 +189,49 @@ class ROI:
 
     def load(self, incr):
 
-        self.rects = []
-        self.current_rect = None
+        found_easy = False
+        while not found_easy:
+            self.rects = []
+            self.current_rect = None
 
-        self.tags = []
-        self.current_n = (self.current_n + incr + len (self.images)) % len (self.images)
+            self.tags = []
+            self.current_n = (self.current_n + incr + len (self.images)) % len (self.images)
 
-        self.input_loc = self.images[(self.current_n + len(self.images) ) % len(self.images)]
-        print (f"loading {self.input_loc} ({self.current_n}/{len(self.images)})")
-        pygame.display.set_caption(f"{self.input_loc} ({self.current_n}/{len(self.images)})")
+            self.input_loc = self.images[(self.current_n + len(self.images) ) % len(self.images)]
+            print (f"loading {self.input_loc} ({self.current_n}/{len(self.images)})")
+            pygame.display.set_caption(f"{self.input_loc} ({self.current_n}/{len(self.images)})")
 
-        json_file = self.json_file()
+            json_file = self.json_file()
 
 
-        if os.path.exists(self.input_loc):
-            self.im, self.lab, guess = self.load_maybe_cache(self.input_loc)
-            if os.path.exists(json_file):
-                self.tags = json.load(open(json_file, "r"))
+            if os.path.exists(self.input_loc):
+                self.im, self.lab, guess = self.load_maybe_cache(self.input_loc)
+                if os.path.exists(json_file):
+                    self.tags = json.load(open(json_file, "r"))
+
+                    found_easy = fast_crop_tags.easy in self.tags
+
+                else:
+                    self.tags = [guess]
             else:
-                self.tags = [guess]
-        else:
-            self.tags = self.default_tags.copy()
-            self.im, self.lab = Image.new("RGB", (10,10)),  Image.new("RGB", (10,10))
-            self.tags = self.default_tags
+                self.tags = self.default_tags.copy()
+                self.im, self.lab = Image.new("RGB", (10,10)),  Image.new("RGB", (10,10))
+                self.tags = self.default_tags
 
-        self.px    = ROI.pilImageToSurface(self.im)
-        self.pxLab = ROI.pilImageToSurface(self.lab)
+            self.px    = ROI.pilImageToSurface(self.im)
+            self.pxLab = ROI.pilImageToSurface(self.lab)
 
-        # self.scale = max ( self.px.get_width()/self.screen.get_width(), self.px.get_height()/self.screen.get_height() )
+            # self.scale = max ( self.px.get_width()/self.screen.get_width(), self.px.get_height()/self.screen.get_height() )
 
-        pygame.draw.rect(self.screen, (0, 0, 0), pygame.Rect(0, 0, self.screen.get_width(), self.screen.get_height()))
-        pygame.display.flip()
+            pygame.draw.rect(self.screen, (0, 0, 0), pygame.Rect(0, 0, self.screen.get_width(), self.screen.get_height()))
+            pygame.display.flip()
 
-        for i in range (1,3): # pre-cache following images
-            self.pre_load_image( self.images[(self.current_n + i + len(self.images)) % len(self.images)] )
+            for i in range (1,3): # pre-cache following images
+                self.pre_load_image( self.images[(self.current_n + i + len(self.images)) % len(self.images)] )
+
+            if incr == 0:
+                found_easy = True
+
 
     def interactive(self):
 
@@ -236,7 +247,50 @@ class ROI:
         self.load(0)
         self.mainLoop()
 
+
+def add_lookup(label_json_file, lookup):
+    jp = Path(label_json_file)
+
+    if os.stat(label_json_file).st_size == 0:  # while the labelling is in progress, some label files are empty placeholders.
+        print(f"skipping empty label file {label_json_file}")
+        return
+
+    with open(label_json_file, "r") as f:
+        data = json.load(f)
+
+    c = 0
+    for crop_name, crop_data in data.items():
+        print(f"           {crop_name}")
+        crop_name = crop_name.replace(".jpg", "")
+        lookup[crop_name] = os.path.join(jp.parent.name, jp.name[:-5])
+        c += 1
+
+    return c
+
+
+def build_lookup():
+    json_src = []
+    json_src.extend(glob.glob(r'./metadata_window_labels/*/*.json'))
+    json_src.extend(glob.glob(r'./metadata_window_labels_2/*/*.json'))
+
+    dataset_root = "."
+
+    lookup = {}
+    count = 0
+
+    for j in json_src:
+        print(j)
+        count += add_lookup(j, lookup)
+
+    print(f"found {count}")
+
+    with open('/home/twak/Downloads/crop2path2.pkl', 'wb') as fp:
+        pickle.dump(lookup, fp)
+
+
 if __name__ == "__main__":
+
+    # build_lookup()
 
     print("\n\n") #pygame output...
 

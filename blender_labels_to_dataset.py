@@ -23,17 +23,27 @@ def to_greyscale_labels(png_file, out_folder):
 
     tol = 10
 
+    out_map = process_labels.colours_for_mode(process_labels.GREY_WL6)
     pretty_map = process_labels.colours_for_mode(process_labels.PRETTY)
     output = np.zeros(pretty.size, dtype=int)
 
-    for i, label_name in enumerate (process_labels.LABEL_SEQ_NO_DOOR):
+    for i, label_name in enumerate (process_labels.LABEL_SEQ_NO_DOOR): # for all colors in the image
 
+        # for all out
         colour = np.array ( pretty_map[label_name] )
         equality = np.logical_and ( np.greater(label, colour-tol), np.less(label, colour+tol) )
         class_map = np.all(equality, axis=-1)
-#        print (f"{label_name} - {colour} :: {class_map.sum()}")
+        # print (f"{label_name} - {colour} :: {class_map.sum()}")
+
+
         output = output * (1- class_map) # zero out any previous labels
-        output = output + class_map * i  # set greyscale label
+
+        if out_map is None:
+            oi = i
+        else:
+            oi = out_map[label_name]
+
+        output = output + class_map * oi  # set greyscale label
 
     print ("saving to %s"%output_path)
     Image.fromarray(np.uint8(output)).save( output_path )
@@ -60,7 +70,7 @@ def to_color_labels(png_file, out_folder):
 
 if __name__ == "__main__":
 
-    _pool = concurrent.futures.ThreadPoolExecutor(max_workers=16)
+    _pool = concurrent.futures.ThreadPoolExecutor( max_workers=16 )
 
     labels = []
 
