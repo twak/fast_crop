@@ -10,7 +10,6 @@ import concurrent.futures
 from pathlib import Path
 
 # convert labels in PRETTY colours (or PRETTY_FILMIC...) to greyscale 8 bits for mmseg
-
 def to_greyscale_labels(png_file, out_folder):
 
     print (png_file)
@@ -23,8 +22,11 @@ def to_greyscale_labels(png_file, out_folder):
 
     tol = 10
 
-    out_map = process_labels.colours_for_mode(process_labels.GREY_WL6)
+    # colours read
     pretty_map = process_labels.colours_for_mode(process_labels.PRETTY)
+    # output grey channels (or None)
+    out_map = process_labels.colours_for_mode(process_labels.GREY_EASY4)
+
     output = np.zeros(pretty.size, dtype=int)
 
     for i, label_name in enumerate (process_labels.LABEL_SEQ_NO_DOOR): # for all colors in the image

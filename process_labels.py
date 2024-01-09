@@ -151,7 +151,7 @@ def colours_for_mode (mode):
         colors["roof"]          = (0) # << render roof as none
         colors["door-pane"]     = (1) # << render door-window-pane as window-pane
 
-    elif mode == GREY_WL6: # none, wall, pane, frame, + WALLFRAME (matches winlab_6)
+    elif mode == GREY_EASY5: # none, wall, pane, frame, + WALLFRAME (matches winlab_6)
         colors["none"]         = (0)
         colors["window pane"]  = (1)
         colors["window frame"] = (2)
@@ -167,7 +167,7 @@ def colours_for_mode (mode):
         colors["roof"]         = (0)
         colors["door-pane"]    = (0)
 
-    elif mode == GREY_WL7: # none, wall, pane, frame (matches winlab_7)
+    elif mode == GREY_EASY4: # none, wall, pane, frame (matches winlab_7)
         colors["none"]         = (0)
         colors["window pane"]  = (1)
         colors["window frame"] = (2)
