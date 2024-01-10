@@ -189,48 +189,48 @@ class ROI:
 
     def load(self, incr):
 
-        found_easy = False
-        while not found_easy:
-            self.rects = []
-            self.current_rect = None
+        # found_easy = False
+        # while not found_easy:
+        self.rects = []
+        self.current_rect = None
 
-            self.tags = []
-            self.current_n = (self.current_n + incr + len (self.images)) % len (self.images)
+        self.tags = []
+        self.current_n = (self.current_n + incr + len (self.images)) % len (self.images)
 
-            self.input_loc = self.images[(self.current_n + len(self.images) ) % len(self.images)]
-            print (f"loading {self.input_loc} ({self.current_n}/{len(self.images)})")
-            pygame.display.set_caption(f"{self.input_loc} ({self.current_n}/{len(self.images)})")
+        self.input_loc = self.images[(self.current_n + len(self.images) ) % len(self.images)]
+        print (f"loading {self.input_loc} ({self.current_n}/{len(self.images)})")
+        pygame.display.set_caption(f"{self.input_loc} ({self.current_n}/{len(self.images)})")
 
-            json_file = self.json_file()
+        json_file = self.json_file()
 
 
-            if os.path.exists(self.input_loc):
-                self.im, self.lab, guess = self.load_maybe_cache(self.input_loc)
-                if os.path.exists(json_file):
-                    self.tags = json.load(open(json_file, "r"))
+        if os.path.exists(self.input_loc):
+            self.im, self.lab, guess = self.load_maybe_cache(self.input_loc)
+            if os.path.exists(json_file):
+                self.tags = json.load(open(json_file, "r"))
 
-                    found_easy = fast_crop_tags.easy in self.tags
+                # found_easy = fast_crop_tags.easy in self.tags
 
-                else:
-                    self.tags = [guess]
             else:
-                self.tags = self.default_tags.copy()
-                self.im, self.lab = Image.new("RGB", (10,10)),  Image.new("RGB", (10,10))
-                self.tags = self.default_tags
+                self.tags = [guess]
+        else:
+            self.tags = self.default_tags.copy()
+            self.im, self.lab = Image.new("RGB", (10,10)),  Image.new("RGB", (10,10))
+            self.tags = self.default_tags
 
-            self.px    = ROI.pilImageToSurface(self.im)
-            self.pxLab = ROI.pilImageToSurface(self.lab)
+        self.px    = ROI.pilImageToSurface(self.im)
+        self.pxLab = ROI.pilImageToSurface(self.lab)
 
-            # self.scale = max ( self.px.get_width()/self.screen.get_width(), self.px.get_height()/self.screen.get_height() )
+        # self.scale = max ( self.px.get_width()/self.screen.get_width(), self.px.get_height()/self.screen.get_height() )
 
-            pygame.draw.rect(self.screen, (0, 0, 0), pygame.Rect(0, 0, self.screen.get_width(), self.screen.get_height()))
-            pygame.display.flip()
+        pygame.draw.rect(self.screen, (0, 0, 0), pygame.Rect(0, 0, self.screen.get_width(), self.screen.get_height()))
+        pygame.display.flip()
 
-            for i in range (1,3): # pre-cache following images
-                self.pre_load_image( self.images[(self.current_n + i + len(self.images)) % len(self.images)] )
+        for i in range (1,3): # pre-cache following images
+            self.pre_load_image( self.images[(self.current_n + i + len(self.images)) % len(self.images)] )
 
-            if incr == 0:
-                found_easy = True
+        # if incr == 0:
+        #     found_easy = True
 
 
     def interactive(self):

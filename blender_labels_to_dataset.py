@@ -37,6 +37,43 @@ def to_greyscale_labels(png_file, out_folder):
         class_map = np.all(equality, axis=-1)
         # print (f"{label_name} - {colour} :: {class_map.sum()}")
 
+        output = output * (1- class_map) # zero out any previous labels
+
+        if out_map is None:
+            oi = i
+        else:
+            oi = out_map[label_name]
+
+        output = output + class_map * oi  # set greyscale label
+
+    print ("saving to %s"%output_path)
+    Image.fromarray(np.uint8(output)).save( output_path )
+
+# convert labels in 1-hot to 1-hot with a different mapping
+def grey_to_grey_remap_labels(png_file, out_folder):
+
+    print (png_file)
+    output_path = os.path.join(out_folder, os.path.basename(Path(png_file).name) )
+    if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
+        return # already done, skip
+
+    grey = Image.open(png_file, "r")
+    grey = np.asarray ( grey )
+
+    # colours read
+    pretty_map = process_labels.colours_for_mode(process_labels.PRETTY)
+    # output grey channels (or None)
+    out_map = process_labels.colours_for_mode(process_labels.GREY_EASY4)
+
+    output = np.zeros(grey.shape, dtype=int)
+
+    for i, label_name in enumerate (process_labels.LABEL_SEQ_NO_DOOR): # for all colors in the image
+
+        # for all out
+        colour = np.array ( pretty_map[label_name] )
+        class_map =  np.equal(grey, i) # np.logical_and ( np.greater(label, colour-tol), np.less(label, colour+tol) )
+        # class_map = np.all(equality, axis=-1)
+        # print (f"{label_name} - {colour} :: {class_map.sum()}")
 
         output = output * (1- class_map) # zero out any previous labels
 
@@ -49,6 +86,7 @@ def to_greyscale_labels(png_file, out_folder):
 
     print ("saving to %s"%output_path)
     Image.fromarray(np.uint8(output)).save( output_path )
+
 
 def to_color_labels(png_file, out_folder):
 
@@ -83,7 +121,8 @@ if __name__ == "__main__":
 
     if True: # rgb to greyscale
         out_dir = os.path.join(sys.argv[1], dest_folder)
-        fn = to_greyscale_labels
+        fn = grey_to_grey_remap_labels
+        # fn = to_greyscale_labels
 
     # else: # greyscale to rgb fi me
     #     fn = to_color_labels
