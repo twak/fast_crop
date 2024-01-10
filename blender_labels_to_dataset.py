@@ -60,21 +60,14 @@ def grey_to_grey_remap_labels(png_file, out_folder):
     grey = Image.open(png_file, "r")
     grey = np.asarray ( grey )
 
-    # colours read
-    pretty_map = process_labels.colours_for_mode(process_labels.PRETTY)
     # output grey channels (or None)
-    out_map = process_labels.colours_for_mode(process_labels.GREY_EASY4)
+    out_map = process_labels.colours_for_mode(process_labels.GREY_EASY5)
 
     output = np.zeros(grey.shape, dtype=int)
 
-    for i, label_name in enumerate (process_labels.LABEL_SEQ_NO_DOOR): # for all colors in the image
+    for i, label_name in enumerate (process_labels.LABEL_SEQ_NO_DOOR):
 
-        # for all out
-        colour = np.array ( pretty_map[label_name] )
-        class_map =  np.equal(grey, i) # np.logical_and ( np.greater(label, colour-tol), np.less(label, colour+tol) )
-        # class_map = np.all(equality, axis=-1)
-        # print (f"{label_name} - {colour} :: {class_map.sum()}")
-
+        class_map =  np.equal(grey, i)
         output = output * (1- class_map) # zero out any previous labels
 
         if out_map is None:
