@@ -23,7 +23,6 @@ with open("/ibex/user/kellyt/winlab_5/easy_train.txt", "r") as f:
         shutil.copyfile("/ibex/user/kellyt/winlab_5/rgb/" + line + ".jpg", f"{outdir}/rgb/{line}.jpg")
         shutil.copyfile("/ibex/user/kellyt/winlab_5/labels_easy4/" + line + ".png", f"{outdir}/labels_easy4/{line}.png")
 
-
 # with open("/ibex/user/kellyt/windowz/winsyn_riyal/16384.txt", "r") as f:
 with open("/ibex/user/kellyt/windowz/winsyn_riyal/2048.txt", "r") as f:
     slines = f.readlines()
@@ -45,26 +44,6 @@ with open("/ibex/user/kellyt/windowz/winsyn_riyal/2048.txt", "r") as f:
         img.save(op, "JPEG", quality=90)
         shutil.copyfile("/ibex/user/kellyt/windowz/winsyn_riyal/labels_easy4/" + line + ".png", f"{outdir}/labels_easy4/{line}.png")
 
-# fixed real, some synthetic
-# for i in range(12, 15):
-#
-#     syn = 2 ** i
-#
-#     for z in range (5) if i <= 16 else [1]:
-#
-#         print(f">>>> {syn} {i}")
-#
-#         with open(f"{outdir}/real_{syn}_{z}.txt", "w") as f:
-#
-#             random.shuffle(rlines)
-#             random.shuffle(slines)
-#
-#             lines = [*rlines]
-#             lines.extend(slines[:syn])
-#
-#             for line in lines:
-#                 line = line.strip()
-#                 f.write(f"{line}\n")
 
 # fixed synthetic, some real
 for i in range(1, 12):
