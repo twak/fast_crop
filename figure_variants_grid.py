@@ -83,6 +83,7 @@ def create_image_grid(root_directory):
     e  = "winsyn_riyal_e"
     f  = "winsyn_riyal_f"
     g  = "winsyn_riyal_g"
+    h  = "winsyn_riyal_h"
 
     with open(os.path.join("winsyn_riyal", "2048.txt"), "r") as fp: # read the splits for 'two'
         sa = fp.read().split("\n")[:-1]
@@ -91,6 +92,10 @@ def create_image_grid(root_directory):
     with open(os.path.join("winsyn_riyal_f", "2048.txt"), "r") as fp: # read the splits for 'two'
         sf = fp.read().split("\n")[:-1]
     random.shuffle(sf)
+
+    with open(os.path.join("winsyn_riyal_h", "2048.txt"), "r") as fp: # read the splits for 'two'
+        sh = fp.read().split("\n")[:-1]
+    random.shuffle(sh)
 
     styles = [
         # (b, "rgb", "png", sa, 32.587),
@@ -158,23 +163,30 @@ def create_image_grid(root_directory):
         # (f, "wide_windows", "png", sf, 32.043),
         # (f, "mono_profile", "png", sf, 32.196),
 
-        (g, "rgb", "png", sa, 0),
+        # (g, "rgb", "png", sa, 0),
+        # (g, "0monomat", "png", sa, 0),
+        # (g, "0.33monomat", "png", sa, 0),
+        # (g, "0.66monomat", "png", sa, 0),
+        # (g, "1monomat", "png", sa, 0),
+        # (g, "2monomat", "png", sa, 0),
+        # (g, "4monomat", "png", sa, 0),
+        # (g, "0multimat", "png", sa, 0),
+        # (g, "0.33multimat", "png", sa, 0),
+        # (g, "0.66multimat", "png", sa, 0),
+        # (g, "1multimat", "png", sa, 0),
+        # (g, "2multimat", "png", sa, 0),
+        # (g, "4multimat", "png", sa, 0),
+        # (g, "all_brick", "png", sa, 0),
 
-        (g, "0monomat", "png", sa, 0),
-        (g, "0.33monomat", "png", sa, 0),
-        (g, "0.66monomat", "png", sa, 0),
-        (g, "1monomat", "png", sa, 0),
-        (g, "2monomat", "png", sa, 0),
-        (g, "4monomat", "png", sa, 0),
+        (h, "1nwall", "png", sh, 23.038),
+        (h, "2nwall", "png", sh,  28.234),
+        (h, "4nwall", "png", sh, 27.882),
+        (h, "8nwall", "png", sh, 29.940),
+        (h, "16nwall", "png", sh, 31.481),
+        (h, "32nwall", "png", sh, 32.284),
+        (h, "64nwall", "png", sh, 32.715),
+        (h, "128nwall", "png", sh, 32.487),
 
-        (g, "0multimat", "png", sa, 0),
-        (g, "0.33multimat", "png", sa, 0),
-        (g, "0.66multimat", "png", sa, 0),
-        (g, "1multimat", "png", sa, 0),
-        (g, "2multimat", "png", sa, 0),
-        (g, "4multimat", "png", sa, 0),
-
-        (g, "all_brick", "png", sa, 0),
 
 
     # (b, "canonical", "png"),
@@ -199,7 +211,7 @@ def create_image_grid(root_directory):
     svg_out_dir = os.path.join(root_directory, f"svg_out_{time.time()}")
     os.makedirs(svg_out_dir, exist_ok=True)
     # draw = ImageDraw.Draw(grid_image)
-    svg_out = svgwrite.Drawing(os.path.join(svg_out_dir, "labels2.svg"), profile='tiny')
+    svg_out = svgwrite.Drawing(os.path.join(svg_out_dir, "labels3.svg"), profile='tiny')
 
 
     y_offset = 0
@@ -221,7 +233,7 @@ def create_image_grid(root_directory):
             if ext.lower() in ['jpg', 'png', 'jpeg']:
                 base_image = Image.open(image_filef)
             elif ext.lower() in ['exr']:
-                base_image = render_depth_image(image_filef)
+                base_image = rendr_depth_image(image_filef)
             elif ext.lower() in ['txt']:
                 base_image = render_attribs(image_filef)
 
