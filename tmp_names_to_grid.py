@@ -9,10 +9,10 @@ from PIL import Image
 
 # get arguments
 # pattern = sys.argv[1]
-rows = 8 # int(sys.argv[2])
-cols = 8 # int(sys.argv[3])
+rows = 10 # int(sys.argv[2])
+cols = 10 # int(sys.argv[3])
 
-resolution = 512
+resolution = 256
 
 # get filenames
 filenames = [] # glob.glob(pattern)
