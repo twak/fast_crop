@@ -220,14 +220,14 @@ def create_image_grid(root_directory):
         svg_out.add(svg_out.text(f"{dataset}", insert=(x_offset, -1)))
 
         svg_out.add(svg_out.text(patch_name(name), insert=(int(x_offset - base_image_width), int ( y_offset + base_image_height / 2))))
-        svg_out.add(svg_out.text(str(miou), insert=(int(x_offset * (num + 2)), int(y_offset + base_image_height / 2))))
+        svg_out.add(svg_out.text(str('{0:.2f}'.format(miou)), insert=(int(base_image_width * (num+1) + 10), int(y_offset + base_image_height / 2))))
 
         fid = subprocess.check_output(['python', '-m', 'pytorch_fid', '--device' ,'cuda:0',  f"/ibex/user/kellyt/windowz/{dataset}/{name}/", f"/ibex/user/kellyt/winsyn_89692_crops_512px_v1/all_fid.npz"])
         fid = float ( fid.decode('utf-8').replace("FID:", "").strip() )
         fid = '{0:.2f}'.format(fid)
         
         print(f" {dataset} {name}, {miou}, {fid}")
-        svg_out.add(svg_out.text(str(fid), insert=(x_offset * (num + 2) + 100, y_offset + base_image_height / 2)))
+        svg_out.add(svg_out.text(str(fid), insert=(base_iamge_width * (num + 2) + 10, y_offset + base_image_height / 2)))
 
         for split in splits[:num]:
 
