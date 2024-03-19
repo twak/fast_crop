@@ -15,6 +15,7 @@ import svgwrite
 import json
 import time
 import re
+import subprocess
 
 def render_depth_image(exr_path):
 
@@ -112,7 +113,7 @@ def create_image_grid(root_directory):
         (b, "col_per_obj", "png", sa, 21.551),
         (b, "texture_rot", "png", sa, 26.647),
         (b, "voronoi_chaos", "png", sa, 19.300),
-        (b, "rgb_depth", "exr", sa, "na"),
+        # (b, "rgb_depth", "exr", sa, "na"),
 
         (d, "1spp", "png", sa, 7.231),
         (d, "2spp", "png", sa, 8.259),
@@ -185,10 +186,7 @@ def create_image_grid(root_directory):
         (h, "16nwall", "png", sh, 31.481),
         (h, "32nwall", "png", sh, 32.284),
         (h, "64nwall", "png", sh, 32.715),
-        (h, "128nwall", "png", sh, 32.487),
-
-
-
+        (h, "128nwall", "png", sh, 32.487)
     # (b, "canonical", "png"),
         # (b, "canonical_albedo", "png"),
         # (b, "canonical_transcol" "png")
@@ -201,7 +199,7 @@ def create_image_grid(root_directory):
     # splits = splits[:num]
 
     num = 1
-    base_image_height = base_image_width = 512
+    base_image_height = base_image_width = 128
 
     total_height = len(styles) * base_image_height
     total_width  = num * base_image_width
@@ -221,15 +219,19 @@ def create_image_grid(root_directory):
         x_offset = 0
         svg_out.add(svg_out.text(f"{dataset}", insert=(x_offset, -1)))
 
-        svg_out.add(svg_out.text(patch_name(name), insert=(x_offset - base_image_width, y_offset + base_image_height / 2)))
-        svg_out.add(svg_out.text(str(miou), insert=(x_offset * (num + 2) + 10, y_offset + base_image_height / 2)))
+        svg_out.add(svg_out.text(patch_name(name), insert=(int(x_offset - base_image_width), int ( y_offset + base_image_height / 2))))
+        svg_out.add(svg_out.text(str('{0:.2f}'.format(miou)), insert=(int(base_image_width * (num+1) + 10), int(y_offset + base_image_height / 2))))
 
-        fid = subprocess.check_output(['python', '-m', 'pytorch_fid', '--device cuda:0',  f"/ibex/user/kellyt/windowz/{dataset}/{name}/", f"/ibex/user/kellyt/winsyn_89692_crops_512px_v1/all_fid.npz"])
-        svg_out.add(svg_out.text(str(fid), insert=(x_offset * (num + 3) + 10, y_offset + base_image_height / 2)))
+        fid = subprocess.check_output(['python', '-m', 'pytorch_fid', '--device' ,'cuda:0',  f"/ibex/user/kellyt/windowz/{dataset}/{name}/", f"/ibex/user/kellyt/winsyn_89692_crops_512px_v1/all_fid.npz"])
+        fid = float ( fid.decode('utf-8').replace("FID:", "").strip() )
+        fid = '{0:.2f}'.format(fid)
+        
+        print(f" {dataset} {name}, {miou}, {fid}")
+        svg_out.add(svg_out.text(str(fid), insert=(base_iamge_width * (num + 2) + 10, y_offset + base_image_height / 2)))
 
         for split in splits[:num]:
 
-            print (f"{name}: {split}.{ext}")
+            #print (f"{name}: {split}.{ext}")
 
             image_filef = os.path.join(os.path.join(root_directory, dataset, name, f"{split}.{ext}" ) )
 
@@ -251,7 +253,7 @@ def create_image_grid(root_directory):
             x_offset += base_image_width
         y_offset += base_image_width
 
-    svg_out.save()
+        svg_out.save()
     output_path = os.path.join(root_directory, "image_grid.jpg")
     grid_image.save(output_path)
 
