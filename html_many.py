@@ -83,8 +83,8 @@ def many_syn(synths, reals, output_folder):
             document.getElementById("demo_desc").innerHTML = desc_showing
 	      }
 	      function showHoverRGB(name, desc){
-            document.getElementById("demo_pane").src = "imgs/"+name+".jpg";
-            document.getElementById("demo_desc").innerHTML = desc
+            //document.getElementById("demo_pane").src = "imgs/"+name+".jpg"; // fun for local, but not web :(
+            // document.getElementById("demo_desc").innerHTML = desc
 	      }
 	      function hideHoverRGB() {
 		    setRGB(desc_showing);
@@ -97,11 +97,19 @@ def many_syn(synths, reals, output_folder):
         index_html.write("""
  }
     </script>
+    <style>
+    
+.highlight_children>div:hover {
+    background-color: #ffffff;
+    opacity: 0.6;
+}
+
+    </style>
     </head><body>
         """
                          )
 
-        index_html.write('<div style="position: relative; width:49%; max-width:512px; display:inline-block;">')
+        index_html.write('<div class="highlight_children" style="position: relative; width:49%; max-width:512px; display:inline-block;">')
         index_html.write('<img src="index.jpg" style="width: 100%; height: auto;">')
 
         i = 0
