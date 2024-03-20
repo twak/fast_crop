@@ -18,7 +18,8 @@ web_dir  = os.path.join(dataset_root, "metadata_website")
 use_batch_cache = False
 use_photo_page_cache = False
 use_img_cache = True
-
+hide_dir = True
+hide_deleted = True
 
 process_labels.USE_PRETTY_COLORS = True
 process_labels.COLOR_MODE = process_labels.PRETTY
@@ -105,7 +106,8 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
 
             for idx, tag_name in enumerate ( batches ): # batch names are also tagged here
                 if os.path.isdir(os.path.join(orig, tag_name)):
-                    html_file.write(f'<input class="{tag_name}_c" type="radio" value="{tag_name}_c" name="foo" onclick="set_batch(this.value);" {"checked" if idx == 0 else ""}>{tag_name}<a href="../photos/{tag_name}">[d]</a>\n')
+                    html_file.write(f'<input class="{tag_name}_c" type="radio" value="{tag_name}_c" name="foo" onclick="set_batch(this.value);" {"checked" if idx == 0 else ""}>{tag_name}')
+                    html_file.write('\n' if hide_dir else f'<a href="../photos/{tag_name}">[d]</a>\n')
                     if idx == 0:
                         first_batch = tag_name
             html_file.write(f'<br><hr>')
@@ -118,7 +120,7 @@ with open(os.path.join(web_dir,"crops.html"), 'w') as rects_html:
 
             html_file.write(f'<br><hr><div id="batch"></div>')
 
-            # js to select a dataset by url the professors
+            # js to select a dataset by url for the "professors"
             html_file.write ("""
                 <script>
                 function getHashValue(key) {
@@ -186,6 +188,8 @@ with open(latlons_js, 'w') as latlons_html:
         append_index_file = os.path.join(batch_thumbs, "html_index.html")
         append_rect_file  = os.path.join(batch_thumbs, "html_rects.html")
 
+        Path(os.path.join(batch_thumbs, "index.html")).touch() # hide dir listings from apache
+
         if use_batch_cache and os.path.exists (append_index_file) and os.path.exists (append_rect_file):
 
             # cache files found, let's use those
@@ -216,8 +220,6 @@ with open(latlons_js, 'w') as latlons_html:
                     json_file = pre + ".json"
 
                     json_file_path = os.path.join(meta_dir, batch, json_file)
-
-
                     labels_png_path = os.path.join(batch_thumbs, pre + ".png")
 
                     # read in the crop metadata
@@ -227,6 +229,11 @@ with open(latlons_js, 'w') as latlons_html:
                         metadata = {}
                         metadata["tags"] = ["no_meta"]
                         metadata["rects"] = []
+
+                    tags = set(metadata["tags"]) # whole image tags
+
+                    if 'deleted' in tags and hide_deleted:
+                        continue
 
                     # use image-with labels as thumbnail where available
 
@@ -244,7 +251,6 @@ with open(latlons_js, 'w') as latlons_html:
                     else:
                         thumbnail(os.path.join(photos_dir, photo), os.path.join(batch_thumbs, photo), metadata, use_cache=use_img_cache)
 
-                    tags = set(metadata["tags"]) # whole image tags
                     # tags.add(batch) - no! we shall all batches because we now use radio
 
                     for md in os.listdir(dataset_root): # all data-types that match batch/name-with-any-extension
@@ -317,13 +323,11 @@ with open(latlons_js, 'w') as latlons_html:
                             if os.path.exists(loc_json):
                                 loc = json.load(open(loc_json, "r"))
                                 lat, lon = float(loc['Latitude']), float(loc['Longitude'])
-                                latlons_html.write(f'[{lat}, {lon},"<a href = \'../{batch}/{photo_pre}.html\'><img src = \'../{batch}/{photo}\'<br/>{photo_pre}</a>"],\n')
+                                latlons_html.write(f'[{lat}, {lon},"<a href = \'../{batch}/{photo_pre}.html\' target="_blank"><img src = \'../{batch}/{photo}\'<br/>{photo_pre}</a>"],\n')
                                 photo_html.write(f"<p>Time: {loc['Time']}   Date: {loc['Date']}</p> <p>Country: {loc['Country']}</p> <p>City: {loc['City']}</p>")
                                 photo_html.write(f"<p><a href='https://www.google.co.uk/maps/place/{lat},{lon}'>location: {lat}, {lon}</a> Source: {loc['Source']}</p>")
                                 delta = 0.001
                                 photo_html.write (f'<iframe loading="lazy" style="border: 1px solid black;" src="https://www.openstreetmap.org/export/embed.html?bbox={lon-delta}%2C{lat-delta}%2C{lon+delta}%2C{lat+delta}&marker={lat}%2C{lon}" width="620px" height="480px" sandbox="allow-scripts"></iframe>')
-
-
 
                             photo_html.write(f"<br><p>all metadata:</p><ul>")
                             for md in os.listdir(dataset_root):
